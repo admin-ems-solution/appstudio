@@ -5,27 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hợp Đồng Cung Cấp Dịch Vụ - 2H STUDIO</title>
     
-    <!-- Using html2pdf.js which includes html2canvas and jsPDF for reliable PDF export -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;700&display=swap');
         :root {
             --page-width: 210mm;
-            --main-padding: 10mm;
+            --main-padding: 10pt;
             --dynamic-data-color: #0d6efd; 
         }
         body { font-family: 'Be Vietnam Pro', sans-serif; font-size: 9.5pt; line-height: 1.4; color: #212529; background-color: #f0f2f5; margin: 0; padding: 0; }
-        
-        .actions-container { 
-            position: sticky; top: 0; display: flex; justify-content: flex-end; align-items: center;
-            width: 100%; background-color: #343a40; padding: 8px 20px; box-sizing: border-box;
-            z-index: 2000; box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        }
+        .actions-container { position: sticky; top: 0; display: flex; justify-content: flex-end; align-items: center; width: 100%; background-color: #343a40; padding: 8px 20px; box-sizing: border-box; z-index: 2000; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
         .actions-container button { background-color: #0d6efd; color: white; border: none; padding: 8px 16px; border-radius: 5px; font-size: 14px; font-weight: 500; cursor: pointer; margin-left: 10px; }
         .actions-container button#download-pdf { background-color: #198754; }
         .actions-container button:disabled { background-color: #6c757d; cursor: not-allowed; }
-
         .page-wrapper { display: flex; justify-content: center; padding: 20px 0; }
         .a4-page { width: var(--page-width); background-color: white; margin: 0 auto; box-shadow: 0 0 15px rgba(0, 0, 0, 0.1); }
         #print-container { width: 100%; border-collapse: collapse; table-layout: fixed; }
@@ -42,6 +35,7 @@
         table { width: 100%; border-collapse: collapse; margin-bottom: 15px; font-size: 9pt; }
         th, td { border: 1px solid #dee2e6; padding: 6px 8px; text-align: left; vertical-align: top; }
         th { background-color: #e9ecef; font-weight: 700; text-align: center; }
+        .page-one-container { display: flex; flex-direction: column; justify-content: space-between; min-height: 220mm; }
         .summary-and-payment { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
         .qr-payment-section { width: 48%; border: 1px solid #e9ecef; padding: 15px; border-radius: 5px; text-align: center; }
         .qr-code { min-height: 140px; display: flex; justify-content: center; align-items: center; }
@@ -49,37 +43,40 @@
         .summary-section { width: 48%; }
         .summary-table .highlight-red { color: #dc3545; font-weight: 700; font-size: 11pt; }
         .terms-section { margin-top: 15px; border-top: 1px solid #dee2e6; padding-top: 10px; }
-        .terms-section h3 { font-size: 11pt; font-weight: 700; margin: 10px 0 5px 0; }
-        .terms-section p, .terms-section li { margin-bottom: 4px; }
-        .terms-section ul { padding-left: 20px; list-style-type: none; }
-        .terms-section ul li::before { content: "- "; }
-        .signature-block { display: flex; justify-content: space-around; text-align: center; margin-top: 40px; padding-top: 15px; border-top: 1px solid #dee2e6; }
+        
+        /* NEW: Class for controlling page breaks */
+        .print-block {
+            page-break-inside: avoid;
+            margin-top: 15px;
+        }
+        .print-block h3 { font-size: 11pt; font-weight: 700; margin: 0 0 5px 0; }
+        .print-block p, .print-block li { margin-bottom: 4px; }
+        .print-block ul { padding-left: 20px; list-style-type: none; margin-block-start: 0; margin-block-end: 0; }
+        .print-block ul li::before { content: "- "; }
+        .signature-block { display: flex; justify-content: space-around; text-align: center; margin-top: 40px; padding-top: 15px; border-top: 1px solid #dee2e6; page-break-before: auto; }
         .signature-block .name { margin-top: 60px; font-weight: 700; }
 
         @media print {
             body { background: none; padding: 0; }
-            .actions-container, .page-wrapper { display: block; }
             .actions-container { display: none !important; }
-            .a4-page { box-shadow: none; margin: 0; }
-            html { font-size: 10pt; }
-            @page { margin: 10mm; }
+            .page-wrapper { padding: 0; }
+            .a4-page { box-shadow: none; margin: 0; width: 100%; }
+            @page { margin: var(--main-padding); }
             .header-content { padding: 0 0 10px 0 !important; }
             #print-container { display: table; width: 100%; }
             #page-header { display: table-header-group; }
             #page-footer { display: table-footer-group; }
+            .page-one-container { min-height: 0; }
             #page-footer .page-number::after { content: "Trang " counter(page); }
             body { counter-reset: page; }
-            .terms-section, .signature-block { page-break-inside: avoid; }
         }
     </style>
 </head>
 <body>
-
     <div class="actions-container">
         <button onclick="window.print()">🖨️ In Hợp Đồng</button>
         <button id="download-pdf">📄 Tải về PDF</button>
     </div>
-
     <div class="page-wrapper">
         <div class="a4-page" id="a4-page-content">
             <table id="print-container">
@@ -145,23 +142,13 @@
                 qrImage.src = qrApiUrl;
             }
             
-            // --- UPDATED PDF DOWNLOAD FUNCTION ---
             document.getElementById("download-pdf").addEventListener("click", () => {
                 const downloadBtn = document.getElementById('download-pdf');
                 downloadBtn.textContent = 'Đang xử lý...';
                 downloadBtn.disabled = true;
-
                 const element = document.getElementById('a4-page-content');
                 const filename = `HD_${document.getElementById('customer-name').textContent.trim()}.pdf`;
-
-                const opt = {
-                    margin:       10, 
-                    filename:     filename,
-                    image:        { type: 'jpeg', quality: 0.98 },
-                    html2canvas:  { scale: 2, useCORS: true, logging: false },
-                    jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-                };
-
+                const opt = { margin: 10, filename: filename, image: { type: 'jpeg', quality: 0.98 }, html2canvas:  { scale: 2, useCORS: true, logging: false }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } };
                 html2pdf().from(element).set(opt).save().then(() => {
                     downloadBtn.textContent = '📄 Tải về PDF';
                     downloadBtn.disabled = false;
@@ -175,10 +162,46 @@
 
             function injectHTMLStructure() {
                  document.querySelector(".header-content").innerHTML = `<header class="header"><div class="logo" style="font-size: 22pt; font-weight: 700;">2H</div><div class="studio-info" style="padding-left:20px;"><h2>2H STUDIO - SƠN TÂY</h2><p><strong>Địa chỉ:</strong> 566 Chùa Thông - Sơn Tây - Hà Nội</p><p><strong>Website:</strong> http://2hstudio.vn/ | <strong>Email:</strong> 2hstudio.wedding@gmail.com</p><p><strong>Điện thoại:</strong> 0854623566 | <strong>Zalo:</strong> 2H studio</p></div></header>`;
-                 document.querySelector(".main-content").innerHTML = `<h1 class="main-title">HỢP ĐỒNG CUNG CẤP DỊCH VỤ</h1><div class="contract-meta">Số: <span id="contract-id" class="dynamic-data"></span> | Ngày: <span id="contract-date" class="dynamic-data"></span></div><p><strong>2H STUDIO - SƠN TÂY</strong> Gửi tới quý khách hàng hoá đơn dịch vụ như sau:</p><div class="info-grid" style="display:flex; justify-content:space-between; margin-bottom:20px;"><div class="customer-info" style="width:48%;"><p><strong>Khách hàng:</strong> <span id="customer-name" class="dynamic-data"></span></p><p><strong>Điện thoại:</strong> <span id="customer-phone" class="dynamic-data"></span></p><p><strong>Địa chỉ:</strong> <span id="customer-address" class="dynamic-data"></span></p></div><div class="staff-info" style="width:48%;"><p><strong>Nhân viên:</strong> <span id="staff-name" class="dynamic-data"></span></p><p><strong>Điện thoại NV:</strong> <span id="staff-phone" class="dynamic-data"></span></p><p><strong>Chức Vụ:</strong> <span id="staff-title" class="dynamic-data"></span></p></div></div><table><thead><tr><th>STT</th><th>Sản phẩm</th><th>ĐVT</th><th>Số lượng</th><th>Đơn giá</th><th>Thành tiền</th><th>Ghi chú</th></tr></thead><tbody id="service-table-body"></tbody></table><div class="summary-and-payment"></div><div class="terms-section"></div><div class="signature-block"></div>`;
-                 document.querySelector(".summary-and-payment").innerHTML = `<div class="qr-payment-section"><div class="qr-code" id="qr-code-container"></div></div><div class="summary-section"><table class="summary-table"><tbody><tr><td>Thành tiền:</td><td style="text-align:right;"><span id="subtotal" class="dynamic-data"></span></td></tr><tr><td>Phát sinh:</td><td style="text-align:right;"><span id="additional-cost" class="dynamic-data"></span></td></tr><tr><td style="font-weight: 700;">Phải TT:</td><td style="text-align:right; font-weight: 700;"><span id="total-due" class="dynamic-data"></span></td></tr><tr><td>Đã TT:</td><td style="text-align:right;"><span id="amount-paid" class="dynamic-data"></span></td></tr><tr><td class="highlight-red">Còn Lại:</td><td style="text-align:right;"><span id="amount-remaining" class="dynamic-data highlight-red"></span></td></tr><tr><td colspan="2">(Bằng chữ: <span id="amount-in-words" class="dynamic-data"></span>)</td></tr></tbody></table></div>`;
-                 document.querySelector(".terms-section").innerHTML = `<h3>Hình thức thanh toán:</h3><ul><li>Lần 1 : 20% ( đặt cọc )</li><li>Lần 2 : 70% (cuối buổi chụp hình)</li><li>Lần 3 : 10% ( khi nhận ảnh in )</li></ul><p><strong>Phương thức thanh toán:</strong> Chuyển khoản hoặc Tiền mặt</p><p><strong>Hai bên thống nhất ký hợp đồng với những điều khoản như sau:</strong></p><h3>Điều 1: Trách nhiệm và quyền lợi của các Bên</h3><p><strong>1.1. Trách nhiệm và quyền lợi của bên A:</strong></p><ul><li>Bên A có trách nhiệm thanh toán cho Bên B phí dịch vụ đúng hạn theo hình thức thanh toán nêu trên.</li><li>Bên A được nhận toàn bộ sản phẩm theo phần chi tiết của hợp đồng này.</li><li>Trường hợp bên A hủy hợp đồng sẽ mất toàn bộ tiền đặt cọc.</li><li>Bên A được quyền hoãn chụp hình (quay video) 01 lần mà không bị tính phí nhưng phải báo trước cho bên B muộn nhất 3 ngày trước ngày chụp.</li><li>Nếu bên A tiếp tục phát sinh việc hoãn lịch thì sẽ chịu chi phí phát sinh: 1.000.000 VND/lần.</li><li>Bên A được quyền hoãn chụp hình 01 lần vào ngày chụp trong trường hợp khách quan thời tiết xấu, tuy nhiên Bên A phải thanh toán các chi phí cố định đã phát sinh trong ngày này - VD: Hoa tay, thuê xe, trang điểm.</li><li>Bên A tự chịu trách nhiệm về an toàn cá nhân trong quá trình chụp ảnh, quay phim.</li><li>Trường hợp bên A hủy hợp đồng sau khi chụp đã copy toàn bộ file gốc sẽ không nhận lại được tiền thanh toán 2 lần đặt cọc.</li><li>Trường hợp bên A muốn copy file Raw, sẽ thanh toán hết phí dịch vụ.</li></ul><p><strong>1.2. Trách nhiệm và quyền lợi của Bên B:</strong></p><ul><li>Bên B có trách nhiệm thực hiện đầy đủ các nội dung nghiệp vụ tương ứng với các dịch vụ ký kết, được niêm yết công khai kèm theo báo giá.</li><li>Bên B đảm bảo thực hiện hợp đồng này với chất lượng cao và nhiệt tình với công việc, đúng nguyên tắc minh bạch, trung thực, uy tín, khách quan và bí mật về thông tin cá nhân của khách hàng.</li></ul><h3>Điều 2: Cam kết thực hiện</h3><ul><li>Hai bên cam kết thực hiện tất cả các điều khoản đã ghi trong hợp đồng.</li><li>Trong quá trình thực hiện nếu gặp khó khăn hai Bên phải kịp thời thông báo cho nhau, cần thiết thì trao đổi bằng văn bản tìm giải pháp thích hợp.</li></ul><p>Hợp đồng này được lập thành 02 bản có giá trị như nhau, Bên A giữ 01 bản, Bên B giữ 01 bản và có hiệu lực kể từ ngày ký hợp đồng, cho đến khi bên B hoàn thành các dịch vụ quy định tại Điều 1 và Bên A thanh toán xong phí dịch vụ cho Bên B thì hợp đồng này xem như được thanh lý hoặc cả hai bên cùng thống nhất chấm dứt hợp đồng bằng văn bản.</p><ul><li>Các điều khoản dịch vụ được sử dụng trong vòng 1 năm tính từ ngày ký hợp đồng.</li></ul>`;
-                 document.querySelector(".signature-block").innerHTML = `<div class="customer-signature"><p style="font-weight: 700;">Khách hàng</p><p style="font-size: 9pt; color: #6c757d; font-style: italic;">(Ký và ghi họ tên)</p><p class="name" id="customer-signature-name" class="dynamic-data"></p></div><div class="staff-signature"><p style="font-weight: 700;">Nhân viên tư vấn</p><p style="font-size: 9pt; color: #6c757d; font-style: italic;">(Ký và ghi họ tên)</p><p class="name" id="staff-signature-name" class="dynamic-data"></p></div><div class="studio-signature"><p style="font-weight: 700;">2H STUDIO</p><p style="font-size: 9pt; color: #6c757d; font-style: italic;">(Ký và ghi họ tên)</p><p class="name" style="margin-top: 60px; font-weight: 700;">2H STUDIO</p></div>`;
+                 
+                 // --- UPDATED HTML STRUCTURE ---
+                 document.querySelector(".main-content").innerHTML = `
+                    <div class="page-one-container">
+                        <div>
+                            <h1 class="main-title">HỢP ĐỒNG CUNG CẤP DỊCH VỤ</h1>
+                            <div class="contract-meta">Số: <span id="contract-id" class="dynamic-data"></span> | Ngày: <span id="contract-date" class="dynamic-data"></span></div>
+                            <p><strong>2H STUDIO - SƠN TÂY</strong> Gửi tới quý khách hàng hoá đơn dịch vụ như sau:</p>
+                            <div class="info-grid" style="display:flex; justify-content:space-between; margin-bottom:20px;"><div class="customer-info" style="width:48%;"><p><strong>Khách hàng:</strong> <span id="customer-name" class="dynamic-data"></span></p><p><strong>Điện thoại:</strong> <span id="customer-phone" class="dynamic-data"></span></p><p><strong>Địa chỉ:</strong> <span id="customer-address" class="dynamic-data"></span></p></div><div class="staff-info" style="width:48%;"><p><strong>Nhân viên:</strong> <span id="staff-name" class="dynamic-data"></span></p><p><strong>Điện thoại NV:</strong> <span id="staff-phone" class="dynamic-data"></span></p><p><strong>Chức Vụ:</strong> <span id="staff-title" class="dynamic-data"></span></p></div></div>
+                            <table><thead><tr><th>STT</th><th>Sản phẩm</th><th>ĐVT</th><th>Số lượng</th><th>Đơn giá</th><th>Thành tiền</th><th>Ghi chú</th></tr></thead><tbody id="service-table-body"></tbody></table>
+                        </div>
+                        <div class="summary-and-payment">
+                            <div class="qr-payment-section"><div class="qr-code" id="qr-code-container"></div></div>
+                            <div class="summary-section"><table class="summary-table"><tbody><tr><td>Thành tiền:</td><td style="text-align:right;"><span id="subtotal" class="dynamic-data"></span></td></tr><tr><td>Phát sinh:</td><td style="text-align:right;"><span id="additional-cost" class="dynamic-data"></span></td></tr><tr><td style="font-weight: 700;">Phải TT:</td><td style="text-align:right; font-weight: 700;"><span id="total-due" class="dynamic-data"></span></td></tr><tr><td>Đã TT:</td><td style="text-align:right;"><span id="amount-paid" class="dynamic-data"></span></td></tr><tr><td class="highlight-red">Còn Lại:</td><td style="text-align:right;"><span id="amount-remaining" class="dynamic-data highlight-red"></span></td></tr><tr><td colspan="2">(Bằng chữ: <span id="amount-in-words" class="dynamic-data"></span>)</td></tr></tbody></table></div>
+                        </div>
+                    </div>
+                    <div class="terms-section">
+                        <div class="print-block">
+                            <h3>Hình thức thanh toán:</h3>
+                            <ul><li>Lần 1 : 20% ( đặt cọc )</li><li>Lần 2 : 70% (cuối buổi chụp hình)</li><li>Lần 3 : 10% ( khi nhận ảnh in )</li></ul>
+                            <p><strong>Phương thức thanh toán:</strong> Chuyển khoản hoặc Tiền mặt</p>
+                            <p><strong>Hai bên thống nhất ký hợp đồng với những điều khoản như sau:</strong></p>
+                        </div>
+                        <div class="print-block">
+                            <h3>Điều 1: Trách nhiệm và quyền lợi của các Bên</h3>
+                            <p><strong>1.1. Trách nhiệm và quyền lợi của bên A:</strong></p>
+                            <ul><li>Bên A có trách nhiệm thanh toán cho Bên B phí dịch vụ đúng hạn theo hình thức thanh toán nêu trên.</li><li>Bên A được nhận toàn bộ sản phẩm theo phần chi tiết của hợp đồng này.</li><li>Trường hợp bên A hủy hợp đồng sẽ mất toàn bộ tiền đặt cọc.</li><li>Bên A được quyền hoãn chụp hình (quay video) 01 lần mà không bị tính phí nhưng phải báo trước cho bên B muộn nhất 3 ngày trước ngày chụp.</li><li>Nếu bên A tiếp tục phát sinh việc hoãn lịch thì sẽ chịu chi phí phát sinh: 1.000.000 VND/lần.</li><li>Bên A được quyền hoãn chụp hình 01 lần vào ngày chụp trong trường hợp khách quan thời tiết xấu, tuy nhiên Bên A phải thanh toán các chi phí cố định đã phát sinh trong ngày này - VD: Hoa tay, thuê xe, trang điểm.</li><li>Bên A tự chịu trách nhiệm về an toàn cá nhân trong quá trình chụp ảnh, quay phim.</li><li>Trường hợp bên A hủy hợp đồng sau khi chụp đã copy toàn bộ file gốc sẽ không nhận lại được tiền thanh toán 2 lần đặt cọc.</li><li>Trường hợp bên A muốn copy file Raw, sẽ thanh toán hết phí dịch vụ.</li></ul>
+                            <p><strong>1.2. Trách nhiệm và quyền lợi của Bên B:</strong></p>
+                            <ul><li>Bên B có trách nhiệm thực hiện đầy đủ các nội dung nghiệp vụ tương ứng với các dịch vụ ký kết, được niêm yết công khai kèm theo báo giá.</li><li>Bên B đảm bảo thực hiện hợp đồng này với chất lượng cao và nhiệt tình với công việc, đúng nguyên tắc minh bạch, trung thực, uy tín, khách quan và bí mật về thông tin cá nhân của khách hàng.</li></ul>
+                        </div>
+                        <div class="print-block">
+                            <h3>Điều 2: Cam kết thực hiện</h3>
+                            <ul><li>Hai bên cam kết thực hiện tất cả các điều khoản đã ghi trong hợp đồng.</li><li>Trong quá trình thực hiện nếu gặp khó khăn hai Bên phải kịp thời thông báo cho nhau, cần thiết thì trao đổi bằng văn bản tìm giải pháp thích hợp.</li></ul>
+                            <p>Hợp đồng này được lập thành 02 bản có giá trị như nhau, Bên A giữ 01 bản, Bên B giữ 01 bản và có hiệu lực kể từ ngày ký hợp đồng, cho đến khi bên B hoàn thành các dịch vụ quy định tại Điều 1 và Bên A thanh toán xong phí dịch vụ cho Bên B thì hợp đồng này xem như được thanh lý hoặc cả hai bên cùng thống nhất chấm dứt hợp đồng bằng văn bản.</p>
+                            <ul><li>Các điều khoản dịch vụ được sử dụng trong vòng 1 năm tính từ ngày ký hợp đồng.</li></ul>
+                        </div>
+                    </div>
+                    <div class="signature-block print-block">
+                        <div class="customer-signature"><p style="font-weight: 700;">Khách hàng</p><p style="font-size: 9pt; color: #6c757d; font-style: italic;">(Ký và ghi họ tên)</p><p class="name" id="customer-signature-name" class="dynamic-data"></p></div><div class="staff-signature"><p style="font-weight: 700;">Nhân viên tư vấn</p><p style="font-size: 9pt; color: #6c757d; font-style: italic;">(Ký và ghi họ tên)</p><p class="name" id="staff-signature-name" class="dynamic-data"></p></div><div class="studio-signature"><p style="font-weight: 700;">2H STUDIO</p><p style="font-size: 9pt; color: #6c757d; font-style: italic;">(Ký và ghi họ tên)</p><p class="name" style="margin-top: 60px; font-weight: 700;">2H STUDIO</p></div>
+                    </div>`;
             }
         });
     </script>
