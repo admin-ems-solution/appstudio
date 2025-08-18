@@ -37,7 +37,7 @@
         th { background-color: #e9ecef; font-weight: 700; text-align: center; }
         .summary-and-payment { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 25px; }
         .qr-payment-section { width: 48%; border: 1px solid #e9ecef; padding: 15px; border-radius: 5px; }
-        .qr-code { min-height: 120px; /* Reserve space */ }
+        .qr-code { min-height: 120px; }
         .qr-code img { width: 120px; height: 120px; border: 1px solid #ccc; display: block; }
         .summary-section { width: 48%; }
         .summary-table .highlight-red { color: #dc3545; font-weight: 700; font-size: 11pt; }
@@ -97,32 +97,47 @@
                 runDemoMode();
             }
 
-            // --- FUNCTION DEFINITIONS ---
             function populateFromUrl(params) {
-                // ... same as before ...
                  const paramToIdMap = { khach_hang: 'customer-name', dien_thoai_kh: 'customer-phone', dia_chi_kh: 'customer-address', nhan_vien: 'staff-name', dien_thoai_nv: 'staff-phone', chuc_vu_nv: 'staff-title', thanh_tien: 'subtotal', tong_phat_sinh: 'additional-cost', phai_thanh_toan: 'total-due', da_thanh_toan: 'amount-paid', con_lai: 'amount-remaining', ten_ky_kh: 'customer-signature-name', ten_ky_nv: 'staff-signature-name' };
-                 for (const param in paramToIdMap) { const element = document.getElementById(paramToIdMap[param]); if (element && params.has(param)) { let value = decodeURIComponent(params.get(param)); if (['thanh_tien', 'tong_phat_sinh', 'phai_thanh_toan', 'da_thanh_toan', 'con_lai'].includes(param)) { value = parseFloat(value.replace(/,/g, '') || 0).toLocaleString('vi-VN'); } element.textContent = value; } }
-                 if (params.has('chitiet_json')) { try { const serviceData = JSON.parse(decodeURIComponent(params.get('chitiet_json'))); populateServiceTable(serviceData); } catch(e) { console.error("Error parsing JSON:", e, params.get('chitiet_json')); } }
+                 for (const param in paramToIdMap) { 
+                     const element = document.getElementById(paramToIdMap[param]); 
+                     if (element && params.has(param)) { 
+                         let value = decodeURIComponent(params.get(param)); 
+                         if (['thanh_tien', 'tong_phat_sinh', 'phai_thanh_toan', 'da_thanh_toan', 'con_lai'].includes(param)) { 
+                             value = parseFloat(value.replace(/,/g, '') || 0).toLocaleString('vi-VN'); 
+                         } 
+                         element.textContent = value; 
+                     } 
+                 }
+                 if (params.has('chitiet_json')) { 
+                     try { 
+                         const serviceData = JSON.parse(decodeURIComponent(params.get('chitiet_json'))); 
+                         populateServiceTable(serviceData); 
+                     } catch(e) { console.error("Error parsing JSON:", e, params.get('chitiet_json')); } 
+                 }
                  generateQRCode({ bin: params.get('ma_bank'), accountNo: params.get('stk'), accountName: params.get('chu_tai_khoan'), amount: parseInt((params.get('con_lai') || "0").replace(/[^0-9]/g, ''), 10), info: params.get('ma_hd') });
-                 const amountRemainingRaw = (document.getElementById('amount-remaining').textContent || "0").replace(/[^0-9]/g, ''); document.getElementById('amount-in-words').textContent = readNumberInVietnamese(amountRemainingRaw);
+                 
+                 // *** FIX IS HERE: Read number from the raw URL parameter before it's formatted ***
+                 const conLaiRaw = (params.get('con_lai') || "0").replace(/[^0-9]/g, '');
+                 document.getElementById('amount-in-words').textContent = readNumberInVietnamese(conLaiRaw);
             }
 
             function runDemoMode() {
-                // ... same as before ...
                  document.body.insertAdjacentHTML('beforeend', '<div style="position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%) rotate(-45deg); font-size: 80pt; color: rgba(0, 0, 0, 0.05); font-weight: 700; text-transform: uppercase; pointer-events: none; z-index: 1000; display: block;">BẢN NHÁP</div>');
                  const demoFields = {'customer-name': "KHÁCH HÀNG DEMO", 'customer-phone': "0123456789", 'customer-address': "Hà Nội", 'staff-name': "NHÂN VIÊN DEMO", 'staff-phone': '0987654321', 'staff-title': 'Nhân viên', 'subtotal': "9,500,000", 'additional-cost': "0", 'total-due': "9,500,000", 'amount-paid': "4,000,000", 'amount-remaining': "5,500,000", 'customer-signature-name': "Tên Khách Hàng Ký", 'staff-signature-name': "Tên Nhân Viên Ký"};
                  for (const id in demoFields) { const el = document.getElementById(id); if (el) el.textContent = demoFields[id]; }
                  populateServiceTable([{ sanpham: "Gói chụp Premium", dvt: "Gói", soluong: 1, dongia: 8900000, thanhtien: 8900000, ghi_chu: "Bao gồm album" }, { sanpham: "In ảnh cổng", dvt: "Tấm", soluong: 1, dongia: 600000, thanhtien: 600000, ghi_chu: "Kích thước 60x90" }]);
                  generateQRCode({ bin: "970436", accountNo: "0501000130594", accountName: "2H STUDIO", amount: 5500000, info: "HD-DEMO-001" });
-                 document.getElementById('amount-in-words').textContent = readNumberInVietnamese("5500000");
+
+                 // *** FIX IS HERE: Ensure demo mode also reads the cleaned number from the displayed value ***
+                 const demoAmountRemainingRaw = (document.getElementById('amount-remaining').textContent || "0").replace(/[^0-9]/g, '');
+                 document.getElementById('amount-in-words').textContent = readNumberInVietnamese(demoAmountRemainingRaw);
             }
 
             function populateServiceTable(data) {
-                // ... same as before ...
                  const tableBody = document.getElementById('service-table-body'); if (!tableBody) return; tableBody.innerHTML = ''; data.forEach((item, index) => { const row = document.createElement('tr'); const donGiaFormatted = (item.dongia || 0).toLocaleString('vi-VN'); const thanhTienFormatted = (item.thanhtien || 0).toLocaleString('vi-VN'); row.innerHTML = `<td style="text-align: center;">${index + 1}</td><td><span class="dynamic-data">${item.sanpham || ''}</span></td><td style="text-align: center;"><span class="dynamic-data">${item.dvt || ''}</span></td><td style="text-align: center;"><span class="dynamic-data">${item.soluong || 0}</span></td><td style="text-align: right;"><span class="dynamic-data">${donGiaFormatted}</span></td><td style="text-align: right;"><span class="dynamic-data">${thanhTienFormatted}</span></td><td><span class="dynamic-data">${item.ghi_chu || ''}</span></td>`; tableBody.appendChild(row); });
             }
 
-            // --- UPDATED VietQR FUNCTION ---
             function generateQRCode(data){
                 const qrContainer = document.getElementById("qr-code-container");
                 const amount = (data.amount || 0).toString().replace(/,/g, "");
@@ -130,50 +145,28 @@
                 const accountNumber = data.accountNo || '';
                 const accountName = data.accountName || '';
 
-                // Validate essential data
-                if (!bankBin || !accountNumber || parseInt(amount) <= 0) {
-                    qrContainer.innerHTML = '<p style="color: red; font-size: 0.9em;">Lỗi: Dữ liệu thanh toán không hợp lệ.</p>';
-                    return;
-                }
-                
-                // Prepare data for VietQR API
-                const description = data.info || '';
-                // CRITICAL FIX: Use non-accented, uppercase account name for the QR URL
+                if (!bankBin || !accountNumber || parseInt(amount) < 0) { qrContainer.innerHTML = '<p style="color: red; font-size: 0.9em;">Lỗi: Dữ liệu thanh toán không hợp lệ.</p>'; return; }
                 const accountNameForURL = encodeURIComponent(removeVietnameseTones(accountName).toUpperCase());
-                
-                // Use img.vietqr.io for direct image embedding
-                const qrApiUrl = `https://img.vietqr.io/image/${bankBin}-${accountNumber}-compact2.png?amount=${amount}&addInfo=${encodeURIComponent(description)}&accountName=${accountNameForURL}`;
-                
-                // Create and display the QR image
+                const qrApiUrl = `https://img.vietqr.io/image/${bankBin}-${accountNumber}-compact2.png?amount=${amount}&addInfo=${encodeURIComponent(data.info||'')}&accountName=${accountNameForURL}`;
                 const qrImage = new Image();
-                qrImage.crossOrigin = 'anonymous'; // Important for html2canvas
-                qrContainer.innerHTML = 'Đang tạo mã QR...'; // Loading message
-
-                qrImage.onload = () => {
-                    qrContainer.innerHTML = ''; // Clear loading message
-                    qrContainer.appendChild(qrImage);
-                };
-                qrImage.onerror = () => {
-                    qrContainer.innerHTML = '<p style="color: red; font-size: 0.9em;">Không thể tạo mã QR. Vui lòng kiểm tra lại thông tin STK/Ngân hàng.</p>';
-                };
+                qrImage.crossOrigin = 'anonymous';
+                qrContainer.innerHTML = 'Đang tạo mã QR...';
+                qrImage.onload = () => { qrContainer.innerHTML = ''; qrContainer.appendChild(qrImage); };
+                qrImage.onerror = () => { qrContainer.innerHTML = '<p style="color: red; font-size: 0.9em;">Không thể tạo mã QR. Vui lòng kiểm tra lại STK/Ngân hàng.</p>'; };
                 qrImage.src = qrApiUrl;
 
-                // Display info on the page (with original accented name)
                 document.getElementById("bank-name").textContent = BANK_MAP[bankBin] || bankBin;
                 document.getElementById("account-number").textContent = accountNumber;
-                document.getElementById("account-name").textContent = accountName; // Display the original name
+                document.getElementById("account-name").textContent = accountName;
                 document.getElementById("qr-amount").textContent = (data.amount || 0).toLocaleString("vi-VN") + " VND";
-                document.getElementById("qr-info").textContent = description;
+                document.getElementById("qr-info").textContent = data.info;
             }
             
-            // --- PDF Generation function (no change) ---
             document.getElementById("download-pdf").addEventListener("click", () => {
-                // ... same as before ...
                 const downloadBtn = document.getElementById('download-pdf'); downloadBtn.textContent = 'Đang xử lý...'; downloadBtn.disabled = true; const content = document.getElementById('a4-page-content'); const pdf = new jspdf.jsPDF('p', 'mm', 'a4'); const pdfWidth = 210; const pdfHeight = 297; html2canvas(content, { scale: 2, useCORS: true, width: content.scrollWidth, height: content.scrollHeight }).then(canvas => { const imgData = canvas.toDataURL('image/png'); const imgWidth = pdfWidth; const pageHeight = pdfHeight; const imgHeight = canvas.height * imgWidth / canvas.width; let heightLeft = imgHeight; let position = 0; pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight); heightLeft -= pageHeight; while (heightLeft > 0) { position = -heightLeft; pdf.addPage(); pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight); heightLeft -= pageHeight; } pdf.save(`HD_${document.getElementById('customer-name').textContent.trim()}.pdf`); }).catch(err => console.error("PDF generation failed:", err)).finally(() => { downloadBtn.textContent = '📄 Tải về PDF'; downloadBtn.disabled = false; });
             });
 
             function injectHTMLStructure() {
-                // ... same as before ...
                  document.querySelector(".header-content").innerHTML = `<header class="header"><div class="logo" style="font-size: 22pt; font-weight: 700;">2H</div><div class="studio-info" style="padding-left:20px;"><h2>2H STUDIO - SƠN TÂY</h2><p><strong>Địa chỉ:</strong> 566 Chùa Thông - Sơn Tây - Hà Nội</p><p><strong>Website:</strong> http://2hstudio.vn/ | <strong>Email:</strong> 2hstudio.wedding@gmail.com</p><p><strong>Điện thoại:</strong> 0854623566 | <strong>Zalo:</strong> 2H studio</p></div></header>`;
                  document.querySelector(".main-content").innerHTML = `<h1 class="main-title">HỢP ĐỒNG CUNG CẤP DỊCH VỤ</h1><p><strong>2H STUDIO - SƠN TÂY</strong> Gửi tới quý khách hàng hoá đơn dịch vụ như sau:</p><div class="info-grid" style="display:flex; justify-content:space-between; margin-bottom:20px;"><div class="customer-info" style="width:48%;"><p><strong>Khách hàng:</strong> <span id="customer-name" class="dynamic-data"></span></p><p><strong>Điện thoại:</strong> <span id="customer-phone" class="dynamic-data"></span></p><p><strong>Địa chỉ:</strong> <span id="customer-address" class="dynamic-data"></span></p></div><div class="staff-info" style="width:48%;"><p><strong>Nhân viên:</strong> <span id="staff-name" class="dynamic-data"></span></p><p><strong>Điện thoại NV:</strong> <span id="staff-phone" class="dynamic-data"></span></p><p><strong>Chức Vụ:</strong> <span id="staff-title" class="dynamic-data"></span></p></div></div><table><thead><tr><th>STT</th><th>Sản phẩm</th><th>ĐVT</th><th>Số lượng</th><th>Đơn giá</th><th>Thành tiền</th><th>Ghi chú</th></tr></thead><tbody id="service-table-body"></tbody></table><div class="summary-and-payment"></div><div class="terms-section"></div><div class="signature-block"></div>`;
                  document.querySelector(".summary-and-payment").innerHTML = `<div class="qr-payment-section"><h3>Thanh toán VietQR</h3><div class="qr-content" style="display: flex; align-items: center;"><div class="qr-code" id="qr-code-container" style="margin-right: 15px;"></div><div class="qr-info"><p><strong>Ngân hàng:</strong> <span id="bank-name" class="dynamic-data"></span></p><p><strong>Số tài khoản:</strong> <span id="account-number" class="dynamic-data"></span></p><p><strong>Chủ tài khoản:</strong> <span id="account-name" class="dynamic-data"></span></p><p><strong>Số tiền:</strong> <span id="qr-amount" class="dynamic-data" style="font-weight:bold; color: #dc3545;"></span></p><p><strong>Nội dung:</strong> <span id="qr-info" class="dynamic-data" style="font-weight:bold;"></span></p></div></div></div><div class="summary-section"><table class="summary-table"><tbody><tr><td>Thành tiền:</td><td style="text-align:right;"><span id="subtotal" class="dynamic-data"></span></td></tr><tr><td>Phát sinh:</td><td style="text-align:right;"><span id="additional-cost" class="dynamic-data"></span></td></tr><tr><td style="font-weight: 700;">Phải TT:</td><td style="text-align:right; font-weight: 700;"><span id="total-due" class="dynamic-data"></span></td></tr><tr><td>Đã TT:</td><td style="text-align:right;"><span id="amount-paid" class="dynamic-data"></span></td></tr><tr><td class="highlight-red">Còn Lại:</td><td style="text-align:right;"><span id="amount-remaining" class="dynamic-data highlight-red"></span></td></tr><tr><td colspan="2">(Bằng chữ: <span id="amount-in-words" class="dynamic-data"></span>)</td></tr></tbody></table></div>`;
