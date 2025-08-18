@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hợp Đồng Cung Cấp Dịch Vụ - 2H STUDIO</title>
+    
+    <!-- Libraries for PDF Generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;700&display=swap');
+
+        :root {
+            --page-width: 210mm;
+            --page-height: 297mm;
+            --main-padding: 15mm;
+        }
+
+        body {
+            font-family: 'Be Vietnam Pro', sans-serif;
+            font-size: 10pt; /* Use points for print consistency */
+            line-height: 1.5;
+            color: #212529;
+            background-color: #e0e0e0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .actions-container {
+            position: sticky;
+            top: 0;
+            width: 100%;
+            background-color: #343a40;
+            padding: 10px 0;
+            text-align: center;
+            z-index: 2000;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .actions-container button {
+            background-color: #0d6efd;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-family: 'Be Vietnam Pro', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            margin: 0 10px;
+            transition: background-color 0.3s;
+        }
+        .actions-container button:hover {
+            background-color: #0b5ed7;
+        }
+        .actions-container button#download-pdf {
+            background-color: #198754;
+        }
+        .actions-container button#download-pdf:hover {
+            background-color: #157347;
+        }
+        .actions-container button:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+        }
+
+        .a4-page {
+            width: var(--page-width);
+            min-height: var(--page-height);
+            padding: var(--main-padding);
+            box-sizing: border-box;
+            background-color: white;
+            margin: 20px 0;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+        
+        .watermark {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            font-size: 80pt;
+            color: rgba(0, 0, 0, 0.05);
+            font-weight: 700;
+            text-transform: uppercase;
+            pointer-events: none;
+            z-index: 1000;
+            display: none;
+        }
+
+        /* All other styles are nested inside .a4-page to be captured by html2canvas */
+        .a4-page .header { display: flex; align-items: flex-start; border-bottom: 1px solid #dee2e6; padding-bottom: 15px; margin-bottom: 20px; }
+        .a4-page .logo { text-align: center; border: 2px solid #333; padding: 10px; border-radius: 50%; width: 90px; height: 90px; display: flex; flex-direction: column; justify-content: center; flex-shrink: 0; }
+        .a4-page .logo .main-text { font-size: 22pt; font-weight: 700; }
+        .a4-page .logo .sub-text { font-size: 7pt; letter-spacing: 0.5px; }
+        .a4-page .studio-info { flex-grow: 1; padding-left: 20px; }
+        .a4-page .studio-info h2 { margin: 0 0 8px 0; font-size: 14pt; }
+        .a4-page .studio-info p { margin: 1px 0; font-size: 9pt; }
+        .a4-page .main-title { text-align: center; font-size: 18pt; font-weight: 700; margin: 20px 0 25px 0; text-transform: uppercase; color: #343a40; }
+        .a4-page .info-grid { display: flex; justify-content: space-between; margin-bottom: 20px; background-color: #f8f9fa; padding: 10px; border-radius: 5px; border: 1px solid #e9ecef; }
+        .a4-page .info-grid div { width: 48%; }
+        .a4-page .info-grid p { margin: 3px 0; }
+        .a4-page table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 9.5pt; }
+        .a4-page th, .a4-page td { border: 1px solid #dee2e6; padding: 8px; text-align: left; vertical-align: top; }
+        .a4-page th { background-color: #e9ecef; font-weight: 700; text-align: center; }
+        .a4-page .details-col { white-space: pre-line; text-align: left; }
+        .a4-page .center-align { text-align: center; }
+        .a4-page .right-align { text-align: right; }
+        .a4-page #service-table-body tr:nth-child(even) { background-color: #f8f9fa; }
+        .a4-page .summary-section { display: flex; justify-content: flex-end; }
+        .a4-page .summary-table { width: 50%; }
+        .a4-page .summary-table td { border: none; padding: 5px 8px; }
+        .a4-page .summary-table tr:not(:last-child) td { border-bottom: 1px solid #e9ecef; }
+        .a4-page .summary-table .label { font-weight: 500; }
+        .a4-page .summary-table .highlight-red { color: #dc3545; font-weight: 700; font-size: 11pt; }
+        .a4-page .summary-table .total-due { font-weight: 700; }
+        .a4-page .pre-summary-table td { padding: 6px 8px; }
+        .a4-page .pre-summary-table .label { width: 120px; }
+        .a4-page .terms-section { margin-top: 30px; }
+        .a4-page .terms-section h3 { font-size: 12pt; font-weight: 700; margin-top: 15px; margin-bottom: 8px; border-bottom: 1px solid #dee2e6; padding-bottom: 4px; }
+        .a4-page .terms-section p, .a4-page .terms-section li { margin-bottom: 6px; }
+        .a4-page .terms-section ul { padding-left: 20px; list-style-type: none; }
+        .a4-page .terms-section ul li::before { content: "•"; color: #0d6efd; font-weight: bold; display: inline-block; width: 1em; margin-left: -1em; }
+        .a4-page .signature-block { display: flex; justify-content: space-around; text-align: center; margin-top: 50px; padding-top: 15px; border-top: 1px solid #dee2e6; }
+        .a4-page .signature-block div { width: 30%; }
+        .a4-page .signature-block .role { font-weight: 700; }
+        .a4-page .signature-block .instruction { font-style: italic; font-size: 9pt; color: #6c757d; }
+        .a4-page .signature-block .name { margin-top: 60px; font-weight: 700; }
+
+        /* Print-specific styles */
+        @media print {
+            body {
+                background: none;
+            }
+            .actions-container {
+                display: none;
+            }
+            .a4-page {
+                margin: 0;
+                box-shadow: none;
+                border-radius: 0;
+                width: 100%;
+                min-height: 0;
+                padding: 0; /* Adjust padding for print if needed */
+            }
+            /* Ensure page breaks are handled gracefully if content overflows */
+            .terms-section, .signature-block {
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- This hidden script tag will hold the JSON data from AppSheet -->
+    <script id="json-data" type="application/json">{{ChiTietDonHangJSON}}</script>
+
+    <div class="actions-container">
+        <button onclick="window.print()">🖨️ In Hợp Đồng</button>
+        <button id="download-pdf">📄 Tải về PDF</button>
+    </div>
+
+    <div class="a4-page" id="a4-page-content">
+        <div id="watermark" class="watermark">BẢN NHÁP</div>
+        
+        <!-- All content goes inside this A4 page div -->
+        <header class="header">
+            <div class="logo">
+                <span class="main-text">2H</span>
+                <span class="sub-text">WEDDING&MEDIA</span>
+            </div>
+            <div class="studio-info">
+                <h2>2H STUDIO - SƠN TÂY</h2>
+                <p><strong>Địa chỉ:</strong> 566 Chùa Thông - Sơn Tây - Hà Nội</p>
+                <p><strong>Website:</strong> http://2hstudio.vn/ &nbsp;&nbsp;<strong>Email:</strong> 2hstudio.wedding@gmail.com</p>
+                <p><strong>Fanpage:</strong> facebook.com/profile.php?id=61559446821981</p>
+                <p><strong>Điện thoại:</strong> 0854623566 &nbsp;&nbsp;<strong>Zalo:</strong> 2H studio</p>
+            </div>
+        </header>
+
+        <h1 class="main-title">HỢP ĐỒNG CUNG CẤP DỊCH VỤ</h1>
+        
+        <div class="info-grid">
+            <div class="customer-info">
+                <p><strong>Khách hàng:</strong> <span id="customer-name">{{khach_hang}}</span></p>
+                <p><strong>Điện thoại:</strong> <span id="customer-phone">{{dien_thoai_kh}}</span></p>
+                <p><strong>Địa chỉ:</strong> <span id="customer-address">{{dia_chi_kh}}</span></p>
+            </div>
+            <div class="staff-info">
+                <p><strong>Nhân viên tư vấn:</strong> <span id="staff-name">{{nhan_vien}}</span></p>
+                <p><strong>Điện thoại NV:</strong> <span id="staff-phone">{{dien_thoai_nv}}</span></p>
+                <p><strong>Chức vụ:</strong> <span id="staff-title">{{chuc_vu_nv}}</span></p>
+            </div>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 5%;">STT</th>
+                    <th style="width: 20%;">Tên dịch vụ, sản phẩm</th>
+                    <th>Chi tiết</th>
+                    <th style="width: 7%;">SL</th>
+                    <th style="width: 12%;">Khuyến mại</th>
+                    <th style="width: 12%;">Tiền KM</th>
+                    <th style="width: 12%;">Ghi chú</th>
+                </tr>
+            </thead>
+            <tbody id="service-table-body"></tbody>
+        </table>
+        
+        <table class="pre-summary-table">
+            <tbody>
+                <tr><td class="label">Ngày chụp:</td><td><span id="shoot-date">{{ngay_chup}}</span></td></tr>
+                <tr><td class="label">Giờ bắt đầu:</td><td><span id="start-time">{{gio_bat_dau}}</span></td></tr>
+                <tr><td class="label">Địa điểm chụp:</td><td><span id="shoot-location">{{dia_diem_chup}}</span></td></tr>
+            </tbody>
+        </table>
+        
+        <div class="summary-section">
+            <table class="summary-table">
+                <tbody>
+                    <tr><td class="label">Thành tiền:</td><td class="right-align"><span id="subtotal">{{thanh_tien}}</span></td></tr>
+                    <tr><td class="label">Tổng tiền phát sinh:</td><td class="right-align"><span id="additional-cost">{{tong_phat_sinh}}</span></td></tr>
+                    <tr><td class="label total-due">Phải thanh toán:</td><td class="right-align total-due"><span id="total-due">{{phai_thanh_toan}}</span></td></tr>
+                    <tr><td class="label">Đã thanh toán:</td><td class="right-align"><span id="amount-paid">{{da_thanh_toan}}</span></td></tr>
+                    <tr><td class="label highlight-red">Còn Lại:</td><td class="right-align highlight-red"><span id="amount-remaining">{{con_lai}}</span></td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="terms-section">
+             <h3>Hình thức thanh toán:</h3>
+            <ul>
+                <li>Lần 1 : 20% ( đặt cọc )</li>
+                <li>Lần 2 : 70% (cuối buổi chụp hình)</li>
+                <li>Lần 3 : 10% ( khi nhận ảnh in )</li>
+            </ul>
+            <h3>Điều 1: Trách nhiệm và quyền lợi các Bên</h3>
+            <p><strong>1.1. Bên A (Khách hàng):</strong></p>
+            <ul>
+                <li>Thanh toán đầy đủ và đúng hạn phí dịch vụ cho Bên B theo các điều khoản đã thỏa thuận.</li>
+                <li>Nhận đầy đủ các sản phẩm và dịch vụ đã được liệt kê chi tiết trong hợp đồng.</li>
+                <li>Hủy hợp đồng sẽ mất toàn bộ tiền đặt cọc đã thanh toán.</li>
+            </ul>
+            <p><strong>1.2. Bên B (2H Studio):</strong></p>
+            <ul>
+                <li>Thực hiện đầy đủ và chuyên nghiệp các dịch vụ đã ký kết, đảm bảo chất lượng và tiến độ.</li>
+                <li>Đảm bảo công việc diễn ra minh bạch, trung thực và bảo mật thông tin cá nhân của khách hàng.</li>
+            </ul>
+        </div>
+
+        <div class="signature-block">
+            <div class="customer-signature">
+                <p class="role">Khách hàng</p>
+                <p class="instruction">(Ký và ghi họ tên)</p>
+                <p class="name" id="customer-signature-name">{{ten_ky_kh}}</p>
+            </div>
+            <div class="staff-signature">
+                <p class="role">Nhân viên tư vấn</p>
+                <p class="instruction">(Ký và ghi họ tên)</p>
+                <p class="name" id="staff-signature-name">{{ten_ky_nv}}</p>
+            </div>
+            <div class="studio-signature">
+                <p class="role">Đại diện 2H STUDIO</p>
+                <p class="instruction">(Ký, ghi họ tên và đóng dấu)</p>
+                <p class="name">2H STUDIO</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // This is required for jsPDF to work
+            window.jspdf = window.jspdf.jsPDF;
+
+            // --- Main Data Population Logic ---
+            function populateServiceTable(data) {
+                const tableBody = document.getElementById('service-table-body');
+                if (!tableBody) return;
+                tableBody.innerHTML = ''; 
+                data.forEach((item, index) => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td class="center-align">${index + 1}</td>
+                        <td>${item.ten_dv || ''}</td>
+                        <td class="details-col">${item.chi_tiet || ''}</td>
+                        <td class="center-align">${item.so_luong || ''}</td>
+                        <td>${item.nd_km || ''}</td>
+                        <td class="right-align">${item.tien_km || ''}</td>
+                        <td>${item.ghi_chu || ''}</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            }
+
+            function fillPlaceholders(isDemo = false) {
+                 if (!isDemo) return;
+                 document.getElementById('watermark').style.display = 'block';
+                 const demoData = {
+                    'customer-name': 'BẢO THY_HỒNG PHONG (DEMO)',
+                    'customer-phone': '0359721076', 'customer-address': 'SG', 'staff-name': 'Ngọc Yến',
+                    'staff-phone': '0374876848', 'staff-title': 'Nhân viên', 'shoot-date': '................................',
+                    'start-time': '................................', 'shoot-location': '................................',
+                    'subtotal': '8,900,000', 'additional-cost': '0', 'total-due': '8,900,000', 'amount-paid': '1,000,000',
+                    'amount-remaining': '7,900,000', 'customer-signature-name': 'Hoàng Minh Duy - My Linh', 'staff-signature-name': 'Ngọc Yến'
+                };
+                for (const id in demoData) { document.getElementById(id).textContent = demoData[id]; }
+            }
+            
+            const jsonDataString = document.getElementById('json-data').textContent.trim();
+            if (jsonDataString && jsonDataString !== '{{ChiTietDonHangJSON}}') {
+                try { populateServiceTable(JSON.parse(jsonDataString)); fillPlaceholders(false); }
+                catch (e) { document.getElementById('service-table-body').innerHTML = '<tr><td colspan="7" style="color:red; text-align:center;">Lỗi: Dữ liệu chi tiết dịch vụ không hợp lệ.</td></tr>'; }
+            } else {
+                const demoServiceData = [{ ten_dv: "Gói studio premium_8,900,000", chi_tiet: "Thời gian chụp : ca sáng hoặc ca chiều\nEkip chụp: 1 nhiếp ảnh gia, 1 makeup...\nSản phẩm: 1 ảnh cổng, 1 album...\nTặng: Mượn 1 váy ngày cưới", so_luong: 1, nd_km: "", tien_km: "", ghi_chu: "Mẫu test" }];
+                populateServiceTable(demoServiceData);
+                fillPlaceholders(true);
+            }
+
+            // --- PDF Generation Logic ---
+            const downloadBtn = document.getElementById('download-pdf');
+            const invoiceElement = document.getElementById('a4-page-content');
+            
+            function getFilename() {
+                let customerName = document.getElementById('customer-name').textContent || 'Khach_Hang';
+                return `HD_${customerName.replace(/[^a-zA-Z0-9]/g, '_')}.pdf`;
+            }
+
+            downloadBtn.addEventListener('click', () => {
+                downloadBtn.textContent = 'Đang xử lý...';
+                downloadBtn.disabled = true;
+
+                html2canvas(invoiceElement, {
+                    scale: 2, // Higher scale for better quality
+                    useCORS: true
+                }).then(canvas => {
+                    const imgData = canvas.toDataURL('image/png');
+                    const pdf = new jspdf('p', 'mm', 'a4');
+                    const pdfWidth = pdf.internal.pageSize.getWidth();
+                    const pdfHeight = pdf.internal.pageSize.getHeight();
+                    const canvasWidth = canvas.width;
+                    const canvasHeight = canvas.height;
+                    const ratio = canvasWidth / canvasHeight;
+                    let imgWidth = pdfWidth;
+                    let imgHeight = imgWidth / ratio;
+                    
+                    // If height is greater than page, scale by height instead
+                    if (imgHeight > pdfHeight) {
+                        imgHeight = pdfHeight;
+                        imgWidth = imgHeight * ratio;
+                    }
+                    
+                    pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+                    pdf.save(getFilename());
+
+                }).catch(err => {
+                    console.error("PDF generation failed:", err);
+                    alert("Đã có lỗi xảy ra khi tạo file PDF.");
+                }).finally(() => {
+                    downloadBtn.textContent = '📄 Tải về PDF';
+                    downloadBtn.disabled = false;
+                });
+            });
+        });
+    </script>
+</body>
+</html>
