@@ -42,6 +42,7 @@
         .summary-table .highlight-red { color: #dc3545; font-weight: 700; font-size: 11pt; }
         .terms-section { margin-top: 20px; border-top: 1px solid #dee2e6; padding-top: 15px; }
         .terms-section h3 { font-size: 12pt; font-weight: 700; }
+        .terms-section p, .terms-section li { margin-bottom: 6px; }
         .terms-section ul { padding-left: 20px; list-style-type: none; }
         .terms-section ul li::before { content: "- "; }
         .signature-block { display: flex; justify-content: space-around; text-align: center; margin-top: 50px; padding-top: 15px; border-top: 1px solid #dee2e6; }
@@ -88,45 +89,31 @@
             window.jspdf = window.jspdf.jsPDF;
 
             // --- INJECT STATIC HTML STRUCTURE ---
-            // This is done once, and then populated with data
             injectHTMLStructure();
 
-            // --- MAIN LOGIC: CHECK FOR 'id_don_hang' (or 'ma_hd') PARAMETER ---
+            // --- MAIN LOGIC: CHECK FOR 'ma_hd' PARAMETER ---
             const urlParams = new URLSearchParams(window.location.search);
-            
-            // Using 'ma_hd' as the key parameter based on your AppSheet formula
             if (urlParams.has('ma_hd')) {
-                // REAL DATA MODE
                 populateFromUrl(urlParams);
             } else {
-                // DEMO MODE
                 runDemoMode();
             }
 
             // --- FUNCTION DEFINITIONS ---
             
             function populateFromUrl(params) {
-                // Map URL parameters from your AppSheet formula to element IDs
                 const paramToIdMap = {
-                    khach_hang: 'customer-name',
-                    dien_thoai_kh: 'customer-phone',
-                    dia_chi_kh: 'customer-address',
-                    nhan_vien: 'staff-name',
-                    thanh_tien: 'subtotal',
-                    tong_phat_sinh: 'additional-cost',
-                    phai_thanh_toan: 'total-due',
-                    da_thanh_toan: 'amount-paid',
-                    con_lai: 'amount-remaining',
-                    ten_ky_kh: 'customer-signature-name',
-                    ten_ky_nv: 'staff-signature-name'
+                    khach_hang: 'customer-name', dien_thoai_kh: 'customer-phone', dia_chi_kh: 'customer-address',
+                    nhan_vien: 'staff-name', dien_thoai_nv: 'staff-phone', chuc_vu_nv: 'staff-title',
+                    thanh_tien: 'subtotal', tong_phat_sinh: 'additional-cost', phai_thanh_toan: 'total-due',
+                    da_thanh_toan: 'amount-paid', con_lai: 'amount-remaining',
+                    ten_ky_kh: 'customer-signature-name', ten_ky_nv: 'staff-signature-name'
                 };
                 
-                // Populate all text fields
                 for (const param in paramToIdMap) {
                     const element = document.getElementById(paramToIdMap[param]);
                     if (element && params.has(param)) {
                         let value = params.get(param);
-                        // Format numbers with commas
                         if (['thanh_tien', 'tong_phat_sinh', 'phai_thanh_toan', 'da_thanh_toan', 'con_lai'].includes(param)) {
                            value = parseFloat(value.replace(/,/g, '') || 0).toLocaleString('vi-VN');
                         }
@@ -134,7 +121,6 @@
                     }
                 }
 
-                // Populate service details table from JSON
                 if (params.has('chitiet_json')) {
                     try {
                         const serviceData = JSON.parse(params.get('chitiet_json'));
@@ -142,7 +128,6 @@
                     } catch(e) { console.error("Error parsing JSON:", e); }
                 }
                 
-                // Generate QR Code
                 generateQRCode({
                     bin: params.get('ma_bank'),
                     accountNo: params.get('stk'),
@@ -151,7 +136,6 @@
                     info: params.get('ma_hd')
                 });
                 
-                // Finalize: Convert the final number to words
                 const amountRemainingRaw = (document.getElementById('amount-remaining').textContent || "0").replace(/[^0-9]/g, '');
                 document.getElementById('amount-in-words').textContent = readNumberInVietnamese(amountRemainingRaw);
             }
@@ -161,7 +145,7 @@
                 
                 const demoFields = {
                     'customer-name': "KHÁCH HÀNG DEMO", 'customer-phone': "0123456789", 'customer-address': "Hà Nội",
-                    'staff-name': "NHÂN VIÊN DEMO",
+                    'staff-name': "NHÂN VIÊN DEMO", 'staff-phone': '0987654321', 'staff-title': 'Nhân viên',
                     'subtotal': "9,500,000", 'additional-cost': "0", 'total-due': "9,500,000",
                     'amount-paid': "4,000,000", 'amount-remaining': "5,500,000",
                     'customer-signature-name': "Tên Khách Hàng Ký", 'staff-signature-name': "Tên Nhân Viên Ký"
@@ -211,7 +195,45 @@
                  document.querySelector(".header-content").innerHTML = `<header class="header"><div class="logo" style="font-size: 22pt; font-weight: 700;">2H</div><div class="studio-info" style="padding-left:20px;"><h2>2H STUDIO - SƠN TÂY</h2><p><strong>Địa chỉ:</strong> 566 Chùa Thông - Sơn Tây - Hà Nội</p><p><strong>Website:</strong> http://2hstudio.vn/ | <strong>Email:</strong> 2hstudio.wedding@gmail.com</p><p><strong>Điện thoại:</strong> 0854623566 | <strong>Zalo:</strong> 2H studio</p></div></header>`;
                  document.querySelector(".main-content").innerHTML = `<h1 class="main-title">HỢP ĐỒNG CUNG CẤP DỊCH VỤ</h1><p><strong>2H STUDIO - SƠN TÂY</strong> Gửi tới quý khách hàng hoá đơn dịch vụ như sau:</p><div class="info-grid" style="display:flex; justify-content:space-between; margin-bottom:20px;"><div class="customer-info" style="width:48%;"><p><strong>Khách hàng:</strong> <span id="customer-name" class="dynamic-data"></span></p><p><strong>Điện thoại:</strong> <span id="customer-phone" class="dynamic-data"></span></p><p><strong>Địa chỉ:</strong> <span id="customer-address" class="dynamic-data"></span></p></div><div class="staff-info" style="width:48%;"><p><strong>Nhân viên:</strong> <span id="staff-name" class="dynamic-data"></span></p><p><strong>Điện thoại NV:</strong> <span id="staff-phone" class="dynamic-data"></span></p><p><strong>Chức Vụ:</strong> <span id="staff-title" class="dynamic-data"></span></p></div></div><table><thead><tr><th>STT</th><th>Sản phẩm</th><th>ĐVT</th><th>Số lượng</th><th>Đơn giá</th><th>Thành tiền</th><th>Ghi chú</th></tr></thead><tbody id="service-table-body"></tbody></table><div class="summary-and-payment"></div><div class="terms-section"></div><div class="signature-block"></div>`;
                  document.querySelector(".summary-and-payment").innerHTML = `<div class="qr-payment-section"><h3>Thanh toán VietQR</h3><div class="qr-content" style="display: flex; align-items: center;"><div class="qr-code" style="margin-right: 15px;"><img id="qr-code-img" alt="QR Code"></div><div class="qr-info"><p><strong>Ngân hàng:</strong> <span id="bank-name" class="dynamic-data"></span></p><p><strong>Số tài khoản:</strong> <span id="account-number" class="dynamic-data"></span></p><p><strong>Chủ tài khoản:</strong> <span id="account-name" class="dynamic-data"></span></p><p><strong>Số tiền:</strong> <span id="qr-amount" class="dynamic-data" style="font-weight:bold; color: #dc3545;"></span></p><p><strong>Nội dung:</strong> <span id="qr-info" class="dynamic-data" style="font-weight:bold;"></span></p></div></div></div><div class="summary-section"><table class="summary-table"><tbody><tr><td>Thành tiền:</td><td style="text-align:right;"><span id="subtotal" class="dynamic-data"></span></td></tr><tr><td>Phát sinh:</td><td style="text-align:right;"><span id="additional-cost" class="dynamic-data"></span></td></tr><tr><td style="font-weight: 700;">Phải TT:</td><td style="text-align:right; font-weight: 700;"><span id="total-due" class="dynamic-data"></span></td></tr><tr><td>Đã TT:</td><td style="text-align:right;"><span id="amount-paid" class="dynamic-data"></span></td></tr><tr><td class="highlight-red">Còn Lại:</td><td style="text-align:right;"><span id="amount-remaining" class="dynamic-data highlight-red"></span></td></tr><tr><td colspan="2">(Bằng chữ: <span id="amount-in-words" class="dynamic-data"></span>)</td></tr></tbody></table></div>`;
-                 document.querySelector(".terms-section").innerHTML = `<h3>Hình thức thanh toán:</h3><ul><li>Lần 1 : 20% ( đặt cọc )</li><li>Lần 2 : 70% (cuối buổi chụp hình)</li><li>Lần 3 : 10% ( khi nhận ảnh in )</li></ul><p><strong>Hai bên thống nhất ký hợp đồng với những điều khoản như sau:</strong></p><h3>Điều 1: Trách nhiệm và quyền lợi của các Bên</h3><p><strong>1.1. Trách nhiệm và quyền lợi của bên A:</strong></p><ul><li>Bên A có trách nhiệm thanh toán cho Bên B phí dịch vụ đúng hạn.</li><li>Bên A được nhận toàn bộ sản phẩm theo phần chi tiết của hợp đồng.</li><li>Trường hợp bên A hủy hợp đồng sẽ mất toàn bộ tiền đặt cọc.</li></ul><p><strong>1.2. Trách nhiệm và quyền lợi của Bên B:</strong></p><ul><li>Bên B có trách nhiệm thực hiện đầy đủ các nội dung nghiệp vụ.</li><li>Bên B đảm bảo thực hiện hợp đồng với chất lượng cao và nhiệt tình.</li></ul><h3>Điều 2: Cam kết thực hiện</h3><p>Hợp đồng này được lập thành 02 bản có giá trị như nhau, mỗi bên giữ 01 bản...</p>`;
+                 
+                 // --- UPDATED TERMS AND CONDITIONS ---
+                 document.querySelector(".terms-section").innerHTML = `
+                    <h3>Hình thức thanh toán:</h3>
+                    <ul>
+                        <li>Lần 1 : 20% ( đặt cọc )</li>
+                        <li>Lần 2 : 70% (cuối buổi chụp hình)</li>
+                        <li>Lần 3 : 10% ( khi nhận ảnh in )</li>
+                    </ul>
+                    <p><strong>Phương thức thanh toán:</strong> Chuyển khoản hoặc Tiền mặt</p>
+                    <p><strong>Hai bên thống nhất ký hợp đồng với những điều khoản như sau:</strong></p>
+                    <h3>Điều 1: Trách nhiệm và quyền lợi của các Bên</h3>
+                    <p><strong>1.1. Trách nhiệm và quyền lợi của bên A:</strong></p>
+                    <ul>
+                        <li>Bên A có trách nhiệm thanh toán cho Bên B phí dịch vụ đúng hạn theo hình thức thanh toán nêu trên.</li>
+                        <li>Bên A được nhận toàn bộ sản phẩm theo phần chi tiết của hợp đồng này.</li>
+                        <li>Trường hợp bên A hủy hợp đồng sẽ mất toàn bộ tiền đặt cọc.</li>
+                        <li>Bên A được quyền hoãn chụp hình (quay video) 01 lần mà không bị tính phí nhưng phải báo trước cho bên B muộn nhất 3 ngày trước ngày chụp.</li>
+                        <li>Nếu bên A tiếp tục phát sinh việc hoãn lịch thì sẽ chịu chi phí phát sinh: 1.000.000 VND/lần.</li>
+                        <li>Bên A được quyền hoãn chụp hình 01 lần vào ngày chụp trong trường hợp khách quan thời tiết xấu, tuy nhiên Bên A phải thanh toán các chi phí cố định đã phát sinh trong ngày này - VD: Hoa tay, thuê xe, trang điểm.</li>
+                        <li>Bên A tự chịu trách nhiệm về an toàn cá nhân trong quá trình chụp ảnh, quay phim.</li>
+                        <li>Trường hợp bên A hủy hợp đồng sau khi chụp đã copy toàn bộ file gốc sẽ không nhận lại được tiền thanh toán 2 lần đặt cọc.</li>
+                        <li>Trường hợp bên A muốn copy file Raw, sẽ thanh toán hết phí dịch vụ.</li>
+                    </ul>
+                    <p><strong>1.2. Trách nhiệm và quyền lợi của Bên B:</strong></p>
+                    <ul>
+                        <li>Bên B có trách nhiệm thực hiện đầy đủ các nội dung nghiệp vụ tương ứng với các dịch vụ ký kết, được niêm yết công khai kèm theo báo giá.</li>
+                        <li>Bên B đảm bảo thực hiện hợp đồng này với chất lượng cao và nhiệt tình với công việc, đúng nguyên tắc minh bạch, trung thực, uy tín, khách quan và bí mật về thông tin cá nhân của khách hàng.</li>
+                    </ul>
+                    <h3>Điều 2: Cam kết thực hiện</h3>
+                    <ul>
+                        <li>Hai bên cam kết thực hiện tất cả các điều khoản đã ghi trong hợp đồng.</li>
+                        <li>Trong quá trình thực hiện nếu gặp khó khăn hai Bên phải kịp thời thông báo cho nhau, cần thiết thì trao đổi bằng văn bản tìm giải pháp thích hợp.</li>
+                    </ul>
+                    <p>Hợp đồng này được lập thành 02 bản có giá trị như nhau, Bên A giữ 01 bản, Bên B giữ 01 bản và có hiệu lực kể từ ngày ký hợp đồng, cho đến khi bên B hoàn thành các dịch vụ quy định tại Điều 1 và Bên A thanh toán xong phí dịch vụ cho Bên B thì hợp đồng này xem như được thanh lý hoặc cả hai bên cùng thống nhất chấm dứt hợp đồng bằng văn bản.</p>
+                    <ul>
+                        <li>Các điều khoản dịch vụ được sử dụng trong vòng 1 năm tính từ ngày ký hợp đồng.</li>
+                    </ul>`;
+                 
                  document.querySelector(".signature-block").innerHTML = `<div class="customer-signature"><p style="font-weight: 700;">Khách hàng</p><p style="font-size: 9pt; color: #6c757d; font-style: italic;">(Ký và ghi họ tên)</p><p class="name" id="customer-signature-name" class="dynamic-data"></p></div><div class="staff-signature"><p style="font-weight: 700;">Nhân viên tư vấn</p><p style="font-size: 9pt; color: #6c757d; font-style: italic;">(Ký và ghi họ tên)</p><p class="name" id="staff-signature-name" class="dynamic-data"></p></div><div class="studio-signature"><p style="font-weight: 700;">2H STUDIO</p><p style="font-size: 9pt; color: #6c757d; font-style: italic;">(Ký và ghi họ tên)</p><p class="name" style="margin-top: 60px; font-weight: 700;">2H STUDIO</p></div>`;
             }
         });
