@@ -54,10 +54,12 @@
     
     /* --- UPDATED LAYOUT STYLES --- */
     .summary-and-payment { display: flex; justify-content: space-between; align-items: flex-start; margin-top: 5px; margin-bottom: 20px; page-break-inside: avoid; }
-    .qr-payment-section { width: 48%; border: 1px solid #e9ecef; padding: 15px; border-radius: 5px; text-align: center; }
-    .qr-code { min-height: 140px; display: flex; justify-content: center; align-items: center; }
-    .qr-code img { width: 140px; height: 140px; border: 1px solid #ccc; display: block; }
-    .summary-section { width: 48%; }
+    .qr-payment-section { width: 58%; border: 1px solid #e9ecef; padding: 15px; border-radius: 5px; }
+    .qr-payment-content { display: flex; align-items: center; text-align: left; }
+    .qr-code { width: 140px; height: 140px; flex-shrink: 0; margin-right: 15px; display: flex; justify-content: center; align-items: center; }
+    .qr-code img { max-width: 100%; height: auto; border: 1px solid #ccc; display: block; }
+    .payment-instructions p { margin: 4px 0; font-size: 9pt; }
+    .summary-section { width: 40%; }
     .summary-table .highlight-red { color: #dc3545; font-weight: 700; font-size: 11pt; }
     /* --- END UPDATED LAYOUT STYLES --- */
     
@@ -102,7 +104,7 @@
     <script>
         function removeVietnameseTones(str) {if(!str)return"";str=str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g,"a");str=str.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g,"e");str=str.replace(/ì|í|ị|ỉ|ĩ/g,"i");str=str.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g,"o");str=str.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g,"u");str=str.replace(/ỳ|ý|ỵ|ỷ|ỹ/g,"y");str=str.replace(/đ/g,"d");str=str.replace(/À|Á|Ạ|Ả|Ã|Â|Ầ|Ấ|Ậ|Ẩ|Ẫ|Ă|Ằ|Ắ|Ặ|Ẳ|Ẵ/g,"A");str=str.replace(/È|É|Ẹ|Ẻ|Ẽ|Ê|Ề|Ế|Ệ|Ể|Ễ/g,"E");str=str.replace(/Ì|Í|Ị|Ỉ|Ĩ/g,"I");str=str.replace(/Ò|Ó|Ọ|Ỏ|Õ|Ô|Ồ|Ố|Ộ|Ổ|Ỗ|Ơ|Ờ|Ớ|Ợ|Ở|Ỡ/g,"O");str=str.replace(/Ù|Ú|Ụ|Ủ|Ũ|Ư|Ừ|Ứ|Ự|Ử|Ữ/g,"U");str=str.replace(/Ỳ|Ý|Ỵ|Ỷ|Ỹ/g,"Y");str=str.replace(/Đ/g,"D");str=str.replace(/\u0300|\u0301|\u0303|\u0309|\u0323/g,"");str=str.replace(/\u02C6|\u0306|\u031B/g,"");return str.trim()}
         function readNumberInVietnamese(t){const e=" hai ba bốn năm sáu bảy tám chín",n=" không"+e,a=" lẺ mƯỜi"+e,o=" không"+e;function i(t){let e;if(t=parseInt(t,10),0===t)return"";let i=(e=t.toString()).length<2?"00"+e:e.length<3?"0"+e:e;const r=parseInt(i[0],10),s=parseInt(i[1],10),l=parseInt(i[2],10);let c="";return r>0&&(c+=o.split(" ")[r]+" trăm",0===s&&0!==l&&(c+=" linh")),s>1&&(c+=" "+a.split(" ")[s]+" mươi",10===s&&1===l&&(c+=" mốt")),1===s&&(c+=" "+a.split(" ")[s]),c+=1===l?s>1||r>0?" mốt":" "+n.split(" ")[l]:5===l?0===s?" "+n.split(" ")[l]:" lăm":0!==l?" "+n.split(" ")[l]:"",c.trim()}const r="1 nghìn triệu tỷ".split(" ");let s,l=(s=parseInt(t,10).toString()).length;if(0===l)return n.split(" ")[0];let c="",u=0;for(;l>0;){let t=s.substring(l-3,l);l-=3;let e=i(t);""!==e&&(c=e+(r[u]?" "+r[u]:"")+" "+c),u++}return(c=c.trim()).length>0&&(c=c.charAt(0).toUpperCase()+c.slice(1)),c.replace("LẺ","lẻ").replace("MƯỜI","mười")+" đồng"}
-        const BANK_MAP={"970422":"MBBank","970436":"Vietcombank","970415":"Vietinbank","970403":"BIDV","970418":"Techcombank","970448":"OCB","970405":"Agribank","970432":"VPBank","970423":"TPBank"};
+        const BANK_MAP={"970422":"MBBank","970436":"Vietcombank","970415":"Vietinbank","970403":"BIDV","970418":"Techcombank","970448":"OCB","970405":"AgriBank","970432":"VPBank","970423":"TPBank"};
         
         document.addEventListener('DOMContentLoaded', function(){
             injectHTMLStructure();
@@ -117,9 +119,15 @@
             function populateFromUrl(params) {
                  const paramToIdMap = { ma_hd: 'contract-id', ngay_hd: 'contract-date', khach_hang: 'customer-name', dien_thoai_kh: 'customer-phone', dia_chi_kh: 'customer-address', nhan_vien: 'staff-name', dien_thoai_nv: 'staff-phone', chuc_vu_nv: 'staff-title', thanh_tien: 'subtotal', tong_phat_sinh: 'additional-cost', phai_thanh_toan: 'total-due', da_thanh_toan: 'amount-paid', con_lai: 'amount-remaining', ten_ky_kh: 'customer-signature-name', ten_ky_nv: 'staff-signature-name' };
                  for (const param in paramToIdMap) { const element = document.getElementById(paramToIdMap[param]); if (element && params.has(param)) { let value = decodeURIComponent(params.get(param)); if (['thanh_tien', 'tong_phat_sinh', 'phai_thanh_toan', 'da_thanh_toan', 'con_lai'].includes(param)) { value = parseFloat(value.replace(/,/g, '') || 0).toLocaleString('vi-VN'); } element.textContent = value; } }
+                 
+                 // Populate payment instructions
+                 document.getElementById('payment-stk').textContent = params.get('stk') || 'N/A';
+                 document.getElementById('payment-account-name').textContent = params.get('chu_tai_khoan') || 'N/A';
+                 document.getElementById('payment-info').textContent = params.get('ma_hd') || 'N/A';
+
                  if (params.has('chitiet_json')) { try { const serviceData = JSON.parse(decodeURIComponent(params.get('chitiet_json'))); populateServiceTable(serviceData); } catch(e) { console.error("Error parsing JSON:", e); } }
                  generatePaymentQRCode({ bin: params.get('ma_bank'), accountNo: params.get('stk'), accountName: params.get('chu_tai_khoan'), amount: parseInt((params.get('con_lai') || "0").replace(/[^0-9]/g, ''), 10), info: params.get('ma_hd') });
-                 generateContractQRCode(params.get('ma_hd')); // Generate contract QR
+                 generateContractQRCode(params.get('ma_hd')); 
                  const conLaiRaw = (params.get('con_lai') || "0").replace(/[^0-9]/g, '');
                  document.getElementById('amount-in-words').textContent = readNumberInVietnamese(conLaiRaw);
             }
@@ -128,9 +136,15 @@
                  document.body.insertAdjacentHTML('beforeend', '<div style="position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%) rotate(-45deg); font-size: 80pt; color: rgba(0, 0, 0, 0.05); font-weight: 700; text-transform: uppercase; pointer-events: none; z-index: 1000; display: block;">BẢN NHÁP</div>');
                  const demoFields = {'contract-id': 'HD-DEMO-001', 'contract-date': new Date().toLocaleDateString('vi-VN'), 'customer-name': "KHÁCH HÀNG DEMO", 'customer-phone': "0123456789", 'customer-address': "Hà Nội", 'staff-name': "NHÂN VIÊN DEMO", 'staff-phone': '0987654321', 'staff-title': 'Nhân viên', 'subtotal': "9,500,000", 'additional-cost': "0", 'total-due': "9,500,000", 'amount-paid': "4,000,000", 'amount-remaining': "5,500,000", 'customer-signature-name': "Tên Khách Hàng Ký", 'staff-signature-name': "Tên Nhân Viên Ký"};
                  for (const id in demoFields) { const el = document.getElementById(id); if (el) el.textContent = demoFields[id]; }
+                 
+                 // Populate payment instructions for demo
+                 document.getElementById('payment-stk').textContent = '0501000130594';
+                 document.getElementById('payment-account-name').textContent = '2H STUDIO';
+                 document.getElementById('payment-info').textContent = 'HD-DEMO-001';
+
                  populateServiceTable([{ sanpham: "Gói chụp Premium", dvt: "Gói", soluong: 1, dongia: 8900000, thanhtien: 8900000, ghi_chu: "Bao gồm album" }, { sanpham: "In ảnh cổng", dvt: "Tấm", soluong: 1, dongia: 600000, thanhtien: 600000, ghi_chu: "Kích thước 60x90" }]);
                  generatePaymentQRCode({ bin: "970436", accountNo: "0501000130594", accountName: "2H STUDIO", amount: 5500000, info: "HD-DEMO-001" });
-                 generateContractQRCode('HD-DEMO-001'); // Generate contract QR
+                 generateContractQRCode('HD-DEMO-001'); 
                  const demoAmountRemainingRaw = (document.getElementById('amount-remaining').textContent || "0").replace(/[^0-9]/g, '');
                  document.getElementById('amount-in-words').textContent = readNumberInVietnamese(demoAmountRemainingRaw);
             }
@@ -139,7 +153,6 @@
                  const tableBody = document.getElementById('service-table-body'); if (!tableBody) return; tableBody.innerHTML = ''; data.forEach((item, index) => { const row = document.createElement('tr'); const donGiaFormatted = (item.dongia || 0).toLocaleString('vi-VN'); const thanhTienFormatted = (item.thanhtien || 0).toLocaleString('vi-VN'); row.innerHTML = `<td style="text-align: center;">${index + 1}</td><td><span class="dynamic-data">${item.sanpham || ''}</span></td><td style="text-align: center;"><span class="dynamic-data">${item.dvt || ''}</span></td><td style="text-align: center;"><span class="dynamic-data">${item.soluong || 0}</span></td><td style="text-align: right;"><span class="dynamic-data">${donGiaFormatted}</span></td><td style="text-align: right;"><span class="dynamic-data">${thanhTienFormatted}</span></td><td><span class="dynamic-data">${item.ghi_chu || ''}</span></td>`; tableBody.appendChild(row); });
             }
 
-            // Function for the VietQR (Payment)
             function generatePaymentQRCode(data){
                 const qrContainer = document.getElementById("payment-qr-code-container");
                 const amount = (data.amount || 0).toString().replace(/,/g, "");
@@ -157,7 +170,6 @@
                 qrImage.src = qrApiUrl;
             }
             
-            // NEW FUNCTION: Generate QR code for the contract ID in the header
             function generateContractQRCode(contractId) {
                 const container = document.getElementById('contract-qr-container');
                 if (!container || !contractId) return;
@@ -165,7 +177,7 @@
                 const qrImage = new Image();
                 qrImage.src = qrApiUrl;
                 qrImage.alt = `QR Code for ${contractId}`;
-                container.innerHTML = ''; // Clear previous content
+                container.innerHTML = '';
                 container.appendChild(qrImage);
             }
 
@@ -189,7 +201,6 @@
 
             function injectHTMLStructure() {
                  const logoUrl = "https://scontent.fsgn2-6.fna.fbcdn.net/v/t39.30808-6/274489412_1388888508225332_3112485830184052132_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=6UFIS_ClcLEQ7kNvwELXjBZ&_nc_oc=AdmyGu3tXEesz-U3QQ3TkufiXrAsnlpuJgRLwf0SHxStw3L-vpIGeaw4TZ6d2EkZaE4&_nc_zt=23&_nc_ht=scontent.fsgn2-6.fna&_nc_gid=BbGYZsNaWzblm0tLvHhfTQ&oh=00_AfWEb38bc0Un-ycVgv1XZO-tNTBfVmpCHfUALr49vuJCaQ&oe=68B1DBA0";
-                 // --- CHANGE 1: UPDATED HEADER WITH CONTRACT QR ---
                  document.querySelector(".header-content").innerHTML = `
                     <header class="header">
                         <div class="header-left">
@@ -204,7 +215,6 @@
                         <div id="contract-qr-container" title="Mã hợp đồng"></div>
                     </header>`;
                  
-                 // --- CHANGE 2: RESTRUCTURED MAIN CONTENT ---
                  document.querySelector(".main-content").innerHTML = `
                     <div>
                         <h1 class="main-title">HỢP ĐỒNG CUNG CẤP DỊCH VỤ</h1>
@@ -216,17 +226,40 @@
                                 <p><strong>Điện thoại:</strong> <span id="customer-phone" class="dynamic-data"></span></p>
                                 <p><strong>Địa chỉ:</strong> <span id="customer-address" class="dynamic-data"></span></p>
                             </div>
-                            <div class="staff-info" style="width:48%; padding-left: 1.5cm; box-sizing: border-box;">
+                            <div class="staff-info" style="width: 34%;">
                                 <p><strong>Nhân viên:</strong> <span id="staff-name" class="dynamic-data"></span></p>
                                 <p><strong>Điện thoại NV:</strong> <span id="staff-phone" class="dynamic-data"></span></p>
                                 <p><strong>Chức Vụ:</strong> <span id="staff-title" class="dynamic-data"></span></p>
                             </div>
                         </div>
-                        <table><thead><tr><th>STT</th><th>Sản phẩm</th><th>ĐVT</th><th>Số lượng</th><th>Đơn giá</th><th>Thành tiền</th><th>Ghi chú</th></tr></thead><tbody id="service-table-body"></tbody></table>
+                        <!-- CHANGE 1: ADDED COLGROUP FOR WIDTH CONTROL -->
+                        <table style="table-layout: fixed;">
+                           <colgroup>
+                              <col style="width: 5%;">
+                              <col style="width: 30%;">
+                              <col style="width: 7%;">
+                              <col style="width: 8%;">
+                              <col style="width: 12%;">
+                              <col style="width: 12%;">
+                              <col style="width: auto;">
+                           </colgroup>
+                           <thead><tr><th>STT</th><th>Sản phẩm</th><th>ĐVT</th><th>Số lượng</th><th>Đơn giá</th><th>Thành tiền</th><th>Ghi chú</th></tr></thead>
+                           <tbody id="service-table-body"></tbody>
+                        </table>
                     </div>
-                    <!-- PAYMENT/SUMMARY BLOCK MOVED HERE -->
+                    <!-- CHANGE 2: UPDATED PAYMENT/SUMMARY BLOCK -->
                     <div class="summary-and-payment">
-                        <div class="qr-payment-section"><div class="qr-code" id="payment-qr-code-container"></div></div>
+                        <div class="qr-payment-section">
+                            <div class="qr-payment-content">
+                                <div class="qr-code" id="payment-qr-code-container"></div>
+                                <div class="payment-instructions">
+                                    <p style="font-weight: bold;">QUÉT MÃ QR ĐỂ THANH TOÁN:</p>
+                                    <p>- STK: <span id="payment-stk" class="dynamic-data"></span></p>
+                                    <p>- Chủ tài khoản: <span id="payment-account-name" class="dynamic-data"></span></p>
+                                    <p>- Nội dung CK: <span id="payment-info" class="dynamic-data"></span></p>
+                                </div>
+                            </div>
+                        </div>
                         <div class="summary-section"><table class="summary-table"><tbody><tr><td>Thành tiền:</td><td style="text-align:right;"><span id="subtotal" class="dynamic-data"></span></td></tr><tr><td>Phát sinh:</td><td style="text-align:right;"><span id="additional-cost" class="dynamic-data"></span></td></tr><tr><td style="font-weight: 700;">Phải TT:</td><td style="text-align:right; font-weight: 700;"><span id="total-due" class="dynamic-data"></span></td></tr><tr><td>Đã TT:</td><td style="text-align:right;"><span id="amount-paid" class="dynamic-data"></span></td></tr><tr><td class="highlight-red">Còn Lại:</td><td style="text-align:right;"><span id="amount-remaining" class="dynamic-data highlight-red"></span></td></tr><tr><td colspan="2">(Bằng chữ: <span id="amount-in-words" class="dynamic-data"></span>)</td></tr></tbody></table></div>
                     </div>
                     <div class="terms-section">
