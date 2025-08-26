@@ -10,7 +10,8 @@
    <style>
     @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;700&display=swap');
     :root {
-        --page-width: 210mm;
+        /* THAY ĐỔI 1: Chiều rộng trang được điều chỉnh để có lề 10mm */
+        --page-width: 190mm; 
         --main-padding: 10pt;
         --dynamic-data-color: #0d6efd; 
     }
@@ -26,17 +27,27 @@
     .actions-container button:disabled { background-color: #6c757d; cursor: not-allowed; }
 
     .page-wrapper { display: flex; justify-content: center; padding: 20px 0; }
-    .a4-page { width: var(--page-width); background-color: white; margin: 0 auto; box-shadow: 0 0 15px rgba(0, 0, 0, 0.1); }
-    #print-container { width: 100%; border-collapse: collapse; table-layout: fixed; }
-    #page-header, #page-footer { height: 1px; }
+    .a4-page { 
+        width: var(--page-width); 
+        background-color: white; 
+        margin: 0 auto; 
+        box-shadow: 0 0 15px rgba(0,0,0,0.1);
+        display: flex;
+        flex-direction: column;
+    }
     .header-content, .footer-content, .main-content { padding: var(--main-padding); box-sizing: border-box; }
-    .main-content { padding-top: 0; padding-bottom: 0; }
-    .footer-content { padding-top: 10px; text-align: right; font-size: 9pt; color: #6c757d; border-top: 1px solid #dee2e6; }
+    .main-content { flex-grow: 1; }
+    .footer-content { 
+        padding-top: 10px; 
+        text-align: right; 
+        font-size: 9pt; 
+        color: #6c757d; 
+        border-top: 1px solid #dee2e6;
+    }
     .dynamic-data { color: var(--dynamic-data-color); font-weight: 500; }
 
-    /* --- UPDATED HEADER STYLES --- */
-    .header-content { padding-bottom: 5px; }
-    .header-content .header { display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #dee2e6; padding-bottom: 5px; }
+    .header-content { padding: 25px var(--main-padding); } 
+    .header-content .header { display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #dee2e6; padding-bottom: 15px; }
     .header-left { display: flex; align-items: center; }
     .header-content .logo { width: 65px; height: 65px; flex-shrink: 0; }
     #contract-qr-container { width: 65px; height: 65px; flex-shrink: 0; }
@@ -44,7 +55,6 @@
     .studio-info { padding-left: 15px !important; }
     .studio-info h2 { font-size: 12pt; margin: 0; }
     .studio-info p { font-size: 8.5pt; line-height: 1.3; margin: 0; }
-    /* --- END HEADER STYLES --- */
 
     .main-title { text-align: center; font-size: 18pt; font-weight: 700; margin: 10px 0 5px 0; text-transform: uppercase; }
     .contract-meta { text-align: center; font-style: italic; color: #555; margin-bottom: 15px; }
@@ -52,37 +62,48 @@
     th, td { border: 1px solid #dee2e6; padding: 6px 8px; text-align: left; vertical-align: top; }
     th { background-color: #e9ecef; font-weight: 700; text-align: center; }
     
-    /* --- UPDATED LAYOUT STYLES --- */
-    .summary-and-payment { display: flex; justify-content: space-between; align-items: flex-start; margin-top: 5px; margin-bottom: 20px; page-break-inside: avoid; }
-    .qr-payment-section { width: 58%; border: 1px solid #e9ecef; padding: 15px; border-radius: 5px; }
-    .qr-payment-content { display: flex; align-items: center; text-align: left; }
+    .summary-and-payment { display: flex; justify-content: space-between; align-items: stretch; margin-top: 5px; margin-bottom: 20px; page-break-inside: avoid; }
+    .qr-payment-section { width: 58%; border: 1px solid #e9ecef; padding: 15px; border-radius: 5px; box-sizing: border-box;}
+    .qr-payment-content { display: flex; align-items: center; text-align: left; height: 100%;}
     .qr-code { width: 140px; height: 140px; flex-shrink: 0; margin-right: 15px; display: flex; justify-content: center; align-items: center; }
     .qr-code img { max-width: 100%; height: auto; border: 1px solid #ccc; display: block; }
     .payment-instructions p { margin: 4px 0; font-size: 9pt; }
-    .summary-section { width: 40%; }
-    .summary-table .highlight-red { color: #dc3545; font-weight: 700; font-size: 11pt; }
-    /* --- END UPDATED LAYOUT STYLES --- */
+    
+    .summary-section { width: 40%; border: 1px solid #e9ecef; padding: 15px; border-radius: 5px; box-sizing: border-box; }
+    .summary-section .summary-table { margin-bottom: 0; }
+    .summary-table td { padding: 4px 8px; }
+    .summary-table .highlight-red { color: #dc3545; font-weight: 700; }
     
     .terms-section { margin-top: 15px; border-top: 1px solid #dee2e6; padding-top: 10px; }
     .print-block { page-break-inside: avoid; margin-top: 15px; }
     .print-block h3 { font-size: 11pt; font-weight: 700; margin: 0 0 5px 0; }
-    .print-block p, .print-block li { margin-bottom: 4px; }
+    .print-block p, .print-block li { 
+        margin-bottom: 4px;
+        text-align: justify;
+    }
     .print-block ul { padding-left: 20px; list-style-type: none; margin-block-start: 0; margin-block-end: 0; }
     .print-block ul li::before { content: "- "; }
     .signature-block { display: flex; justify-content: space-around; text-align: center; margin-top: 40px; padding-top: 15px; border-top: 1px solid #dee2e6; page-break-before: auto; }
+    .signature-block p {
+        text-align: center;
+    }
     .signature-block .name { margin-top: 60px; font-weight: 700; }
 
     @media print {
-        body { background: none; padding: 0; }
+        body { background: none; }
         .actions-container { display: none !important; }
         .page-wrapper { padding: 0; }
-        .a4-page { box-shadow: none; margin: 0; width: 100%; }
-        @page { margin: var(--main-padding); }
-        #print-container { display: table; width: 100%; }
-        #page-header { display: table-header-group; }
-        #page-footer { display: table-footer-group; }
-        #page-footer .page-number::after { content: "Trang " counter(page); }
-        body { counter-reset: page; }
+        .a4-page {
+            box-shadow: none;
+            border: none;
+            margin: 0;
+            width: 100%;
+        }
+        /* THAY ĐỔI 2: Đồng bộ lề bản in thành 10mm */
+        @page { 
+            size: A4;
+            margin: 10mm;
+        }
     }
 </style>
 </head>
@@ -93,11 +114,13 @@
     </div>
     <div class="page-wrapper">
         <div class="a4-page" id="a4-page-content">
-            <table id="print-container">
-                <thead id="page-header"><tr><td><div class="header-content"></div></td></tr></thead>
-                <tbody><tr><td><div class="main-content"></div></td></tr></tbody>
-                <tfoot id="page-footer"><tr><td><div class="footer-content"><span class="page-number"></span></div></td></tr></tfoot>
-            </table>
+            <div id="page-header">
+                <div class="header-content"></div>
+            </div>
+            <div class="main-content"></div>
+            <div id="page-footer">
+                <div class="footer-content"><span class="page-number"></span></div>
+            </div>
         </div>
     </div>
     
@@ -120,7 +143,6 @@
                  const paramToIdMap = { ma_hd: 'contract-id', ngay_hd: 'contract-date', khach_hang: 'customer-name', dien_thoai_kh: 'customer-phone', dia_chi_kh: 'customer-address', nhan_vien: 'staff-name', dien_thoai_nv: 'staff-phone', chuc_vu_nv: 'staff-title', thanh_tien: 'subtotal', tong_phat_sinh: 'additional-cost', phai_thanh_toan: 'total-due', da_thanh_toan: 'amount-paid', con_lai: 'amount-remaining', ten_ky_kh: 'customer-signature-name', ten_ky_nv: 'staff-signature-name' };
                  for (const param in paramToIdMap) { const element = document.getElementById(paramToIdMap[param]); if (element && params.has(param)) { let value = decodeURIComponent(params.get(param)); if (['thanh_tien', 'tong_phat_sinh', 'phai_thanh_toan', 'da_thanh_toan', 'con_lai'].includes(param)) { value = parseFloat(value.replace(/,/g, '') || 0).toLocaleString('vi-VN'); } element.textContent = value; } }
                  
-                 // Populate payment instructions
                  document.getElementById('payment-stk').textContent = params.get('stk') || 'N/A';
                  document.getElementById('payment-account-name').textContent = params.get('chu_tai_khoan') || 'N/A';
                  document.getElementById('payment-info').textContent = params.get('ma_hd') || 'N/A';
@@ -137,7 +159,6 @@
                  const demoFields = {'contract-id': 'HD-DEMO-001', 'contract-date': new Date().toLocaleDateString('vi-VN'), 'customer-name': "KHÁCH HÀNG DEMO", 'customer-phone': "0123456789", 'customer-address': "Hà Nội", 'staff-name': "NHÂN VIÊN DEMO", 'staff-phone': '0987654321', 'staff-title': 'Nhân viên', 'subtotal': "9,500,000", 'additional-cost': "0", 'total-due': "9,500,000", 'amount-paid': "4,000,000", 'amount-remaining': "5,500,000", 'customer-signature-name': "Tên Khách Hàng Ký", 'staff-signature-name': "Tên Nhân Viên Ký"};
                  for (const id in demoFields) { const el = document.getElementById(id); if (el) el.textContent = demoFields[id]; }
                  
-                 // Populate payment instructions for demo
                  document.getElementById('payment-stk').textContent = '0501000130594';
                  document.getElementById('payment-account-name').textContent = '2H STUDIO';
                  document.getElementById('payment-info').textContent = 'HD-DEMO-001';
@@ -183,19 +204,38 @@
 
             document.getElementById("download-pdf").addEventListener("click", () => {
                 const downloadBtn = document.getElementById('download-pdf');
+                const element = document.getElementById('a4-page-content');
+                const originalShadow = element.style.boxShadow;
+                const originalWidth = element.style.width;
+
                 downloadBtn.textContent = 'Đang xử lý...';
                 downloadBtn.disabled = true;
-                const element = document.getElementById('a4-page-content');
+                
+                element.style.boxShadow = 'none';
+                element.style.width = 'auto';
+
                 const filename = `HD_${document.getElementById('customer-name').textContent.trim()}.pdf`;
-                const opt = { margin: 10, filename: filename, image: { type: 'jpeg', quality: 0.98 }, html2canvas:  { scale: 2, useCORS: true, logging: false }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } };
+                // THAY ĐỔI 3: Đồng bộ lề PDF thành 10mm
+                const opt = { 
+                    margin: 10, 
+                    filename: filename, 
+                    image: { type: 'jpeg', quality: 0.98 }, 
+                    html2canvas:  { scale: 2, useCORS: true, logging: false }, 
+                    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } 
+                };
+                
                 html2pdf().from(element).set(opt).save().then(() => {
                     downloadBtn.textContent = '📄 Tải về PDF';
                     downloadBtn.disabled = false;
+                    element.style.boxShadow = originalShadow;
+                    element.style.width = originalWidth;
                 }).catch(err => {
                     console.error("PDF generation failed:", err);
                     alert("Lỗi khi tạo PDF. Vui lòng thử lại.");
                     downloadBtn.textContent = '📄 Tải về PDF';
                     downloadBtn.disabled = false;
+                    element.style.boxShadow = originalShadow;
+                    element.style.width = originalWidth;
                 });
             });
 
@@ -221,23 +261,23 @@
                         <div class="contract-meta">Số: <span id="contract-id" class="dynamic-data"></span> | Ngày: <span id="contract-date" class="dynamic-data"></span></div>
                         <p><strong>2H STUDIO - SƠN TÂY</strong> Gửi tới quý khách hàng hoá đơn dịch vụ như sau:</p>
                         <div class="info-grid" style="display:flex; justify-content:space-between; margin-bottom:20px;">
-                            <div class="customer-info" style="width:48%;">
+                            <div class="customer-info" style="width:50%;">
                                 <p><strong>Khách hàng:</strong> <span id="customer-name" class="dynamic-data"></span></p>
                                 <p><strong>Điện thoại:</strong> <span id="customer-phone" class="dynamic-data"></span></p>
                                 <p><strong>Địa chỉ:</strong> <span id="customer-address" class="dynamic-data"></span></p>
                             </div>
-                            <div class="staff-info" style="width: 34%;">
+                            <div class="staff-info" style="width: 40%;">
                                 <p><strong>Nhân viên:</strong> <span id="staff-name" class="dynamic-data"></span></p>
                                 <p><strong>Điện thoại NV:</strong> <span id="staff-phone" class="dynamic-data"></span></p>
                                 <p><strong>Chức Vụ:</strong> <span id="staff-title" class="dynamic-data"></span></p>
                             </div>
                         </div>
-                        <!-- CHANGE 1: ADDED COLGROUP FOR WIDTH CONTROL -->
+                        
                         <table style="table-layout: fixed;">
                            <colgroup>
                               <col style="width: 5%;">
-                              <col style="width: 30%;">
-                              <col style="width: 7%;">
+                              <col style="width: 27%;">
+                              <col style="width: 10%;">
                               <col style="width: 8%;">
                               <col style="width: 12%;">
                               <col style="width: 12%;">
@@ -247,7 +287,7 @@
                            <tbody id="service-table-body"></tbody>
                         </table>
                     </div>
-                    <!-- CHANGE 2: UPDATED PAYMENT/SUMMARY BLOCK -->
+                    
                     <div class="summary-and-payment">
                         <div class="qr-payment-section">
                             <div class="qr-payment-content">
@@ -260,7 +300,18 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="summary-section"><table class="summary-table"><tbody><tr><td>Thành tiền:</td><td style="text-align:right;"><span id="subtotal" class="dynamic-data"></span></td></tr><tr><td>Phát sinh:</td><td style="text-align:right;"><span id="additional-cost" class="dynamic-data"></span></td></tr><tr><td style="font-weight: 700;">Phải TT:</td><td style="text-align:right; font-weight: 700;"><span id="total-due" class="dynamic-data"></span></td></tr><tr><td>Đã TT:</td><td style="text-align:right;"><span id="amount-paid" class="dynamic-data"></span></td></tr><tr><td class="highlight-red">Còn Lại:</td><td style="text-align:right;"><span id="amount-remaining" class="dynamic-data highlight-red"></span></td></tr><tr><td colspan="2">(Bằng chữ: <span id="amount-in-words" class="dynamic-data"></span>)</td></tr></tbody></table></div>
+                        <div class="summary-section">
+                           <table class="summary-table">
+                              <tbody>
+                                 <tr><td>Thành tiền:</td><td style="text-align:right;"><span id="subtotal" class="dynamic-data"></span></td></tr>
+                                 <tr><td>Phát sinh:</td><td style="text-align:right;"><span id="additional-cost" class="dynamic-data"></span></td></tr>
+                                 <tr><td style="font-weight: 700;">Phải TT:</td><td style="text-align:right; font-weight: 700;"><span id="total-due" class="dynamic-data"></span></td></tr>
+                                 <tr><td>Đã TT:</td><td style="text-align:right;"><span id="amount-paid" class="dynamic-data"></span></td></tr>
+                                 <tr><td class="highlight-red">Còn Lại:</td><td style="text-align:right;"><span class="dynamic-data highlight-red" id="amount-remaining"></span></td></tr>
+                                 <tr><td colspan="2">(Bằng chữ: <span id="amount-in-words" class="dynamic-data"></span>)</td></tr>
+                              </tbody>
+                           </table>
+                        </div>
                     </div>
                     <div class="terms-section">
                         <div class="print-block">
