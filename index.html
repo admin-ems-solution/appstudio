@@ -10,7 +10,6 @@
    <style>
     @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;700&display=swap');
     :root {
-        /* THAY ĐỔI 1: Chiều rộng trang được điều chỉnh để có lề 10mm */
         --page-width: 190mm; 
         --main-padding: 10pt;
         --dynamic-data-color: #0d6efd; 
@@ -99,7 +98,6 @@
             margin: 0;
             width: 100%;
         }
-        /* THAY ĐỔI 2: Đồng bộ lề bản in thành 10mm */
         @page { 
             size: A4;
             margin: 10mm;
@@ -140,8 +138,56 @@
             }
 
             function populateFromUrl(params) {
-                 const paramToIdMap = { ma_hd: 'contract-id', ngay_hd: 'contract-date', khach_hang: 'customer-name', dien_thoai_kh: 'customer-phone', dia_chi_kh: 'customer-address', nhan_vien: 'staff-name', dien_thoai_nv: 'staff-phone', chuc_vu_nv: 'staff-title', thanh_tien: 'subtotal', tong_phat_sinh: 'additional-cost', phai_thanh_toan: 'total-due', da_thanh_toan: 'amount-paid', con_lai: 'amount-remaining', ten_ky_kh: 'customer-signature-name', ten_ky_nv: 'staff-signature-name' };
-                 for (const param in paramToIdMap) { const element = document.getElementById(paramToIdMap[param]); if (element && params.has(param)) { let value = decodeURIComponent(params.get(param)); if (['thanh_tien', 'tong_phat_sinh', 'phai_thanh_toan', 'da_thanh_toan', 'con_lai'].includes(param)) { value = parseFloat(value.replace(/,/g, '') || 0).toLocaleString('vi-VN'); } element.textContent = value; } }
+                 const paramToIdMap = { 
+                     // Studio Info
+                     ten_studio: ['studio-name', 'studio-name-main'],
+                     diachi_studio: 'studio-address',
+                     website_studio: 'studio-website',
+                     email_studio: 'studio-email',
+                     dienthoai_studio: 'studio-phone',
+                     zalo_studio: 'studio-zalo',
+                     // Contract Info
+                     ma_hd: 'contract-id', 
+                     ngay_hd: 'contract-date', 
+                     khach_hang: 'customer-name', 
+                     dien_thoai_kh: 'customer-phone', 
+                     dia_chi_kh: 'customer-address', 
+                     nhan_vien: 'staff-name', 
+                     dien_thoai_nv: 'staff-phone', 
+                     chuc_vu_nv: 'staff-title', 
+                     thanh_tien: 'subtotal', 
+                     tong_phat_sinh: 'additional-cost', 
+                     phai_thanh_toan: 'total-due', 
+                     da_thanh_toan: 'amount-paid', 
+                     con_lai: 'amount-remaining', 
+                     ten_ky_kh: 'customer-signature-name', 
+                     ten_ky_nv: 'staff-signature-name' 
+                 };
+
+                 for (const param in paramToIdMap) {
+                     if (params.has(param)) {
+                         let value = decodeURIComponent(params.get(param));
+                         if (['thanh_tien', 'tong_phat_sinh', 'phai_thanh_toan', 'da_thanh_toan', 'con_lai'].includes(param)) {
+                             value = parseFloat(value.replace(/,/g, '') || 0).toLocaleString('vi-VN');
+                         }
+                         
+                         const ids = Array.isArray(paramToIdMap[param]) ? paramToIdMap[param] : [paramToIdMap[param]];
+                         ids.forEach(id => {
+                             const element = document.getElementById(id);
+                             if (element) {
+                                 element.textContent = value;
+                             }
+                         });
+                     }
+                 }
+                 
+                 // Handle logo separately as it's an image src
+                 if (params.has('logo_url')) {
+                    const logoImg = document.getElementById('studio-logo-img');
+                    if (logoImg) {
+                        logoImg.src = decodeURIComponent(params.get('logo_url'));
+                    }
+                 }
                  
                  document.getElementById('payment-stk').textContent = params.get('stk') || 'N/A';
                  document.getElementById('payment-account-name').textContent = params.get('chu_tai_khoan') || 'N/A';
@@ -156,9 +202,35 @@
 
             function runDemoMode() {
                  document.body.insertAdjacentHTML('beforeend', '<div style="position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%) rotate(-45deg); font-size: 80pt; color: rgba(0, 0, 0, 0.05); font-weight: 700; text-transform: uppercase; pointer-events: none; z-index: 1000; display: block;">BẢN NHÁP</div>');
-                 const demoFields = {'contract-id': 'HD-DEMO-001', 'contract-date': new Date().toLocaleDateString('vi-VN'), 'customer-name': "KHÁCH HÀNG DEMO", 'customer-phone': "0123456789", 'customer-address': "Hà Nội", 'staff-name': "NHÂN VIÊN DEMO", 'staff-phone': '0987654321', 'staff-title': 'Nhân viên', 'subtotal': "9,500,000", 'additional-cost': "0", 'total-due': "9,500,000", 'amount-paid': "4,000,000", 'amount-remaining': "5,500,000", 'customer-signature-name': "Tên Khách Hàng Ký", 'staff-signature-name': "Tên Nhân Viên Ký"};
+                 const demoFields = {
+                     'studio-name': '2H STUDIO - SƠN TÂY',
+                     'studio-address': '566 Chùa Thông - Sơn Tây - Hà Nội',
+                     'studio-website': 'http://2hstudio.vn/',
+                     'studio-email': '2hstudio.wedding@gmail.com',
+                     'studio-phone': '0854623566',
+                     'studio-zalo': '2H studio',
+                     'contract-id': 'HD-DEMO-001', 
+                     'contract-date': new Date().toLocaleDateString('vi-VN'), 
+                     'customer-name': "KHÁCH HÀNG DEMO", 
+                     'customer-phone': "0123456789", 
+                     'customer-address': "Hà Nội", 
+                     'staff-name': "NHÂN VIÊN DEMO", 
+                     'staff-phone': '0987654321', 
+                     'staff-title': 'Nhân viên', 
+                     'subtotal': "9,500,000", 
+                     'additional-cost': "0", 
+                     'total-due': "9,500,000", 
+                     'amount-paid': "4,000,000", 
+                     'amount-remaining': "5,500,000", 
+                     'customer-signature-name': "Tên Khách Hàng Ký", 
+                     'staff-signature-name': "Tên Nhân Viên Ký"
+                 };
                  for (const id in demoFields) { const el = document.getElementById(id); if (el) el.textContent = demoFields[id]; }
+                 document.getElementById('studio-name-main').textContent = demoFields['studio-name'];
                  
+                 const logoImg = document.getElementById('studio-logo-img');
+                 if(logoImg) logoImg.src = "https://scontent.fsgn2-6.fna.fbcdn.net/v/t39.30808-6/274489412_1388888508225332_3112485830184052132_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=6UFIS_ClcLEQ7kNvwELXjBZ&_nc_oc=AdmyGu3tXEesz-U3QQ3TkufiXrAsnlpuJgRLwf0SHxStw3L-vpIGeaw4TZ6d2EkZaE4&_nc_zt=23&_nc_ht=scontent.fsgn2-6.fna&_nc_gid=BbGYZsNaWzblm0tLvHhfTQ&oh=00_AfWEb38bc0Un-ycVgv1XZO-tNTBfVmpCHfUALr49vuJCaQ&oe=68B1DBA0";
+
                  document.getElementById('payment-stk').textContent = '0501000130594';
                  document.getElementById('payment-account-name').textContent = '2H STUDIO';
                  document.getElementById('payment-info').textContent = 'HD-DEMO-001';
@@ -215,7 +287,6 @@
                 element.style.width = 'auto';
 
                 const filename = `HD_${document.getElementById('customer-name').textContent.trim()}.pdf`;
-                // THAY ĐỔI 3: Đồng bộ lề PDF thành 10mm
                 const opt = { 
                     margin: 10, 
                     filename: filename, 
@@ -240,16 +311,17 @@
             });
 
             function injectHTMLStructure() {
-                 const logoUrl = "https://scontent.fsgn2-6.fna.fbcdn.net/v/t39.30808-6/274489412_1388888508225332_3112485830184052132_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=6UFIS_ClcLEQ7kNvwELXjBZ&_nc_oc=AdmyGu3tXEesz-U3QQ3TkufiXrAsnlpuJgRLwf0SHxStw3L-vpIGeaw4TZ6d2EkZaE4&_nc_zt=23&_nc_ht=scontent.fsgn2-6.fna&_nc_gid=BbGYZsNaWzblm0tLvHhfTQ&oh=00_AfWEb38bc0Un-ycVgv1XZO-tNTBfVmpCHfUALr49vuJCaQ&oe=68B1DBA0";
                  document.querySelector(".header-content").innerHTML = `
                     <header class="header">
                         <div class="header-left">
-                           <div class="logo"><img src="${logoUrl}" alt="2H Studio Logo" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;"></div>
+                           <div class="logo">
+                               <img id="studio-logo-img" alt="Studio Logo" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+                           </div>
                            <div class="studio-info">
-                              <h2>2H STUDIO - SƠN TÂY</h2>
-                              <p><strong>Địa chỉ:</strong> 566 Chùa Thông - Sơn Tây - Hà Nội</p>
-                              <p><strong>Website:</strong> http://2hstudio.vn/ | <strong>Email:</strong> 2hstudio.wedding@gmail.com</p>
-                              <p><strong>Điện thoại:</strong> 0854623566 | <strong>Zalo:</strong> 2H studio</p>
+                              <h2 id="studio-name"></h2>
+                              <p><strong>Địa chỉ:</strong> <span id="studio-address"></span></p>
+                              <p><strong>Website:</strong> <span id="studio-website"></span> | <strong>Email:</strong> <span id="studio-email"></span></p>
+                              <p><strong>Điện thoại:</strong> <span id="studio-phone"></span> | <strong>Zalo:</strong> <span id="studio-zalo"></span></p>
                            </div>
                         </div>
                         <div id="contract-qr-container" title="Mã hợp đồng"></div>
@@ -259,7 +331,7 @@
                     <div>
                         <h1 class="main-title">HỢP ĐỒNG CUNG CẤP DỊCH VỤ</h1>
                         <div class="contract-meta">Số: <span id="contract-id" class="dynamic-data"></span> | Ngày: <span id="contract-date" class="dynamic-data"></span></div>
-                        <p><strong>2H STUDIO - SƠN TÂY</strong> Gửi tới quý khách hàng hoá đơn dịch vụ như sau:</p>
+                        <p><strong><span id="studio-name-main"></span></strong> Gửi tới quý khách hàng hoá đơn dịch vụ như sau:</p>
                         <div class="info-grid" style="display:flex; justify-content:space-between; margin-bottom:20px;">
                             <div class="customer-info" style="width:50%;">
                                 <p><strong>Khách hàng:</strong> <span id="customer-name" class="dynamic-data"></span></p>
