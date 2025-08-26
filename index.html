@@ -1,240 +1,363 @@
-<script>
-    function removeVietnameseTones(str) {if(!str)return"";str=str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g,"a");str=str.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g,"e");str=str.replace(/ì|í|ị|ỉ|ĩ/g,"i");str=str.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g,"o");str=str.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g,"u");str=str.replace(/ỳ|ý|ỵ|ỷ|ỹ/g,"y");str=str.replace(/đ/g,"d");str=str.replace(/À|Á|Ạ|Ả|Ã|Â|Ầ|Ấ|Ậ|Ẩ|Ẫ|Ă|Ằ|Ắ|Ặ|Ẳ|Ẵ/g,"A");str=str.replace(/È|É|Ẹ|Ẻ|Ẽ|Ê|Ề|Ế|Ệ|Ể|Ễ/g,"E");str=str.replace(/Ì|Í|Ị|Ỉ|Ĩ/g,"I");str=str.replace(/Ò|Ó|Ọ|Ỏ|Õ|Ô|Ồ|Ố|Ộ|Ổ|Ỗ|Ơ|Ờ|Ớ|Ợ|Ở|Ỡ/g,"O");str=str.replace(/Ù|Ú|Ụ|Ủ|Ũ|Ư|Ừ|Ứ|Ự|Ử|Ữ/g,"U");str=str.replace(/Ỳ|Ý|Ỵ|Ỷ|Ỹ/g,"Y");str=str.replace(/Đ/g,"D");str=str.replace(/\u0300|\u0301|\u0303|\u0309|\u0323/g,"");str=str.replace(/\u02C6|\u0306|\u031B/g,"");return str.trim()}
-    function readNumberInVietnamese(t){const e=" hai ba bốn năm sáu bảy tám chín",n=" không"+e,a=" lẺ mƯỜi"+e,o=" không"+e;function i(t){let e;if(t=parseInt(t,10),0===t)return"";let i=(e=t.toString()).length<2?"00"+e:e.length<3?"0"+e:e;const r=parseInt(i[0],10),s=parseInt(i[1],10),l=parseInt(i[2],10);let c="";return r>0&&(c+=o.split(" ")[r]+" trăm",0===s&&0!==l&&(c+=" linh")),s>1&&(c+=" "+a.split(" ")[s]+" mươi",10===s&&1===l&&(c+=" mốt")),1===s&&(c+=" "+a.split(" ")[s]),c+=1===l?s>1||r>0?" mốt":" "+n.split(" ")[l]:5===l?0===s?" "+n.split(" ")[l]:" lăm":0!==l?" "+n.split(" ")[l]:"",c.trim()}const r="1 nghìn triệu tỷ".split(" ");let s,l=(s=parseInt(t,10).toString()).length;if(0===l)return n.split(" ")[0];let c="",u=0;for(;l>0;){let t=s.substring(l-3,l);l-=3;let e=i(t);""!==e&&(c=e+(r[u]?" "+r[u]:"")+" "+c),u++}return(c=c.trim()).length>0&&(c=c.charAt(0).toUpperCase()+c.slice(1)),c.replace("LẺ","lẻ").replace("MƯỜI","mười")+" đồng"}
-    const BANK_MAP={"970422":"MBBank","970436":"Vietcombank","970415":"Vietinbank","970403":"BIDV","970418":"Techcombank","970448":"OCB","970405":"AgriBank","970432":"VPBank","970423":"TPBank"};
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hợp Đồng Cung Cấp Dịch Vụ</title>
     
-    document.addEventListener('DOMContentLoaded', function(){
-        injectHTMLStructure();
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    
+   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;700&display=swap');
+    :root {
+        --page-width: 190mm; 
+        --main-padding: 10pt;
+        --dynamic-data-color: #0d6efd; 
+    }
+    body { font-family: 'Be Vietnam Pro', sans-serif; font-size: 9.5pt; line-height: 1.4; color: #212529; background-color: #f0f2f5; margin: 0; padding: 0; }
+    
+    .actions-container { 
+        position: sticky; top: 0; display: flex; justify-content: flex-end; align-items: center;
+        width: 100%; background-color: #343a40; padding: 8px 20px; box-sizing: border-box;
+        z-index: 2000; box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+    .actions-container button { background-color: #0d6efd; color: white; border: none; padding: 8px 16px; border-radius: 5px; font-size: 14px; font-weight: 500; cursor: pointer; margin-left: 10px; }
+    .actions-container button#download-pdf { background-color: #198754; }
+    .actions-container button:disabled { background-color: #6c757d; cursor: not-allowed; }
 
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.has('ma_hd') && urlParams.get('ma_hd').trim() !== '') {
-            populateFromUrl(urlParams);
-        } else {
-            runDemoMode();
+    .page-wrapper { display: flex; justify-content: center; padding: 20px 0; }
+    .a4-page { 
+        width: var(--page-width); 
+        background-color: white; 
+        margin: 0 auto; 
+        box-shadow: 0 0 15px rgba(0,0,0,0.1);
+        display: flex;
+        flex-direction: column;
+    }
+    .header-content, .footer-content, .main-content { padding: var(--main-padding); box-sizing: border-box; }
+    .main-content { flex-grow: 1; }
+    .footer-content { 
+        padding-top: 10px; 
+        text-align: right; 
+        font-size: 9pt; 
+        color: #6c757d; 
+        border-top: 1px solid #dee2e6;
+    }
+    .dynamic-data { color: var(--dynamic-data-color); font-weight: 500; }
+
+    .header-content { padding: 25px var(--main-padding); } 
+    .header-content .header { display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #dee2e6; padding-bottom: 15px; }
+    .header-left { display: flex; align-items: center; }
+    .header-content .logo { width: 65px; height: 65px; flex-shrink: 0; }
+    #contract-qr-container { width: 65px; height: 65px; flex-shrink: 0; }
+    #contract-qr-container img { width: 100%; height: 100%; display: block; }
+    .studio-info { padding-left: 15px !important; }
+    .studio-info h2 { font-size: 12pt; margin: 0; }
+    .studio-info p { font-size: 8.5pt; line-height: 1.3; margin: 0; }
+
+    .main-title { text-align: center; font-size: 18pt; font-weight: 700; margin: 10px 0 5px 0; text-transform: uppercase; }
+    .contract-meta { text-align: center; font-style: italic; color: #555; margin-bottom: 15px; }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 15px; font-size: 9pt; }
+    th, td { border: 1px solid #dee2e6; padding: 6px 8px; text-align: left; vertical-align: top; }
+    th { background-color: #e9ecef; font-weight: 700; text-align: center; }
+    
+    .summary-and-payment { display: flex; justify-content: space-between; align-items: stretch; margin-top: 5px; margin-bottom: 20px; page-break-inside: avoid; }
+    .qr-payment-section { width: 58%; border: 1px solid #e9ecef; padding: 15px; border-radius: 5px; box-sizing: border-box;}
+    .qr-payment-content { display: flex; align-items: center; text-align: left; height: 100%;}
+    .qr-code { width: 140px; height: 140px; flex-shrink: 0; margin-right: 15px; display: flex; justify-content: center; align-items: center; }
+    .qr-code img { max-width: 100%; height: auto; border: 1px solid #ccc; display: block; }
+    .payment-instructions p { margin: 4px 0; font-size: 9pt; }
+    
+    .summary-section { width: 40%; border: 1px solid #e9ecef; padding: 15px; border-radius: 5px; box-sizing: border-box; }
+    .summary-section .summary-table { margin-bottom: 0; }
+    .summary-table td { padding: 4px 8px; }
+    .summary-table .highlight-red { color: #dc3545; font-weight: 700; }
+    
+    .terms-section { margin-top: 15px; border-top: 1px solid #dee2e6; padding-top: 10px; }
+    .print-block { page-break-inside: avoid; margin-top: 15px; }
+    .print-block h3 { font-size: 11pt; font-weight: 700; margin: 0 0 5px 0; }
+    .print-block p, .print-block li { 
+        margin-bottom: 4px;
+        text-align: justify;
+    }
+    .print-block ul { padding-left: 20px; list-style-type: none; margin-block-start: 0; margin-block-end: 0; }
+    .print-block ul li::before { content: "- "; }
+    .signature-block { display: flex; justify-content: space-around; text-align: center; margin-top: 40px; padding-top: 15px; border-top: 1px solid #dee2e6; page-break-before: auto; }
+    .signature-block p {
+        text-align: center;
+    }
+    .signature-block .name { margin-top: 60px; font-weight: 700; }
+
+    @media print {
+        body { background: none; }
+        .actions-container { display: none !important; }
+        .page-wrapper { padding: 0; }
+        .a4-page {
+            box-shadow: none;
+            border: none;
+            margin: 0;
+            width: 100%;
         }
-
-        function populateFromUrl(params) {
-             const paramToIdMap = { 
-                'ten_studio': 'studio-name',
-                'dia_chi': 'studio-address',
-                'website': 'studio-website',
-                'email': 'studio-email',
-                'dien_thoai': 'studio-phone',
-                'zalo': 'studio-zalo',
-                ma_hd: 'contract-id', ngay_hd: 'contract-date', khach_hang: 'customer-name', 
-                dien_thoai_kh: 'customer-phone', dia_chi_kh: 'customer-address', nhan_vien: 'staff-name', 
-                dien_thoai_nv: 'staff-phone', chuc_vu_nv: 'staff-title', thanh_tien: 'subtotal', 
-                tong_phat_sinh: 'additional-cost', phai_thanh_toan: 'total-due', da_thanh_toan: 'amount-paid', 
-                con_lai: 'amount-remaining', ten_ky_kh: 'customer-signature-name', ten_ky_nv: 'staff-signature-name' 
-            };
-             for (const param in paramToIdMap) { const element = document.getElementById(paramToIdMap[param]); if (element && params.has(param)) { let value = decodeURIComponent(params.get(param)); if (['thanh_tien', 'tong_phat_sinh', 'phai_thanh_toan', 'da_thanh_toan', 'con_lai'].includes(param)) { value = parseFloat(value.replace(/,/g, '') || 0).toLocaleString('vi-VN'); } element.textContent = value; } }
-             
-             document.getElementById('payment-stk').textContent = params.get('stk') || 'N/A';
-             document.getElementById('payment-account-name').textContent = params.get('chu_tai_khoan') || 'N/A';
-             document.getElementById('payment-info').textContent = params.get('ma_hd') || 'N/A';
-             document.title = "HĐ " + params.get('ma_hd') + " - " + params.get('ten_studio');
-
-
-             if (params.has('chitiet_json')) { try { const serviceData = JSON.parse(decodeURIComponent(params.get('chitiet_json'))); populateServiceTable(serviceData); } catch(e) { console.error("Error parsing JSON:", e); } }
-             generatePaymentQRCode({ bin: params.get('ma_bank'), accountNo: params.get('stk'), accountName: params.get('chu_tai_khoan'), amount: parseInt((params.get('con_lai') || "0").replace(/[^0-9]/g, ''), 10), info: params.get('ma_hd') });
-             generateContractQRCode(params.get('ma_hd')); 
-             const conLaiRaw = (params.get('con_lai') || "0").replace(/[^0-9]/g, '');
-             document.getElementById('amount-in-words').textContent = readNumberInVietnamese(conLaiRaw);
+        @page { 
+            size: A4;
+            margin: 10mm;
         }
-
-        function runDemoMode() {
-             // DÒNG NÀY ĐÃ ĐƯỢC THAY ĐỔI MÀU SANG MÀU ĐỎ
-             document.body.insertAdjacentHTML('beforeend', '<div style="position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%) rotate(-45deg); font-size: 80pt; color: rgba(255, 0, 0, 0.05); font-weight: 700; text-transform: uppercase; pointer-events: none; z-index: 1000; display: block;">BẢN NHÁP</div>');
-             
-             const demoHeader = {'studio-name': '2H STUDIO - SƠN TÂY', 'studio-address': '566 Chùa Thông - Sơn Tây - Hà Nội', 'studio-website': 'http://2hstudio.vn/', 'studio-email': '2hstudio.wedding@gmail.com', 'studio-phone': '0854623566', 'studio-zalo': '2H studio'};
-             for (const id in demoHeader) { const el = document.getElementById(id); if (el) el.textContent = demoHeader[id]; }
-
-             const demoFields = {'contract-id': 'HD-DEMO-001', 'contract-date': new Date().toLocaleDateString('vi-VN'), 'customer-name': "KHÁCH HÀNG DEMO", 'customer-phone': "0123456789", 'customer-address': "Hà Nội", 'staff-name': "NHÂN VIÊN DEMO", 'staff-phone': '0987654321', 'staff-title': 'Nhân viên', 'subtotal': "9,500,000", 'additional-cost': "0", 'total-due': "9,500,000", 'amount-paid': "4,000,000", 'amount-remaining': "5,500,000", 'customer-signature-name': "Tên Khách Hàng Ký", 'staff-signature-name': "Tên Nhân Viên Ký"};
-             for (const id in demoFields) { const el = document.getElementById(id); if (el) el.textContent = demoFields[id]; }
-             
-             document.getElementById('payment-stk').textContent = '0501000130594';
-             document.getElementById('payment-account-name').textContent = '2H STUDIO';
-             document.getElementById('payment-info').textContent = 'HD-DEMO-001';
-
-             populateServiceTable([{ sanpham: "Gói chụp Premium", dvt: "Gói", soluong: 1, dongia: 8900000, thanhtien: 8900000, ghi_chu: "Bao gồm album" }, { sanpham: "In ảnh cổng", dvt: "Tấm", soluong: 1, dongia: 600000, thanhtien: 600000, ghi_chu: "Kích thước 60x90" }]);
-             generatePaymentQRCode({ bin: "970436", accountNo: "0501000130594", accountName: "2H STUDIO", amount: 5500000, info: "HD-DEMO-001" });
-             generateContractQRCode('HD-DEMO-001'); 
-             const demoAmountRemainingRaw = (document.getElementById('amount-remaining').textContent || "0").replace(/[^0-9]/g, '');
-             document.getElementById('amount-in-words').textContent = readNumberInVietnamese(demoAmountRemainingRaw);
-        }
-
-        function populateServiceTable(data) {
-             const tableBody = document.getElementById('service-table-body'); if (!tableBody) return; tableBody.innerHTML = ''; data.forEach((item, index) => { const row = document.createElement('tr'); const donGiaFormatted = (item.dongia || 0).toLocaleString('vi-VN'); const thanhTienFormatted = (item.thanhtien || 0).toLocaleString('vi-VN'); row.innerHTML = `<td style="text-align: center;">${index + 1}</td><td><span class="dynamic-data">${item.sanpham || ''}</span></td><td style="text-align: center;"><span class="dynamic-data">${item.dvt || ''}</span></td><td style="text-align: center;"><span class="dynamic-data">${item.soluong || 0}</span></td><td style="text-align: right;"><span class="dynamic-data">${donGiaFormatted}</span></td><td style="text-align: right;"><span class="dynamic-data">${thanhTienFormatted}</span></td><td><span class="dynamic-data">${item.ghi_chu || ''}</span></td>`; tableBody.appendChild(row); });
-        }
-
-        function generatePaymentQRCode(data){
-            const qrContainer = document.getElementById("payment-qr-code-container");
-            const amount = (data.amount || 0).toString().replace(/,/g, "");
-            const bankBin = data.bin || '';
-            const accountNumber = data.accountNo || '';
-            const accountName = data.accountName || '';
-            if (!bankBin || !accountNumber || parseInt(amount) < 0) { qrContainer.innerHTML = '<p style="color: red; font-size: 0.9em;">Lỗi: Dữ liệu thanh toán không hợp lệ.</p>'; return; }
-            const accountNameForURL = encodeURIComponent(removeVietnameseTones(accountName).toUpperCase());
-            const qrApiUrl = `https://img.vietqr.io/image/${bankBin}-${accountNumber}-compact.png?amount=${amount}&addInfo=${encodeURIComponent(data.info||'')}&accountName=${accountNameForURL}`;
-            const qrImage = new Image();
-            qrImage.crossOrigin = 'anonymous';
-            qrContainer.innerHTML = 'Đang tạo mã QR...';
-            qrImage.onload = () => { qrContainer.innerHTML = ''; qrContainer.appendChild(qrImage); };
-            qrImage.onerror = () => { qrContainer.innerHTML = '<p style="color: red; font-size: 0.9em;">Không thể tạo mã QR. Vui lòng kiểm tra lại STK/Ngân hàng.</p>'; };
-            qrImage.src = qrApiUrl;
-        }
+    }
+</style>
+</head>
+<body>
+    <div class="actions-container">
+        <button onclick="window.print()">🖨️ In Hợp Đồng</button>
+        <button id="download-pdf">📄 Tải về PDF</button>
+    </div>
+    <div class="page-wrapper">
+        <div class="a4-page" id="a4-page-content">
+            <div id="page-header">
+                <div class="header-content"></div>
+            </div>
+            <div class="main-content"></div>
+            <div id="page-footer">
+                <div class="footer-content"><span class="page-number"></span></div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function removeVietnameseTones(str) {if(!str)return"";str=str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g,"a");str=str.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g,"e");str=str.replace(/ì|í|ị|ỉ|ĩ/g,"i");str=str.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g,"o");str=str.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g,"u");str=str.replace(/ỳ|ý|ỵ|ỷ|ỹ/g,"y");str=str.replace(/đ/g,"d");str=str.replace(/À|Á|Ạ|Ả|Ã|Â|Ầ|Ấ|Ậ|Ẩ|Ẫ|Ă|Ằ|Ắ|Ặ|Ẳ|Ẵ/g,"A");str=str.replace(/È|É|Ẹ|Ẻ|Ẽ|Ê|Ề|Ế|Ệ|Ể|Ễ/g,"E");str=str.replace(/Ì|Í|Ị|Ỉ|Ĩ/g,"I");str=str.replace(/Ò|Ó|Ọ|Ỏ|Õ|Ô|Ồ|Ố|Ộ|Ổ|Ỗ|Ơ|Ờ|Ớ|Ợ|Ở|Ỡ/g,"O");str=str.replace(/Ù|Ú|Ụ|Ủ|Ũ|Ư|Ừ|Ứ|Ự|Ử|Ữ/g,"U");str=str.replace(/Ỳ|Ý|Ỵ|Ỷ|Ỹ/g,"Y");str=str.replace(/Đ/g,"D");str=str.replace(/\u0300|\u0301|\u0303|\u0309|\u0323/g,"");str=str.replace(/\u02C6|\u0306|\u031B/g,"");return str.trim()}
+        function readNumberInVietnamese(t){const e=" hai ba bốn năm sáu bảy tám chín",n=" không"+e,a=" lẺ mƯỜi"+e,o=" không"+e;function i(t){let e;if(t=parseInt(t,10),0===t)return"";let i=(e=t.toString()).length<2?"00"+e:e.length<3?"0"+e:e;const r=parseInt(i[0],10),s=parseInt(i[1],10),l=parseInt(i[2],10);let c="";return r>0&&(c+=o.split(" ")[r]+" trăm",0===s&&0!==l&&(c+=" linh")),s>1&&(c+=" "+a.split(" ")[s]+" mươi",10===s&&1===l&&(c+=" mốt")),1===s&&(c+=" "+a.split(" ")[s]),c+=1===l?s>1||r>0?" mốt":" "+n.split(" ")[l]:5===l?0===s?" "+n.split(" ")[l]:" lăm":0!==l?" "+n.split(" ")[l]:"",c.trim()}const r="1 nghìn triệu tỷ".split(" ");let s,l=(s=parseInt(t,10).toString()).length;if(0===l)return n.split(" ")[0];let c="",u=0;for(;l>0;){let t=s.substring(l-3,l);l-=3;let e=i(t);""!==e&&(c=e+(r[u]?" "+r[u]:"")+" "+c),u++}return(c=c.trim()).length>0&&(c=c.charAt(0).toUpperCase()+c.slice(1)),c.replace("LẺ","lẻ").replace("MƯỜI","mười")+" đồng"}
+        const BANK_MAP={"970422":"MBBank","970436":"Vietcombank","970415":"Vietinbank","970403":"BIDV","970418":"Techcombank","970448":"OCB","970405":"AgriBank","970432":"VPBank","970423":"TPBank"};
         
-        function generateContractQRCode(contractId) {
-            const container = document.getElementById('contract-qr-container');
-            if (!container || !contractId) return;
-            const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=65x65&data=${encodeURIComponent(contractId)}&qzone=1&format=svg`;
-            const qrImage = new Image();
-            qrImage.src = qrApiUrl;
-            qrImage.alt = `QR Code for ${contractId}`;
-            container.innerHTML = '';
-            container.appendChild(qrImage);
-        }
+        document.addEventListener('DOMContentLoaded', function(){
+            injectHTMLStructure();
 
-        document.getElementById("download-pdf").addEventListener("click", () => {
-            const downloadBtn = document.getElementById('download-pdf');
-            const element = document.getElementById('a4-page-content');
-            const originalShadow = element.style.boxShadow;
-            const originalWidth = element.style.width;
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('ma_hd') && urlParams.get('ma_hd').trim() !== '') {
+                populateFromUrl(urlParams);
+            } else {
+                runDemoMode();
+            }
 
-            downloadBtn.textContent = 'Đang xử lý...';
-            downloadBtn.disabled = true;
+            function populateFromUrl(params) {
+                 const paramToIdMap = { 
+                    'ten_studio': 'studio-name',
+                    'dia_chi': 'studio-address',
+                    'website': 'studio-website',
+                    'email': 'studio-email',
+                    'dien_thoai': 'studio-phone',
+                    'zalo': 'studio-zalo',
+                    ma_hd: 'contract-id', ngay_hd: 'contract-date', khach_hang: 'customer-name', 
+                    dien_thoai_kh: 'customer-phone', dia_chi_kh: 'customer-address', nhan_vien: 'staff-name', 
+                    dien_thoai_nv: 'staff-phone', chuc_vu_nv: 'staff-title', thanh_tien: 'subtotal', 
+                    tong_phat_sinh: 'additional-cost', phai_thanh_toan: 'total-due', da_thanh_toan: 'amount-paid', 
+                    con_lai: 'amount-remaining', ten_ky_kh: 'customer-signature-name', ten_ky_nv: 'staff-signature-name' 
+                };
+                 for (const param in paramToIdMap) { const element = document.getElementById(paramToIdMap[param]); if (element && params.has(param)) { let value = decodeURIComponent(params.get(param)); if (['thanh_tien', 'tong_phat_sinh', 'phai_thanh_toan', 'da_thanh_toan', 'con_lai'].includes(param)) { value = parseFloat(value.replace(/,/g, '') || 0).toLocaleString('vi-VN'); } element.textContent = value; } }
+                 
+                 document.getElementById('payment-stk').textContent = params.get('stk') || 'N/A';
+                 document.getElementById('payment-account-name').textContent = params.get('chu_tai_khoan') || 'N/A';
+                 document.getElementById('payment-info').textContent = params.get('ma_hd') || 'N/A';
+                 document.title = "HĐ " + params.get('ma_hd') + " - " + params.get('ten_studio');
+
+
+                 if (params.has('chitiet_json')) { try { const serviceData = JSON.parse(decodeURIComponent(params.get('chitiet_json'))); populateServiceTable(serviceData); } catch(e) { console.error("Error parsing JSON:", e); } }
+                 generatePaymentQRCode({ bin: params.get('ma_bank'), accountNo: params.get('stk'), accountName: params.get('chu_tai_khoan'), amount: parseInt((params.get('con_lai') || "0").replace(/[^0-9]/g, ''), 10), info: params.get('ma_hd') });
+                 generateContractQRCode(params.get('ma_hd')); 
+                 const conLaiRaw = (params.get('con_lai') || "0").replace(/[^0-9]/g, '');
+                 document.getElementById('amount-in-words').textContent = readNumberInVietnamese(conLaiRaw);
+            }
+
+            function runDemoMode() {
+                 document.body.insertAdjacentHTML('beforeend', '<div style="position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%) rotate(-45deg); font-size: 80pt; color: rgba(255, 0, 0, 0.05); font-weight: 700; text-transform: uppercase; pointer-events: none; z-index: 1000; display: block;">BẢN NHÁP</div>');
+                 
+                 const demoHeader = {'studio-name': '2H STUDIO - SƠN TÂY', 'studio-address': '566 Chùa Thông - Sơn Tây - Hà Nội', 'studio-website': 'http://2hstudio.vn/', 'studio-email': '2hstudio.wedding@gmail.com', 'studio-phone': '0854623566', 'studio-zalo': '2H studio'};
+                 for (const id in demoHeader) { const el = document.getElementById(id); if (el) el.textContent = demoHeader[id]; }
+
+                 const demoFields = {'contract-id': 'HD-DEMO-001', 'contract-date': new Date().toLocaleDateString('vi-VN'), 'customer-name': "KHÁCH HÀNG DEMO", 'customer-phone': "0123456789", 'customer-address': "Hà Nội", 'staff-name': "NHÂN VIÊN DEMO", 'staff-phone': '0987654321', 'staff-title': 'Nhân viên', 'subtotal': "9,500,000", 'additional-cost': "0", 'total-due': "9,500,000", 'amount-paid': "4,000,000", 'amount-remaining': "5,500,000", 'customer-signature-name': "Tên Khách Hàng Ký", 'staff-signature-name': "Tên Nhân Viên Ký"};
+                 for (const id in demoFields) { const el = document.getElementById(id); if (el) el.textContent = demoFields[id]; }
+                 
+                 document.getElementById('payment-stk').textContent = '0501000130594';
+                 document.getElementById('payment-account-name').textContent = '2H STUDIO';
+                 document.getElementById('payment-info').textContent = 'HD-DEMO-001';
+
+                 populateServiceTable([{ sanpham: "Gói chụp Premium", dvt: "Gói", soluong: 1, dongia: 8900000, thanhtien: 8900000, ghi_chu: "Bao gồm album" }, { sanpham: "In ảnh cổng", dvt: "Tấm", soluong: 1, dongia: 600000, thanhtien: 600000, ghi_chu: "Kích thước 60x90" }]);
+                 generatePaymentQRCode({ bin: "970436", accountNo: "0501000130594", accountName: "2H STUDIO", amount: 5500000, info: "HD-DEMO-001" });
+                 generateContractQRCode('HD-DEMO-001'); 
+                 const demoAmountRemainingRaw = (document.getElementById('amount-remaining').textContent || "0").replace(/[^0-9]/g, '');
+                 document.getElementById('amount-in-words').textContent = readNumberInVietnamese(demoAmountRemainingRaw);
+            }
+
+            function populateServiceTable(data) {
+                 const tableBody = document.getElementById('service-table-body'); if (!tableBody) return; tableBody.innerHTML = ''; data.forEach((item, index) => { const row = document.createElement('tr'); const donGiaFormatted = (item.dongia || 0).toLocaleString('vi-VN'); const thanhTienFormatted = (item.thanhtien || 0).toLocaleString('vi-VN'); row.innerHTML = `<td style="text-align: center;">${index + 1}</td><td><span class="dynamic-data">${item.sanpham || ''}</span></td><td style="text-align: center;"><span class="dynamic-data">${item.dvt || ''}</span></td><td style="text-align: center;"><span class="dynamic-data">${item.soluong || 0}</span></td><td style="text-align: right;"><span class="dynamic-data">${donGiaFormatted}</span></td><td style="text-align: right;"><span class="dynamic-data">${thanhTienFormatted}</span></td><td><span class="dynamic-data">${item.ghi_chu || ''}</span></td>`; tableBody.appendChild(row); });
+            }
+
+            function generatePaymentQRCode(data){
+                const qrContainer = document.getElementById("payment-qr-code-container");
+                const amount = (data.amount || 0).toString().replace(/,/g, "");
+                const bankBin = data.bin || '';
+                const accountNumber = data.accountNo || '';
+                const accountName = data.accountName || '';
+                if (!bankBin || !accountNumber || parseInt(amount) < 0) { qrContainer.innerHTML = '<p style="color: red; font-size: 0.9em;">Lỗi: Dữ liệu thanh toán không hợp lệ.</p>'; return; }
+                const accountNameForURL = encodeURIComponent(removeVietnameseTones(accountName).toUpperCase());
+                const qrApiUrl = `https://img.vietqr.io/image/${bankBin}-${accountNumber}-compact.png?amount=${amount}&addInfo=${encodeURIComponent(data.info||'')}&accountName=${accountNameForURL}`;
+                const qrImage = new Image();
+                qrImage.crossOrigin = 'anonymous';
+                qrContainer.innerHTML = 'Đang tạo mã QR...';
+                qrImage.onload = () => { qrContainer.innerHTML = ''; qrContainer.appendChild(qrImage); };
+                qrImage.onerror = () => { qrContainer.innerHTML = '<p style="color: red; font-size: 0.9em;">Không thể tạo mã QR. Vui lòng kiểm tra lại STK/Ngân hàng.</p>'; };
+                qrImage.src = qrApiUrl;
+            }
             
-            element.style.boxShadow = 'none';
-            element.style.width = 'auto';
+            function generateContractQRCode(contractId) {
+                const container = document.getElementById('contract-qr-container');
+                if (!container || !contractId) return;
+                const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=65x65&data=${encodeURIComponent(contractId)}&qzone=1&format=svg`;
+                const qrImage = new Image();
+                qrImage.src = qrApiUrl;
+                qrImage.alt = `QR Code for ${contractId}`;
+                container.innerHTML = '';
+                container.appendChild(qrImage);
+            }
 
-            const filename = `HD_${document.getElementById('contract-id').textContent.trim()}_${document.getElementById('customer-name').textContent.trim()}.pdf`;
-            const opt = { 
-                margin: 10, 
-                filename: filename, 
-                image: { type: 'jpeg', quality: 0.98 }, 
-                html2canvas:  { scale: 2, useCORS: true, logging: false }, 
-                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } 
-            };
-            
-            html2pdf().from(element).set(opt).save().then(() => {
-                downloadBtn.textContent = '📄 Tải về PDF';
-                downloadBtn.disabled = false;
-                element.style.boxShadow = originalShadow;
-                element.style.width = originalWidth;
-            }).catch(err => {
-                console.error("PDF generation failed:", err);
-                alert("Lỗi khi tạo PDF. Vui lòng thử lại.");
-                downloadBtn.textContent = '📄 Tải về PDF';
-                downloadBtn.disabled = false;
-                element.style.boxShadow = originalShadow;
-                element.style.width = originalWidth;
-            });
-        });
+            document.getElementById("download-pdf").addEventListener("click", () => {
+                const downloadBtn = document.getElementById('download-pdf');
+                const element = document.getElementById('a4-page-content');
+                const originalShadow = element.style.boxShadow;
+                const originalWidth = element.style.width;
 
-        function injectHTMLStructure() {
-             const logoUrl = "https://scontent.fsgn2-6.fna.fbcdn.net/v/t39.30808-6/274489412_1388888508225332_3112485830184052132_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=6UFIS_ClcLEQ7kNvwELXjBZ&_nc_oc=AdmyGu3tXEesz-U3QQ3TkufiXrAsnlpuJgRLwf0SHxStw3L-vpIGeaw4TZ6d2EkZaE4&_nc_zt=23&_nc_ht=scontent.fsgn2-6.fna&_nc_gid=BbGYZsNaWzblm0tLvHhfTQ&oh=00_AfWEb38bc0Un-ycVgv1XZO-tNTBfVmpCHfUALr49vuJCaQ&oe=68B1DBA0";
-             document.querySelector(".header-content").innerHTML = `
-                <header class="header">
-                    <div class="header-left">
-                       <div class="logo"><img src="${logoUrl}" alt="Studio Logo" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;"></div>
-                       <div class="studio-info">
-                          <h2><span id="studio-name" class="dynamic-data"></span></h2>
-                          <p><strong>Địa chỉ:</strong> <span id="studio-address" class="dynamic-data"></span></p>
-                          <p><strong>Website:</strong> <span id="studio-website" class="dynamic-data"></span> | <strong>Email:</strong> <span id="studio-email" class="dynamic-data"></span></p>
-                          <p><strong>Điện thoại:</strong> <span id="studio-phone" class="dynamic-data"></span> | <strong>Zalo:</strong> <span id="studio-zalo" class="dynamic-data"></span></p>
-                       </div>
-                    </div>
-                    <div id="contract-qr-container" title="Mã hợp đồng"></div>
-                </header>`;
-             
-             document.querySelector(".main-content").innerHTML = `
-                <div>
-                    <h1 class="main-title">HỢP ĐỒNG CUNG CẤP DỊCH VỤ</h1>
-                    <div class="contract-meta">Số: <span id="contract-id" class="dynamic-data"></span> | Ngày: <span id="contract-date" class="dynamic-data"></span></div>
-                    <p><strong><span id="studio-name-main" class="dynamic-data"></span></strong> Gửi tới quý khách hàng hoá đơn dịch vụ như sau:</p>
-                    <div class="info-grid" style="display:flex; justify-content:space-between; margin-bottom:20px;">
-                        <div class="customer-info" style="width:50%;">
-                            <p><strong>Khách hàng:</strong> <span id="customer-name" class="dynamic-data"></span></p>
-                            <p><strong>Điện thoại:</strong> <span id="customer-phone" class="dynamic-data"></span></p>
-                            <p><strong>Địa chỉ:</strong> <span id="customer-address" class="dynamic-data"></span></p>
-                        </div>
-                        <div class="staff-info" style="width: 40%;">
-                            <p><strong>Nhân viên:</strong> <span id="staff-name" class="dynamic-data"></span></p>
-                            <p><strong>Điện thoại NV:</strong> <span id="staff-phone" class="dynamic-data"></span></p>
-                            <p><strong>Chức Vụ:</strong> <span id="staff-title" class="dynamic-data"></span></p>
-                        </div>
-                    </div>
-                    
-                    <table style="table-layout: fixed;">
-                       <colgroup>
-                          <col style="width: 5%;">
-                          <col style="width: 27%;">
-                          <col style="width: 10%;">
-                          <col style="width: 8%;">
-                          <col style="width: 12%;">
-                          <col style="width: 12%;">
-                          <col style="width: auto;">
-                       </colgroup>
-                       <thead><tr><th>STT</th><th>Sản phẩm</th><th>ĐVT</th><th>Số lượng</th><th>Đơn giá</th><th>Thành tiền</th><th>Ghi chú</th></tr></thead>
-                       <tbody id="service-table-body"></tbody>
-                    </table>
-                </div>
+                downloadBtn.textContent = 'Đang xử lý...';
+                downloadBtn.disabled = true;
                 
-                <div class="summary-and-payment">
-                    <div class="qr-payment-section">
-                        <div class="qr-payment-content">
-                            <div class="qr-code" id="payment-qr-code-container"></div>
-                            <div class="payment-instructions">
-                                <p style="font-weight: bold;">QUÉT MÃ QR ĐỂ THANH TOÁN:</p>
-                                <p>- STK: <span id="payment-stk" class="dynamic-data"></span></p>
-                                <p>- Chủ tài khoản: <span id="payment-account-name" class="dynamic-data"></span></p>
-                                <p>- Nội dung CK: <span id="payment-info" class="dynamic-data"></span></p>
+                element.style.boxShadow = 'none';
+                element.style.width = 'auto';
+
+                const filename = `HD_${document.getElementById('contract-id').textContent.trim()}_${document.getElementById('customer-name').textContent.trim()}.pdf`;
+                const opt = { 
+                    margin: 10, 
+                    filename: filename, 
+                    image: { type: 'jpeg', quality: 0.98 }, 
+                    html2canvas:  { scale: 2, useCORS: true, logging: false }, 
+                    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } 
+                };
+                
+                html2pdf().from(element).set(opt).save().then(() => {
+                    downloadBtn.textContent = '📄 Tải về PDF';
+                    downloadBtn.disabled = false;
+                    element.style.boxShadow = originalShadow;
+                    element.style.width = originalWidth;
+                }).catch(err => {
+                    console.error("PDF generation failed:", err);
+                    alert("Lỗi khi tạo PDF. Vui lòng thử lại.");
+                    downloadBtn.textContent = '📄 Tải về PDF';
+                    downloadBtn.disabled = false;
+                    element.style.boxShadow = originalShadow;
+                    element.style.width = originalWidth;
+                });
+            });
+
+            function injectHTMLStructure() {
+                 const logoUrl = "https://scontent.fsgn2-6.fna.fbcdn.net/v/t39.30808-6/274489412_1388888508225332_3112485830184052132_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=6UFIS_ClcLEQ7kNvwELXjBZ&_nc_oc=AdmyGu3tXEesz-U3QQ3TkufiXrAsnlpuJgRLwf0SHxStw3L-vpIGeaw4TZ6d2EkZaE4&_nc_zt=23&_nc_ht=scontent.fsgn2-6.fna&_nc_gid=BbGYZsNaWzblm0tLvHhfTQ&oh=00_AfWEb38bc0Un-ycVgv1XZO-tNTBfVmpCHfUALr49vuJCaQ&oe=68B1DBA0";
+                 document.querySelector(".header-content").innerHTML = `
+                    <header class="header">
+                        <div class="header-left">
+                           <div class="logo"><img src="${logoUrl}" alt="Studio Logo" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;"></div>
+                           <div class="studio-info">
+                              <h2><span id="studio-name" class="dynamic-data"></span></h2>
+                              <p><strong>Địa chỉ:</strong> <span id="studio-address" class="dynamic-data"></span></p>
+                              <p><strong>Website:</strong> <span id="studio-website" class="dynamic-data"></span> | <strong>Email:</strong> <span id="studio-email" class="dynamic-data"></span></p>
+                              <p><strong>Điện thoại:</strong> <span id="studio-phone" class="dynamic-data"></span> | <strong>Zalo:</strong> <span id="studio-zalo" class="dynamic-data"></span></p>
+                           </div>
+                        </div>
+                        <div id="contract-qr-container" title="Mã hợp đồng"></div>
+                    </header>`;
+                 
+                 document.querySelector(".main-content").innerHTML = `
+                    <div>
+                        <h1 class="main-title">HỢP ĐỒNG CUNG CẤP DỊCH VỤ</h1>
+                        <div class="contract-meta">Số: <span id="contract-id" class="dynamic-data"></span> | Ngày: <span id="contract-date" class="dynamic-data"></span></div>
+                        <p><strong><span id="studio-name-main" class="dynamic-data"></span></strong> Gửi tới quý khách hàng hoá đơn dịch vụ như sau:</p>
+                        <div class="info-grid" style="display:flex; justify-content:space-between; margin-bottom:20px;">
+                            <div class="customer-info" style="width:50%;">
+                                <p><strong>Khách hàng:</strong> <span id="customer-name" class="dynamic-data"></span></p>
+                                <p><strong>Điện thoại:</strong> <span id="customer-phone" class="dynamic-data"></span></p>
+                                <p><strong>Địa chỉ:</strong> <span id="customer-address" class="dynamic-data"></span></p>
+                            </div>
+                            <div class="staff-info" style="width: 40%;">
+                                <p><strong>Nhân viên:</strong> <span id="staff-name" class="dynamic-data"></span></p>
+                                <p><strong>Điện thoại NV:</strong> <span id="staff-phone" class="dynamic-data"></span></p>
+                                <p><strong>Chức Vụ:</strong> <span id="staff-title" class="dynamic-data"></span></p>
                             </div>
                         </div>
+                        
+                        <table style="table-layout: fixed;">
+                           <colgroup>
+                              <col style="width: 5%;">
+                              <col style="width: 27%;">
+                              <col style="width: 10%;">
+                              <col style="width: 8%;">
+                              <col style="width: 12%;">
+                              <col style="width: 12%;">
+                              <col style="width: auto;">
+                           </colgroup>
+                           <thead><tr><th>STT</th><th>Sản phẩm</th><th>ĐVT</th><th>Số lượng</th><th>Đơn giá</th><th>Thành tiền</th><th>Ghi chú</th></tr></thead>
+                           <tbody id="service-table-body"></tbody>
+                        </table>
                     </div>
-                    <div class="summary-section">
-                       <table class="summary-table">
-                          <tbody>
-                             <tr><td>Thành tiền:</td><td style="text-align:right;"><span id="subtotal" class="dynamic-data"></span></td></tr>
-                             <tr><td>Phát sinh:</td><td style="text-align:right;"><span id="additional-cost" class="dynamic-data"></span></td></tr>
-                             <tr><td style="font-weight: 700;">Phải TT:</td><td style="text-align:right; font-weight: 700;"><span id="total-due" class="dynamic-data"></span></td></tr>
-                             <tr><td>Đã TT:</td><td style="text-align:right;"><span id="amount-paid" class="dynamic-data"></span></td></tr>
-                             <tr><td class="highlight-red">Còn Lại:</td><td style="text-align:right;"><span class="dynamic-data highlight-red" id="amount-remaining"></span></td></tr>
-                             <tr><td colspan="2">(Bằng chữ: <span id="amount-in-words" class="dynamic-data"></span>)</td></tr>
-                          </tbody>
-                       </table>
+                    
+                    <div class="summary-and-payment">
+                        <div class="qr-payment-section">
+                            <div class="qr-payment-content">
+                                <div class="qr-code" id="payment-qr-code-container"></div>
+                                <div class="payment-instructions">
+                                    <p style="font-weight: bold;">QUÉT MÃ QR ĐỂ THANH TOÁN:</p>
+                                    <p>- STK: <span id="payment-stk" class="dynamic-data"></span></p>
+                                    <p>- Chủ tài khoản: <span id="payment-account-name" class="dynamic-data"></span></p>
+                                    <p>- Nội dung CK: <span id="payment-info" class="dynamic-data"></span></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="summary-section">
+                           <table class="summary-table">
+                              <tbody>
+                                 <tr><td>Thành tiền:</td><td style="text-align:right;"><span id="subtotal" class="dynamic-data"></span></td></tr>
+                                 <tr><td>Phát sinh:</td><td style="text-align:right;"><span id="additional-cost" class="dynamic-data"></span></td></tr>
+                                 <tr><td style="font-weight: 700;">Phải TT:</td><td style="text-align:right; font-weight: 700;"><span id="total-due" class="dynamic-data"></span></td></tr>
+                                 <tr><td>Đã TT:</td><td style="text-align:right;"><span id="amount-paid" class="dynamic-data"></span></td></tr>
+                                 <tr><td class="highlight-red">Còn Lại:</td><td style="text-align:right;"><span class="dynamic-data highlight-red" id="amount-remaining"></span></td></tr>
+                                 <tr><td colspan="2">(Bằng chữ: <span id="amount-in-words" class="dynamic-data"></span>)</td></tr>
+                              </tbody>
+                           </table>
+                        </div>
                     </div>
-                </div>
-                <div class="terms-section">
-                    <div class="print-block">
-                        <h3>Hình thức thanh toán:</h3>
-                        <ul><li>Lần 1 : 20% ( đặt cọc )</li><li>Lần 2 : 70% (cuối buổi chụp hình)</li><li>Lần 3 : 10% ( khi nhận ảnh in )</li></ul>
-                        <p><strong>Phương thức thanh toán:</strong> Chuyển khoản hoặc Tiền mặt</p>
-                        <p><strong>Hai bên thống nhất ký hợp đồng với những điều khoản như sau:</strong></p>
+                    <div class="terms-section">
+                        <div class="print-block">
+                            <h3>Hình thức thanh toán:</h3>
+                            <ul><li>Lần 1 : 20% ( đặt cọc )</li><li>Lần 2 : 70% (cuối buổi chụp hình)</li><li>Lần 3 : 10% ( khi nhận ảnh in )</li></ul>
+                            <p><strong>Phương thức thanh toán:</strong> Chuyển khoản hoặc Tiền mặt</p>
+                            <p><strong>Hai bên thống nhất ký hợp đồng với những điều khoản như sau:</strong></p>
+                        </div>
+                        <div class="print-block">
+                            <h3>Điều 1: Trách nhiệm và quyền lợi của các Bên</h3>
+                            <p><strong>1.1. Trách nhiệm và quyền lợi của bên A:</strong></p>
+                            <ul><li>Bên A có trách nhiệm thanh toán cho Bên B phí dịch vụ đúng hạn theo hình thức thanh toán nêu trên.</li><li>Bên A được nhận toàn bộ sản phẩm theo phần chi tiết của hợp đồng này.</li><li>Trường hợp bên A hủy hợp đồng sẽ mất toàn bộ tiền đặt cọc.</li><li>Bên A được quyền hoãn chụp hình (quay video) 01 lần mà không bị tính phí nhưng phải báo trước cho bên B muộn nhất 3 ngày trước ngày chụp.</li><li>Nếu bên A tiếp tục phát sinh việc hoãn lịch thì sẽ chịu chi phí phát sinh: 1.000.000 VND/lần.</li><li>Bên A được quyền hoãn chụp hình 01 lần vào ngày chụp trong trường hợp khách quan thời tiết xấu, tuy nhiên Bên A phải thanh toán các chi phí cố định đã phát sinh trong ngày này - VD: Hoa tay, thuê xe, trang điểm.</li><li>Bên A tự chịu trách nhiệm về an toàn cá nhân trong quá trình chụp ảnh, quay phim.</li><li>Trường hợp bên A hủy hợp đồng sau khi chụp đã copy toàn bộ file gốc sẽ không nhận lại được tiền thanh toán 2 lần đặt cọc.</li><li>Trường hợp bên A muốn copy file Raw, sẽ thanh toán hết phí dịch vụ.</li></ul>
+                            <p><strong>1.2. Trách nhiệm và quyền lợi của Bên B:</strong></p>
+                            <ul><li>Bên B có trách nhiệm thực hiện đầy đủ các nội dung nghiệp vụ tương ứng với các dịch vụ ký kết, được niêm yết công khai kèm theo báo giá.</li><li>Bên B đảm bảo thực hiện hợp đồng này với chất lượng cao và nhiệt tình với công việc, đúng nguyên tắc minh bạch, trung thực, uy tín, khách quan và bí mật về thông tin cá nhân của khách hàng.</li></ul>
+                        </div>
+                        <div class="print-block">
+                            <h3>Điều 2: Cam kết thực hiện</h3>
+                            <ul><li>Hai bên cam kết thực hiện tất cả các điều khoản đã ghi trong hợp đồng.</li><li>Trong quá trình thực hiện nếu gặp khó khăn hai Bên phải kịp thời thông báo cho nhau, cần thiết thì trao đổi bằng văn bản tìm giải pháp thích hợp.</li></ul>
+                            <p>Hợp đồng này được lập thành 02 bản có giá trị như nhau, Bên A giữ 01 bản, Bên B giữ 01 bản và có hiệu lực kể từ ngày ký hợp đồng, cho đến khi bên B hoàn thành các dịch vụ quy định tại Điều 1 và Bên A thanh toán xong phí dịch vụ cho Bên B thì hợp đồng này xem như được thanh lý hoặc cả hai bên cùng thống nhất chấm dứt hợp đồng bằng văn bản.</p>
+                            <ul><li>Các điều khoản dịch vụ được sử dụng trong vòng 1 năm tính từ ngày ký hợp đồng.</li></ul>
+                        </div>
                     </div>
-                    <div class="print-block">
-                        <h3>Điều 1: Trách nhiệm và quyền lợi của các Bên</h3>
-                        <p><strong>1.1. Trách nhiệm và quyền lợi của bên A:</strong></p>
-                        <ul><li>Bên A có trách nhiệm thanh toán cho Bên B phí dịch vụ đúng hạn theo hình thức thanh toán nêu trên.</li><li>Bên A được nhận toàn bộ sản phẩm theo phần chi tiết của hợp đồng này.</li><li>Trường hợp bên A hủy hợp đồng sẽ mất toàn bộ tiền đặt cọc.</li><li>Bên A được quyền hoãn chụp hình (quay video) 01 lần mà không bị tính phí nhưng phải báo trước cho bên B muộn nhất 3 ngày trước ngày chụp.</li><li>Nếu bên A tiếp tục phát sinh việc hoãn lịch thì sẽ chịu chi phí phát sinh: 1.000.000 VND/lần.</li><li>Bên A được quyền hoãn chụp hình 01 lần vào ngày chụp trong trường hợp khách quan thời tiết xấu, tuy nhiên Bên A phải thanh toán các chi phí cố định đã phát sinh trong ngày này - VD: Hoa tay, thuê xe, trang điểm.</li><li>Bên A tự chịu trách nhiệm về an toàn cá nhân trong quá trình chụp ảnh, quay phim.</li><li>Trường hợp bên A hủy hợp đồng sau khi chụp đã copy toàn bộ file gốc sẽ không nhận lại được tiền thanh toán 2 lần đặt cọc.</li><li>Trường hợp bên A muốn copy file Raw, sẽ thanh toán hết phí dịch vụ.</li></ul>
-                        <p><strong>1.2. Trách nhiệm và quyền lợi của Bên B:</strong></p>
-                        <ul><li>Bên B có trách nhiệm thực hiện đầy đủ các nội dung nghiệp vụ tương ứng với các dịch vụ ký kết, được niêm yết công khai kèm theo báo giá.</li><li>Bên B đảm bảo thực hiện hợp đồng này với chất lượng cao và nhiệt tình với công việc, đúng nguyên tắc minh bạch, trung thực, uy tín, khách quan và bí mật về thông tin cá nhân của khách hàng.</li></ul>
-                    </div>
-                    <div class="print-block">
-                        <h3>Điều 2: Cam kết thực hiện</h3>
-                        <ul><li>Hai bên cam kết thực hiện tất cả các điều khoản đã ghi trong hợp đồng.</li><li>Trong quá trình thực hiện nếu gặp khó khăn hai Bên phải kịp thời thông báo cho nhau, cần thiết thì trao đổi bằng văn bản tìm giải pháp thích hợp.</li></ul>
-                        <p>Hợp đồng này được lập thành 02 bản có giá trị như nhau, Bên A giữ 01 bản, Bên B giữ 01 bản và có hiệu lực kể từ ngày ký hợp đồng, cho đến khi bên B hoàn thành các dịch vụ quy định tại Điều 1 và Bên A thanh toán xong phí dịch vụ cho Bên B thì hợp đồng này xem như được thanh lý hoặc cả hai bên cùng thống nhất chấm dứt hợp đồng bằng văn bản.</p>
-                        <ul><li>Các điều khoản dịch vụ được sử dụng trong vòng 1 năm tính từ ngày ký hợp đồng.</li></ul>
-                    </div>
-                </div>
-                <div class="signature-block print-block">
-                    <div class="customer-signature"><p style="font-weight: 700;">Khách hàng</p><p style="font-size: 9pt; color: #6c757d; font-style: italic;">(Ký và ghi họ tên)</p><p class="name" id="customer-signature-name" class="dynamic-data"></p></div><div class="staff-signature"><p style="font-weight: 700;">Nhân viên tư vấn</p><p style="font-size: 9pt; color: #6c757d; font-style: italic;">(Ký và ghi họ tên)</p><p class="name" id="staff-signature-name" class="dynamic-data"></p></div><div class="studio-signature"><p style="font-weight: 700;" id="studio-signature-name"></p><p style="font-size: 9pt; color: #6c757d; font-style: italic;">(Ký và ghi họ tên)</p><p class="name" id="studio-signature-name-bottom"></p></div>
-                </div>`;
-                
-                document.getElementById('studio-signature-name').textContent = document.getElementById('studio-name').textContent;
-                document.getElementById('studio-signature-name-bottom').textContent = document.getElementById('studio-name').textContent;
-                document.getElementById('studio-name-main').textContent = document.getElementById('studio-name').textContent;
-
-
-        }
-    });
-</script>
+                    <div class="signature-block print-block">
+                        <div class="customer-signature"><p style="font-weight: 700;">Khách hàng</p><p style="font-size: 9pt; color: #6c757d; font-style: italic;">(Ký và ghi họ tên)</p><p class="name" id="customer-signature-name" class="dynamic-data"></p></div><div class="staff-signature"><p style="font-weight: 700;">Nhân viên tư vấn</p><p style="font-size: 9pt; color: #6c757d; font-style: italic;">(Ký và ghi họ tên)</p><p class="name" id="staff-signature-name" class="dynamic-data"></p></div><div class="studio-signature"><p style="font-weight: 700;" id="studio-signature-name"></p><p style="font-size: 9pt; color: #6c757d; font-style: italic;">(Ký và ghi họ tên)</p><p class="name" id="studio-signature-name-bottom"></p></div>
+                    </div>`;
+                    
+                    document.getElementById('studio-signature-name').textContent = document.getElementById('studio-name').textContent;
+                    document.getElementById('studio-signature-name-bottom').textContent = document.getElementById('studio-name').textContent;
+                    document.getElementById('studio-name-main').textContent = document.getElementById('studio-name').textContent;
+            }
+        });
+    </script>
+</body>
+</html>
