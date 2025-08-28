@@ -61,6 +61,12 @@
     th, td { border: 1px solid #dee2e6; padding: 6px 8px; text-align: left; vertical-align: top; }
     th { background-color: #e9ecef; font-weight: 700; text-align: center; }
     
+    /* THAY ĐỔI: Thêm style để chống tràn cột số tiền */
+    .price-cell {
+        white-space: nowrap;
+        text-align: right !important;
+    }
+
     .summary-and-payment { display: flex; justify-content: space-between; align-items: stretch; margin-top: 5px; margin-bottom: 20px; page-break-inside: avoid; }
     .qr-payment-section { width: 58%; border: 1px solid #e9ecef; padding: 15px; border-radius: 5px; box-sizing: border-box;}
     .qr-payment-content { display: flex; align-items: center; text-align: left; height: 100%;}
@@ -124,73 +130,71 @@
     
     <script>
         function removeVietnameseTones(str) {if(!str)return"";str=str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g,"a");str=str.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g,"e");str=str.replace(/ì|í|ị|ỉ|ĩ/g,"i");str=str.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g,"o");str=str.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g,"u");str=str.replace(/ỳ|ý|ỵ|ỷ|ỹ/g,"y");str=str.replace(/đ/g,"d");str=str.replace(/À|Á|Ạ|Ả|Ã|Â|Ầ|Ấ|Ậ|Ẩ|Ẫ|Ă|Ằ|Ắ|Ặ|Ẳ|Ẵ/g,"A");str=str.replace(/È|É|Ẹ|Ẻ|Ẽ|Ê|Ề|Ế|Ệ|Ể|Ễ/g,"E");str=str.replace(/Ì|Í|Ị|Ỉ|Ĩ/g,"I");str=str.replace(/Ò|Ó|Ọ|Ỏ|Õ|Ô|Ồ|Ố|Ộ|Ổ|Ỗ|Ơ|Ờ|Ớ|Ợ|Ở|Ỡ/g,"O");str=str.replace(/Ù|Ú|Ụ|Ủ|Ũ|Ư|Ừ|Ứ|Ự|Ử|Ữ/g,"U");str=str.replace(/Ỳ|Ý|Ỵ|Ỷ|Ỹ/g,"Y");str=str.replace(/Đ/g,"D");str=str.replace(/\u0300|\u0301|\u0303|\u0309|\u0323/g,"");str=str.replace(/\u02C6|\u0306|\u031B/g,"");return str.trim()}
-        
-        // SỬA LỖI ĐỌC SỐ: Thay thế hoàn toàn hàm cũ bằng hàm mới chính xác hơn
         function readNumberInVietnamese(number) {
-            const units = ["", "một", "hai", "ba", "bốn", "năm", "sáu", "bảy", "tám", "chín"];
-            const teens = ["mười", "mười một", "mười hai", "mười ba", "mười bốn", "mười lăm", "mười sáu", "mười bảy", "mười tám", "mười chín"];
-            const tens = ["", "mười", "hai mươi", "ba mươi", "bốn mươi", "năm mươi", "sáu mươi", "bảy mươi", "tám mươi", "chín mươi"];
-            const powers = ["", "nghìn", "triệu", "tỷ"];
+            const defaultNumbers = ' hai ba bốn năm sáu bảy tám chín';
+            const chuHangDonVi = (' không' + defaultNumbers).split(' ');
+            const chuHangChuc = (' lẺ mười' + defaultNumbers).split(' ');
+            const chuHangTram = (' không' + defaultNumbers).split(' ');
+            const dv = ['', ' nghìn', ' triệu', ' tỷ', ' nghìn tỷ', ' triệu tỷ'];
 
-            function readThreeDigits(n) {
-                const hundred = Math.floor(n / 100);
-                const ten = Math.floor((n % 100) / 10);
-                const unit = n % 10;
-                let result = "";
-
-                if (hundred > 0) {
-                    result += units[hundred] + " trăm ";
+            function convert_block_three(numberStr) {
+                if (numberStr === '000') return '';
+                let tram = numberStr.charAt(0);
+                let chuc = numberStr.charAt(1);
+                let donvi = numberStr.charAt(2);
+                let chuoi = '';
+                if (tram !== '0') {
+                    chuoi += chuHangTram[tram] + ' trăm';
+                    if (chuc === '0' && donvi !== '0') chuoi += ' linh';
                 }
-
-                if (ten === 0 && unit > 0 && hundred > 0) {
-                    result += "linh ";
-                } else if (ten === 1) {
-                    result += teens[unit] + " ";
-                    return result.trim();
-                } else if (ten > 1) {
-                    result += tens[ten] + " ";
+                if (chuc !== '0' && chuc !== '1') {
+                    chuoi += ' ' + chuHangChuc[chuc] + ' mươi';
+                    if (chuc === '0' && donvi !== '0') chuoi += ' linh';
                 }
-
-                if (unit > 0 && ten !== 1) {
-                    if (unit === 1 && ten > 1) {
-                        result += "mốt ";
-                    } else if (unit === 5 && ten > 0) {
-                        result += "lăm ";
-                    } else {
-                        result += units[unit] + " ";
-                    }
+                if (chuc === '1') chuoi += ' mười';
+                switch (donvi) {
+                    case '1':
+                        if (chuc !== '0' && chuc !== '1') {
+                            chuoi += ' mốt';
+                        } else {
+                            chuoi += ' ' + chuHangDonVi[donvi];
+                        }
+                        break;
+                    case '5':
+                        if (chuc === '0') {
+                            chuoi += ' ' + chuHangDonVi[donvi];
+                        } else {
+                            chuoi += ' lăm';
+                        }
+                        break;
+                    default:
+                        if (donvi !== '0') {
+                            chuoi += ' ' + chuHangDonVi[donvi];
+                        }
+                        break;
                 }
-                return result.trim();
+                return chuoi.trim();
             }
 
-            if (number === null || number === undefined || number.toString().trim() === '') return "";
-            number = parseInt(number.toString().replace(/[^0-9]/g, ''), 10);
-            if (isNaN(number)) return "Số không hợp lệ";
-            if (number === 0) return "Không đồng";
-
-            let strNumber = number.toString();
-            let result = "";
-            let powerIndex = 0;
-
-            while (strNumber.length > 0) {
-                let threeDigits = strNumber.length > 3 ? strNumber.slice(-3) : strNumber;
-                strNumber = strNumber.length > 3 ? strNumber.slice(0, -3) : "";
-                
-                let num = parseInt(threeDigits, 10);
-                if (num > 0) {
-                    let part = readThreeDigits(num);
-                    let power = powers[powerIndex] ? " " + powers[powerIndex] : "";
-                    result = part + power + " " + result;
-                }
-                powerIndex++;
+            let numStr = String(parseInt(number, 10));
+            if (numStr === '0') return 'Không đồng';
+            let i = numStr.length;
+            let chunks = [];
+            while (i > 0) {
+                chunks.push(numStr.substring(i - 3 > 0 ? i - 3 : 0, i));
+                i -= 3;
             }
-            
-            result = result.trim();
-            if (!result) return "Không đồng";
+            if (chunks.length === 0) return "Không đồng";
 
-            return result.charAt(0).toUpperCase() + result.slice(1) + " đồng chẵn.";
+            const result = chunks.reverse().map((chunk, index) => {
+                if (chunk === "000" || chunk === "00" || chunk === "0") return "";
+                while (chunk.length < 3) chunk = '0' + chunk;
+                const text = convert_block_three(chunk);
+                return text ? text + dv[chunks.length - 1 - index] : '';
+            }).filter(Boolean).join(' ');
+
+            return (result.charAt(0).toUpperCase() + result.slice(1)).trim() + " đồng";
         }
-
         const BANK_MAP={"970422":"MBBank","970436":"Vietcombank","970415":"Vietinbank","970403":"BIDV","970418":"Techcombank","970448":"OCB","970405":"AgriBank","970432":"VPBank","970423":"TPBank"};
         
         document.addEventListener('DOMContentLoaded', function(){
@@ -208,6 +212,7 @@
                      ten_studio: ['studio-name', 'studio-signature-name-top', 'studio-signature-name-bottom'],
                      ten_chi_nhanh: 'branch-name-main',
                      diachi_studio: 'studio-address',
+                     website_studio: 'studio-website',
                      email_studio: 'studio-email',
                      dienthoai_studio: 'studio-phone',
                      zalo_studio: 'studio-zalo',
@@ -227,22 +232,6 @@
                      ten_ky_kh: 'customer-signature-name', 
                      ten_ky_nv: 'staff-signature-name' 
                  };
-                 
-                 if (params.has('website_studio')) {
-                    const websiteElement = document.getElementById('studio-website');
-                    if (websiteElement) {
-                        try {
-                            const websiteData = JSON.parse(decodeURIComponent(params.get('website_studio')));
-                            websiteElement.href = websiteData.Url;
-                            websiteElement.textContent = websiteData.LinkText || websiteData.Url;
-                        } catch (e) {
-                            const url = decodeURIComponent(params.get('website_studio'));
-                            websiteElement.href = url;
-                            websiteElement.textContent = url;
-                        }
-                    }
-                 }
-
 
                  for (const param in paramToIdMap) {
                      if (params.has(param)) {
@@ -274,13 +263,8 @@
                  if (params.has('chitiet_json')) { try { const serviceData = JSON.parse(decodeURIComponent(params.get('chitiet_json'))); populateServiceTable(serviceData); } catch(e) { console.error("Error parsing JSON:", e); } }
                  generatePaymentQRCode({ bin: params.get('ma_bank'), accountNo: params.get('stk'), accountName: params.get('chu_tai_khoan'), amount: parseInt((params.get('con_lai') || "0").replace(/[^0-9]/g, ''), 10), info: params.get('ma_hd') });
                  generateContractQRCode(params.get('ma_hd')); 
-                 
-                 const amountRemainingElement = document.getElementById('amount-remaining');
-                 if (amountRemainingElement) {
-                    const conLaiFormatted = amountRemainingElement.textContent;
-                    const conLaiRaw = conLaiFormatted.replace(/[^0-9]/g, '');
-                    document.getElementById('amount-in-words').textContent = readNumberInVietnamese(conLaiRaw);
-                 }
+                 const conLaiRaw = (params.get('con_lai') || "0").replace(/[^0-9]/g, '');
+                 document.getElementById('amount-in-words').textContent = readNumberInVietnamese(conLaiRaw);
             }
 
             function runDemoMode() {
@@ -290,7 +274,7 @@
                  demoParams.set('ten_studio', '2H STUDIO');
                  demoParams.set('ten_chi_nhanh', '2H STUDIO - SƠN TÂY');
                  demoParams.set('diachi_studio', '566 Chùa Thông - Sơn Tây - Hà Nội');
-                 demoParams.set('website_studio', '{"Url":"http://2hstudio.vn/","LinkText":"2hstudio.vn"}');
+                 demoParams.set('website_studio', 'http://2hstudio.vn/');
                  demoParams.set('email_studio', '2hstudio.wedding@gmail.com');
                  demoParams.set('dienthoai_studio', '0854623566');
                  demoParams.set('zalo_studio', '2H studio');
@@ -305,8 +289,8 @@
                  demoParams.set('thanh_tien', '9500000');
                  demoParams.set('tong_phat_sinh', '0');
                  demoParams.set('phai_thanh_toan', '9500000');
-                 demoParams.set('da_thanh_toan', '8500000');
-                 demoParams.set('con_lai', '1000000'); // Demo với 1 triệu
+                 demoParams.set('da_thanh_toan', '4000000');
+                 demoParams.set('con_lai', '5500000');
                  demoParams.set('ten_ky_kh', 'Tên Khách Hàng Ký');
                  demoParams.set('ten_ky_nv', 'Tên Nhân Viên Ký');
                  demoParams.set('stk', '0501000130594');
@@ -314,11 +298,53 @@
                  demoParams.set('ma_bank', '970436');
                  populateFromUrl(demoParams);
                  
-                 populateServiceTable([{ sanpham: "Gói chụp Premium", dvt: "Gói", soluong: 1, dongia: 8900000, thanhtien: 8900000, ghi_chu: "Bao gồm album" }, { sanpham: "In ảnh cổng", dvt: "Tấm", soluong: 1, dongia: 600000, thanhtien: 600000, ghi_chu: "Kích thước 60x90" }]);
+                 const demoServiceData = [{
+                    sanpham: "Gói chụp Premium", 
+                    chitiet: `Thời gian chụp : ca sáng hoặc ca chiều<br>
+                              Ekip chụp :<br>
+                              - 1 nhiếp ảnh gia<br>
+                              - 1 makeup<br>
+                              - 1 support<br>
+                              Trang phục:<br>
+                              - 2 váy cưới ngày chụp<br>
+                              - 2 vest cưới ngày chụp<br>
+                              - Hoa lụa cầm tay studio setup<br>
+                              Sản phẩm bao gồm :<br>
+                              - 2 ảnh cổng ép gỗ 60x90 laminate <br>
+                              - 2 ảnh bàn mica 15x21<br>
+                              - 15 file photoshop<br>
+                              - Hoàn trả toàn bộ FILE GỐC sau buổi chụp<br>
+                              Tặng :<br>
+                              - 10 hình ép lụa 13x18`,
+                    soluong: 1, 
+                    dongia: 8900000, 
+                    thanhtien: 8900000, 
+                    ghi_chu: "Bao gồm album"
+                 }, { 
+                    sanpham: "In ảnh cổng", 
+                    chitiet: "Tấm", 
+                    soluong: 1, 
+                    dongia: 600000, 
+                    thanhtien: 600000, 
+                    ghi_chu: "Kích thước 60x90"
+                 }];
+                 populateServiceTable(demoServiceData);
             }
 
             function populateServiceTable(data) {
-                 const tableBody = document.getElementById('service-table-body'); if (!tableBody) return; tableBody.innerHTML = ''; data.forEach((item, index) => { const row = document.createElement('tr'); const donGiaFormatted = (item.dongia || 0).toLocaleString('vi-VN'); const thanhTienFormatted = (item.thanhtien || 0).toLocaleString('vi-VN'); row.innerHTML = `<td style="text-align: center;">${index + 1}</td><td><span class="dynamic-data">${item.sanpham || ''}</span></td><td style="text-align: center;"><span class="dynamic-data">${item.dvt || ''}</span></td><td style="text-align: center;"><span class="dynamic-data">${item.soluong || 0}</span></td><td style="text-align: right;"><span class="dynamic-data">${donGiaFormatted}</span></td><td style="text-align: right;"><span class="dynamic-data">${thanhTienFormatted}</span></td><td><span class="dynamic-data">${item.ghi_chu || ''}</span></td>`; tableBody.appendChild(row); });
+                 const tableBody = document.getElementById('service-table-body'); if (!tableBody) return; tableBody.innerHTML = ''; data.forEach((item, index) => { 
+                     const row = document.createElement('tr'); 
+                     const donGiaFormatted = (item.dongia || 0).toLocaleString('vi-VN'); 
+                     const thanhTienFormatted = (item.thanhtien || 0).toLocaleString('vi-VN'); 
+                     row.innerHTML = `<td style="text-align: center;">${index + 1}</td>
+                                      <td><span class="dynamic-data">${item.sanpham || ''}</span></td>
+                                      <td><span class="dynamic-data">${item.chitiet || ''}</span></td>
+                                      <td style="text-align: center;"><span class="dynamic-data">${item.soluong || 0}</span></td>
+                                      <td class="price-cell"><span class="dynamic-data">${donGiaFormatted}</span></td>
+                                      <td class="price-cell"><span class="dynamic-data">${thanhTienFormatted}</span></td>
+                                      <td><span class="dynamic-data">${item.ghi_chu || ''}</span></td>`; 
+                     tableBody.appendChild(row); 
+                });
             }
 
             function generatePaymentQRCode(data){
@@ -359,10 +385,10 @@
                 downloadBtn.disabled = true;
                 
                 element.style.boxShadow = 'none';
-
+                
                 const filename = `HD_${document.getElementById('contract-id').textContent.trim()}_${document.getElementById('customer-name').textContent.trim()}.pdf`;
                 const opt = { 
-                    margin: [5, 10, 10, 10], 
+                    margin: 10, 
                     filename: filename, 
                     image: { type: 'jpeg', quality: 0.98 }, 
                     html2canvas:  { scale: 2, useCORS: true, logging: false }, 
@@ -394,7 +420,7 @@
                            <div class="studio-info">
                               <h2 id="studio-name"></h2>
                               <p><strong>Địa chỉ:</strong> <span id="studio-address"></span></p>
-                              <p><strong>Website:</strong> <a id="studio-website" href="#" target="_blank" class="dynamic-data"></a> | <strong>Email:</strong> <span id="studio-email"></span></p>
+                              <p><strong>Website:</strong> <a id="studio-website" href="#" target="_blank"></a> | <strong>Email:</strong> <span id="studio-email"></span></p>
                               <p><strong>Điện thoại:</strong> <span id="studio-phone"></span> | <strong>Zalo:</strong> <span id="studio-zalo"></span></p>
                            </div>
                         </div>
@@ -422,14 +448,14 @@
                         <table style="table-layout: fixed;">
                            <colgroup>
                               <col style="width: 5%;">
-                              <col style="width: 27%;">
-                              <col style="width: 10%;">
+                              <col style="width: 14%;">
+                              <col style="width: 35%;">
                               <col style="width: 8%;">
                               <col style="width: 12%;">
                               <col style="width: 12%;">
                               <col style="width: auto;">
                            </colgroup>
-                           <thead><tr><th>STT</th><th>Sản phẩm</th><th>ĐVT</th><th>Số lượng</th><th>Đơn giá</th><th>Thành tiền</th><th>Ghi chú</th></tr></thead>
+                           <thead><tr><th>STT</th><th>Sản phẩm</th><th>Chi tiết</th><th>Số lượng</th><th>Đơn giá</th><th>Thành tiền</th><th>Ghi chú</th></tr></thead>
                            <tbody id="service-table-body"></tbody>
                         </table>
                     </div>
@@ -440,8 +466,8 @@
                                 <div class="qr-code" id="payment-qr-code-container"></div>
                                 <div class="payment-instructions">
                                     <p style="font-weight: bold;">QUÉT MÃ QR ĐỂ THANH TOÁN:</p>
-                                    <p>- Số TK: <span id="payment-stk" class="dynamic-data"></span></p>
-                                    <p>- Chủ TK: <span id="payment-account-name" class="dynamic-data"></span></p>
+                                    <p>- STK: <span id="payment-stk" class="dynamic-data"></span></p>
+                                    <p>- Chủ tài khoản: <span id="payment-account-name" class="dynamic-data"></span></p>
                                     <p>- Nội dung CK: <span id="payment-info" class="dynamic-data"></span></p>
                                 </div>
                             </div>
