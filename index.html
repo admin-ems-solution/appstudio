@@ -212,6 +212,7 @@
                      ten_studio: ['studio-name', 'studio-signature-name-top', 'studio-signature-name-bottom'],
                      ten_chi_nhanh: 'branch-name-main',
                      diachi_studio: 'studio-address',
+                     website_studio: 'studio-website',
                      email_studio: 'studio-email',
                      dienthoai_studio: 'studio-phone',
                      zalo_studio: 'studio-zalo',
@@ -225,7 +226,6 @@
                      chuc_vu_nv: 'staff-title', 
                      thanh_tien: 'subtotal', 
                      tong_phat_sinh: 'additional-cost', 
-                     khuyen_mai_tong: 'total-promotion',
                      phai_thanh_toan: 'total-due', 
                      da_thanh_toan: 'amount-paid', 
                      con_lai: 'amount-remaining', 
@@ -233,25 +233,10 @@
                      ten_ky_nv: 'staff-signature-name' 
                  };
 
-                 if (params.has('website_studio')) {
-                    const websiteElement = document.getElementById('studio-website');
-                    if (websiteElement) {
-                        const websiteValue = decodeURIComponent(params.get('website_studio'));
-                        try {
-                            const websiteData = JSON.parse(websiteValue);
-                            websiteElement.href = websiteData.Url;
-                            websiteElement.textContent = websiteData.LinkText || websiteData.Url;
-                        } catch (e) {
-                            websiteElement.href = websiteValue;
-                            websiteElement.textContent = websiteValue;
-                        }
-                    }
-                 }
-
                  for (const param in paramToIdMap) {
                      if (params.has(param)) {
                          let value = decodeURIComponent(params.get(param));
-                         if (['thanh_tien', 'tong_phat_sinh', 'khuyen_mai_tong', 'phai_thanh_toan', 'da_thanh_toan', 'con_lai'].includes(param)) {
+                         if (['thanh_tien', 'tong_phat_sinh', 'phai_thanh_toan', 'da_thanh_toan', 'con_lai'].includes(param)) {
                              value = parseFloat(value.replace(/,/g, '') || 0).toLocaleString('vi-VN');
                          }
                          
@@ -289,7 +274,7 @@
                  demoParams.set('ten_studio', '2H STUDIO');
                  demoParams.set('ten_chi_nhanh', '2H STUDIO - SƠN TÂY');
                  demoParams.set('diachi_studio', '566 Chùa Thông - Sơn Tây - Hà Nội');
-                 demoParams.set('website_studio', '{"Url":"http://2hstudio.vn/","LinkText":"2hstudio.vn"}');
+                 demoParams.set('website_studio', 'http://2hstudio.vn/');
                  demoParams.set('email_studio', '2hstudio.wedding@gmail.com');
                  demoParams.set('dienthoai_studio', '0854623566');
                  demoParams.set('zalo_studio', '2H studio');
@@ -303,10 +288,9 @@
                  demoParams.set('chuc_vu_nv', 'Nhân viên');
                  demoParams.set('thanh_tien', '9500000');
                  demoParams.set('tong_phat_sinh', '0');
-                 demoParams.set('khuyen_mai_tong', '500000');
-                 demoParams.set('phai_thanh_toan', '9000000');
+                 demoParams.set('phai_thanh_toan', '9500000');
                  demoParams.set('da_thanh_toan', '4000000');
-                 demoParams.set('con_lai', '5000000');
+                 demoParams.set('con_lai', '5500000');
                  demoParams.set('ten_ky_kh', 'Tên Khách Hàng Ký');
                  demoParams.set('ten_ky_nv', 'Tên Nhân Viên Ký');
                  demoParams.set('stk', '0501000130594');
@@ -318,14 +302,14 @@
                     sanpham: "Gói chụp Premium", 
                     chitiet: "Gói", 
                     soluong: 1, 
-                    khuyenmai: "500.000", 
-                    thanhtien: 8400000, 
+                    dongia: 8900000, 
+                    thanhtien: 8900000, 
                     ghi_chu: "Bao gồm album"
                  }, { 
                     sanpham: "In ảnh cổng", 
                     chitiet: "Tấm", 
                     soluong: 1, 
-                    khuyenmai: "", 
+                    dongia: 600000, 
                     thanhtien: 600000, 
                     ghi_chu: "Kích thước 60x90"
                  }];
@@ -335,12 +319,13 @@
             function populateServiceTable(data) {
                  const tableBody = document.getElementById('service-table-body'); if (!tableBody) return; tableBody.innerHTML = ''; data.forEach((item, index) => { 
                      const row = document.createElement('tr'); 
+                     const donGiaFormatted = (item.dongia || 0).toLocaleString('vi-VN'); 
                      const thanhTienFormatted = (item.thanhtien || 0).toLocaleString('vi-VN'); 
                      row.innerHTML = `<td style="text-align: center;">${index + 1}</td>
                                       <td><span class="dynamic-data">${item.sanpham || ''}</span></td>
                                       <td><span class="dynamic-data">${item.chitiet || ''}</span></td>
                                       <td style="text-align: center;"><span class="dynamic-data">${item.soluong || 0}</span></td>
-                                      <td class="price-cell"><span class="dynamic-data">${item.khuyenmai || ''}</span></td>
+                                      <td class="price-cell"><span class="dynamic-data">${donGiaFormatted}</span></td>
                                       <td class="price-cell"><span class="dynamic-data">${thanhTienFormatted}</span></td>
                                       <td><span class="dynamic-data">${item.ghi_chu || ''}</span></td>`; 
                      tableBody.appendChild(row); 
@@ -456,7 +441,7 @@
                               <col style="width: 12%;">
                               <col style="width: 9%;">
                            </colgroup>
-                           <thead><tr><th>STT</th><th>Sản phẩm</th><th>Chi tiết</th><th>Số lượng</th><th>Khuyến mãi</th><th>Thành tiền</th><th>Ghi chú</th></tr></thead>
+                           <thead><tr><th>STT</th><th>Sản phẩm</th><th>Chi tiết</th><th>Số lượng</th><th>Đơn giá</th><th>Thành tiền</th><th>Ghi chú</th></tr></thead>
                            <tbody id="service-table-body"></tbody>
                         </table>
                     </div>
