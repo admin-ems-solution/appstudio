@@ -142,7 +142,7 @@
                      ten_studio: ['studio-name', 'studio-signature-name-top', 'studio-signature-name-bottom'],
                      ten_chi_nhanh: 'branch-name-main',
                      diachi_studio: 'studio-address',
-                     website_studio: 'studio-website',
+                     // website_studio đã được xử lý riêng bên dưới
                      email_studio: 'studio-email',
                      dienthoai_studio: 'studio-phone',
                      zalo_studio: 'studio-zalo',
@@ -162,6 +162,25 @@
                      ten_ky_kh: 'customer-signature-name', 
                      ten_ky_nv: 'staff-signature-name' 
                  };
+                 
+                 // SỬA LỖI 1: Xử lý riêng cho website vì dữ liệu là JSON
+                 if (params.has('website_studio')) {
+                    const websiteElement = document.getElementById('studio-website');
+                    if (websiteElement) {
+                        try {
+                            const websiteData = JSON.parse(decodeURIComponent(params.get('website_studio')));
+                            websiteElement.href = websiteData.Url;
+                            websiteElement.textContent = websiteData.LinkText || websiteData.Url;
+                        } catch (e) {
+                            // Dự phòng trường hợp dữ liệu không phải JSON
+                            const url = decodeURIComponent(params.get('website_studio'));
+                            websiteElement.href = url;
+                            websiteElement.textContent = url;
+                            console.warn("Dữ liệu website không phải JSON hợp lệ, hiển thị như một URL thông thường.");
+                        }
+                    }
+                 }
+
 
                  for (const param in paramToIdMap) {
                      if (params.has(param)) {
@@ -193,8 +212,14 @@
                  if (params.has('chitiet_json')) { try { const serviceData = JSON.parse(decodeURIComponent(params.get('chitiet_json'))); populateServiceTable(serviceData); } catch(e) { console.error("Error parsing JSON:", e); } }
                  generatePaymentQRCode({ bin: params.get('ma_bank'), accountNo: params.get('stk'), accountName: params.get('chu_tai_khoan'), amount: parseInt((params.get('con_lai') || "0").replace(/[^0-9]/g, ''), 10), info: params.get('ma_hd') });
                  generateContractQRCode(params.get('ma_hd')); 
-                 const conLaiRaw = (params.get('con_lai') || "0").replace(/[^0-9]/g, '');
-                 document.getElementById('amount-in-words').textContent = readNumberInVietnamese(conLaiRaw);
+                 
+                 // SỬA LỖI 2: Đọc số tiền từ chính ô "Còn Lại" để đảm bảo khớp 100%
+                 const amountRemainingElement = document.getElementById('amount-remaining');
+                 if (amountRemainingElement) {
+                    const conLaiFormatted = amountRemainingElement.textContent; // Lấy giá trị đã hiển thị (VD: "5.500.000")
+                    const conLaiRaw = conLaiFormatted.replace(/[^0-9]/g, ''); // Chuyển thành chuỗi số (VD: "5500000")
+                    document.getElementById('amount-in-words').textContent = readNumberInVietnamese(conLaiRaw);
+                 }
             }
 
             function runDemoMode() {
@@ -204,7 +229,8 @@
                  demoParams.set('ten_studio', '2H STUDIO');
                  demoParams.set('ten_chi_nhanh', '2H STUDIO - SƠN TÂY');
                  demoParams.set('diachi_studio', '566 Chùa Thông - Sơn Tây - Hà Nội');
-                 demoParams.set('website_studio', 'http://2hstudio.vn/');
+                 // Dữ liệu website demo dưới dạng JSON
+                 demoParams.set('website_studio', '{"Url":"http://2hstudio.vn/","LinkText":"2hstudio.vn"}');
                  demoParams.set('email_studio', '2hstudio.wedding@gmail.com');
                  demoParams.set('dienthoai_studio', '0854623566');
                  demoParams.set('zalo_studio', '2H studio');
@@ -275,7 +301,6 @@
                 element.style.boxShadow = 'none';
 
                 const filename = `HD_${document.getElementById('contract-id').textContent.trim()}_${document.getElementById('customer-name').textContent.trim()}.pdf`;
-                // THAY ĐỔI: Sử dụng lề [5, 10, 10, 10] cho PDF
                 const opt = { 
                     margin: [5, 10, 10, 10], // [top, left, bottom, right]
                     filename: filename, 
@@ -309,7 +334,8 @@
                            <div class="studio-info">
                               <h2 id="studio-name"></h2>
                               <p><strong>Địa chỉ:</strong> <span id="studio-address"></span></p>
-                              <p><strong>Website:</strong> <span id="studio-website"></span> | <strong>Email:</strong> <span id="studio-email"></span></p>
+                              <!-- SỬA LỖI 1: Thay đổi span thành thẻ a để hiển thị link -->
+                              <p><strong>Website:</strong> <a id="studio-website" href="#" target="_blank" class="dynamic-data"></a> | <strong>Email:</strong> <span id="studio-email"></span></p>
                               <p><strong>Điện thoại:</strong> <span id="studio-phone"></span> | <strong>Zalo:</strong> <span id="studio-zalo"></span></p>
                            </div>
                         </div>
