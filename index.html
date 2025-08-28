@@ -31,11 +31,11 @@
         background-color: white; 
         margin: 0 auto; 
         box-shadow: 0 0 15px rgba(0,0,0,0.1);
-        display: flex;
-        flex-direction: column;
     }
+    #print-container { width: 100%; border-collapse: collapse; table-layout: fixed; }
+    #page-header, #page-footer { height: 1px; }
     .header-content, .footer-content, .main-content { padding: var(--main-padding); box-sizing: border-box; }
-    .main-content { flex-grow: 1; }
+    .main-content { padding-top: 0; padding-bottom: 0; }
     .footer-content { 
         padding-top: 10px; 
         text-align: right; 
@@ -61,7 +61,6 @@
     th, td { border: 1px solid #dee2e6; padding: 6px 8px; text-align: left; vertical-align: top; }
     th { background-color: #e9ecef; font-weight: 700; text-align: center; }
     
-    /* THAY ĐỔI: Thêm style để chống tràn cột số tiền */
     .price-cell {
         white-space: nowrap;
         text-align: right !important;
@@ -108,6 +107,9 @@
             size: A4;
             margin: 10mm;
         }
+        #print-container { display: table; width: 100%; }
+        #page-header { display: table-row-group; }
+        #page-footer { display: table-footer-group; }
     }
 </style>
 </head>
@@ -118,13 +120,11 @@
     </div>
     <div class="page-wrapper">
         <div class="a4-page" id="a4-page-content">
-            <div id="page-header">
-                <div class="header-content"></div>
-            </div>
-            <div class="main-content"></div>
-            <div id="page-footer">
-                <div class="footer-content"><span class="page-number"></span></div>
-            </div>
+            <table id="print-container">
+                <thead id="page-header"><tr><td><div class="header-content"></div></td></tr></thead>
+                <tbody><tr><td><div class="main-content"></div></td></tr></tbody>
+                <tfoot id="page-footer"><tr><td><div class="footer-content"><span class="page-number"></span></div></td></tr></tfoot>
+            </table>
         </div>
     </div>
     
@@ -226,6 +226,7 @@
                      chuc_vu_nv: 'staff-title', 
                      thanh_tien: 'subtotal', 
                      tong_phat_sinh: 'additional-cost', 
+                     khuyen_mai_tong: 'total-promotion',
                      phai_thanh_toan: 'total-due', 
                      da_thanh_toan: 'amount-paid', 
                      con_lai: 'amount-remaining', 
@@ -236,7 +237,7 @@
                  for (const param in paramToIdMap) {
                      if (params.has(param)) {
                          let value = decodeURIComponent(params.get(param));
-                         if (['thanh_tien', 'tong_phat_sinh', 'phai_thanh_toan', 'da_thanh_toan', 'con_lai'].includes(param)) {
+                         if (['thanh_tien', 'tong_phat_sinh', 'khuyen_mai_tong', 'phai_thanh_toan', 'da_thanh_toan', 'con_lai'].includes(param)) {
                              value = parseFloat(value.replace(/,/g, '') || 0).toLocaleString('vi-VN');
                          }
                          
@@ -288,9 +289,10 @@
                  demoParams.set('chuc_vu_nv', 'Nhân viên');
                  demoParams.set('thanh_tien', '9500000');
                  demoParams.set('tong_phat_sinh', '0');
-                 demoParams.set('phai_thanh_toan', '9500000');
+                 demoParams.set('khuyen_mai_tong', '500000');
+                 demoParams.set('phai_thanh_toan', '9000000');
                  demoParams.set('da_thanh_toan', '4000000');
-                 demoParams.set('con_lai', '5500000');
+                 demoParams.set('con_lai', '5000000');
                  demoParams.set('ten_ky_kh', 'Tên Khách Hàng Ký');
                  demoParams.set('ten_ky_nv', 'Tên Nhân Viên Ký');
                  demoParams.set('stk', '0501000130594');
@@ -300,31 +302,16 @@
                  
                  const demoServiceData = [{
                     sanpham: "Gói chụp Premium", 
-                    chitiet: `Thời gian chụp : ca sáng hoặc ca chiều<br>
-                              Ekip chụp :<br>
-                              - 1 nhiếp ảnh gia<br>
-                              - 1 makeup<br>
-                              - 1 support<br>
-                              Trang phục:<br>
-                              - 2 váy cưới ngày chụp<br>
-                              - 2 vest cưới ngày chụp<br>
-                              - Hoa lụa cầm tay studio setup<br>
-                              Sản phẩm bao gồm :<br>
-                              - 2 ảnh cổng ép gỗ 60x90 laminate <br>
-                              - 2 ảnh bàn mica 15x21<br>
-                              - 15 file photoshop<br>
-                              - Hoàn trả toàn bộ FILE GỐC sau buổi chụp<br>
-                              Tặng :<br>
-                              - 10 hình ép lụa 13x18`,
+                    chitiet: "Gói", 
                     soluong: 1, 
-                    dongia: 8900000, 
-                    thanhtien: 8900000, 
+                    khuyenmai: "500.000", 
+                    thanhtien: 8400000, 
                     ghi_chu: "Bao gồm album"
                  }, { 
                     sanpham: "In ảnh cổng", 
                     chitiet: "Tấm", 
                     soluong: 1, 
-                    dongia: 600000, 
+                    khuyenmai: "", 
                     thanhtien: 600000, 
                     ghi_chu: "Kích thước 60x90"
                  }];
@@ -334,13 +321,12 @@
             function populateServiceTable(data) {
                  const tableBody = document.getElementById('service-table-body'); if (!tableBody) return; tableBody.innerHTML = ''; data.forEach((item, index) => { 
                      const row = document.createElement('tr'); 
-                     const donGiaFormatted = (item.dongia || 0).toLocaleString('vi-VN'); 
                      const thanhTienFormatted = (item.thanhtien || 0).toLocaleString('vi-VN'); 
                      row.innerHTML = `<td style="text-align: center;">${index + 1}</td>
                                       <td><span class="dynamic-data">${item.sanpham || ''}</span></td>
                                       <td><span class="dynamic-data">${item.chitiet || ''}</span></td>
                                       <td style="text-align: center;"><span class="dynamic-data">${item.soluong || 0}</span></td>
-                                      <td class="price-cell"><span class="dynamic-data">${donGiaFormatted}</span></td>
+                                      <td class="price-cell"><span class="dynamic-data">${item.khuyenmai || ''}</span></td>
                                       <td class="price-cell"><span class="dynamic-data">${thanhTienFormatted}</span></td>
                                       <td><span class="dynamic-data">${item.ghi_chu || ''}</span></td>`; 
                      tableBody.appendChild(row); 
@@ -448,14 +434,14 @@
                         <table style="table-layout: fixed;">
                            <colgroup>
                               <col style="width: 5%;">
-                              <col style="width: 14%;">
-                              <col style="width: 35%;">
+                              <col style="width: 24%;">
+                              <col style="width: 31%;">
                               <col style="width: 8%;">
                               <col style="width: 12%;">
                               <col style="width: 12%;">
                               <col style="width: auto;">
                            </colgroup>
-                           <thead><tr><th>STT</th><th>Sản phẩm</th><th>Chi tiết</th><th>Số lượng</th><th>Đơn giá</th><th>Thành tiền</th><th>Ghi chú</th></tr></thead>
+                           <thead><tr><th>STT</th><th>Sản phẩm</th><th>Chi tiết</th><th>Số lượng</th><th>Khuyến mãi</th><th>Thành tiền</th><th>Ghi chú</th></tr></thead>
                            <tbody id="service-table-body"></tbody>
                         </table>
                     </div>
@@ -476,6 +462,7 @@
                            <table class="summary-table">
                               <tbody>
                                  <tr><td>Thành tiền:</td><td style="text-align:right;"><span id="subtotal" class="dynamic-data"></span></td></tr>
+                                 <tr><td>Khuyến mãi:</td><td style="text-align:right;"><span id="total-promotion" class="dynamic-data"></span></td></tr>
                                  <tr><td>Phát sinh:</td><td style="text-align:right;"><span id="additional-cost" class="dynamic-data"></span></td></tr>
                                  <tr><td style="font-weight: 700;">Phải TT:</td><td style="text-align:right; font-weight: 700;"><span id="total-due" class="dynamic-data"></span></td></tr>
                                  <tr><td>Đã TT:</td><td style="text-align:right;"><span id="amount-paid" class="dynamic-data"></span></td></tr>
