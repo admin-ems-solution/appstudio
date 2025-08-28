@@ -58,7 +58,7 @@
     .main-title { text-align: center; font-size: 18pt; font-weight: 700; margin: 10px 0 5px 0; text-transform: uppercase; }
     .contract-meta { text-align: center; font-style: italic; color: #555; margin-bottom: 15px; }
     table { width: 100%; border-collapse: collapse; margin-bottom: 15px; font-size: 9pt; }
-    th, td { border: 1px solid #dee2e6; padding: 6px 8px; text-align: left; vertical-align: top; }
+    th, td { border: 1px solid #dee2e6; padding: 6px 8px; text-align: left; vertical-align: top; word-break: break-word; }
     th { background-color: #e9ecef; font-weight: 700; text-align: center; }
     
     .price-cell {
@@ -371,10 +371,11 @@
                 downloadBtn.disabled = true;
                 
                 element.style.boxShadow = 'none';
-                
+                element.style.width = 'auto';
+
                 const filename = `HD_${document.getElementById('contract-id').textContent.trim()}_${document.getElementById('customer-name').textContent.trim()}.pdf`;
                 const opt = { 
-                    margin: 10, 
+                    margin: 13, 
                     filename: filename, 
                     image: { type: 'jpeg', quality: 0.98 }, 
                     html2canvas:  { scale: 2, useCORS: true, logging: false }, 
@@ -433,15 +434,15 @@
                         
                         <table style="table-layout: fixed;">
                            <colgroup>
-                              <col style="width: 5%;">
-                              <col style="width: 24%;">
-                              <col style="width: 31%;">
+                              <col style="width: 7%;">
+                              <col style="width: 22%;">
+                              <col style="width: 30%;">
                               <col style="width: 8%;">
                               <col style="width: 12%;">
                               <col style="width: 12%;">
-                              <col style="width: auto;">
+                              <col style="width: 9%;">
                            </colgroup>
-                           <thead><tr><th>STT</th><th>Sản phẩm</th><th>Chi tiết</th><th>Số lượng</th><th>Đơn giá</th><th>Thành tiền</th><th>Ghi chú</th></tr></thead>
+                           <thead><tr><th>STT</th><th>Sản phẩm</th><th>Chi tiết</th><th>Số lượng</th><th>Khuyến mãi</th><th>Thành tiền</th><th>Ghi chú</th></tr></thead>
                            <tbody id="service-table-body"></tbody>
                         </table>
                     </div>
