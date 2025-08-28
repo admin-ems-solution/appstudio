@@ -212,7 +212,6 @@
                      ten_studio: ['studio-name', 'studio-signature-name-top', 'studio-signature-name-bottom'],
                      ten_chi_nhanh: 'branch-name-main',
                      diachi_studio: 'studio-address',
-                     website_studio: 'studio-website',
                      email_studio: 'studio-email',
                      dienthoai_studio: 'studio-phone',
                      zalo_studio: 'studio-zalo',
@@ -233,6 +232,22 @@
                      ten_ky_kh: 'customer-signature-name', 
                      ten_ky_nv: 'staff-signature-name' 
                  };
+
+                 // THAY ĐỔI: Xử lý website_studio riêng biệt
+                 if (params.has('website_studio')) {
+                    const websiteElement = document.getElementById('studio-website');
+                    if (websiteElement) {
+                        const websiteValue = decodeURIComponent(params.get('website_studio'));
+                        try {
+                            const websiteData = JSON.parse(websiteValue);
+                            websiteElement.href = websiteData.Url;
+                            websiteElement.textContent = websiteData.LinkText || websiteData.Url;
+                        } catch (e) {
+                            websiteElement.href = websiteValue;
+                            websiteElement.textContent = websiteValue;
+                        }
+                    }
+                 }
 
                  for (const param in paramToIdMap) {
                      if (params.has(param)) {
@@ -275,7 +290,7 @@
                  demoParams.set('ten_studio', '2H STUDIO');
                  demoParams.set('ten_chi_nhanh', '2H STUDIO - SƠN TÂY');
                  demoParams.set('diachi_studio', '566 Chùa Thông - Sơn Tây - Hà Nội');
-                 demoParams.set('website_studio', 'http://2hstudio.vn/');
+                 demoParams.set('website_studio', '{"Url":"http://2hstudio.vn/","LinkText":"2hstudio.vn"}');
                  demoParams.set('email_studio', '2hstudio.wedding@gmail.com');
                  demoParams.set('dienthoai_studio', '0854623566');
                  demoParams.set('zalo_studio', '2H studio');
@@ -375,7 +390,7 @@
 
                 const filename = `HD_${document.getElementById('contract-id').textContent.trim()}_${document.getElementById('customer-name').textContent.trim()}.pdf`;
                 const opt = { 
-                    margin: 13, 
+                    margin: 10, 
                     filename: filename, 
                     image: { type: 'jpeg', quality: 0.98 }, 
                     html2canvas:  { scale: 2, useCORS: true, logging: false }, 
@@ -435,12 +450,12 @@
                         <table style="table-layout: fixed;">
                            <colgroup>
                               <col style="width: 7%;">
-                              <col style="width: 22%;">
+                              <col style="width: 21%;">
                               <col style="width: 30%;">
                               <col style="width: 8%;">
                               <col style="width: 12%;">
                               <col style="width: 12%;">
-                              <col style="width: 9%;">
+                              <col style="width: 10%;">
                            </colgroup>
                            <thead><tr><th>STT</th><th>Sản phẩm</th><th>Chi tiết</th><th>Số lượng</th><th>Khuyến mãi</th><th>Thành tiền</th><th>Ghi chú</th></tr></thead>
                            <tbody id="service-table-body"></tbody>
