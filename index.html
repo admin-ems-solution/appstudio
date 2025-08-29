@@ -14,7 +14,9 @@
         --main-padding: 10pt;
         --dynamic-data-color: #0d6efd; 
     }
-    body { font-family: 'Be Vietnam Pro', sans-serif; font-size: 9.5pt; line-height: 1.4; color: #212529; background-color: #f0f2f5; margin: 0; padding: 0; }
+    /* --- START: UPDATED --- */
+    body { font-family: 'Be Vietnam Pro', sans-serif; font-size: 9pt; line-height: 1.35; color: #212529; background-color: #f0f2f5; margin: 0; padding: 0; }
+    /* --- END: UPDATED --- */
     
     .actions-container { 
         position: sticky; top: 0; display: flex; justify-content: flex-end; align-items: center;
@@ -131,7 +133,6 @@
     <script>
         function removeVietnameseTones(str) {if(!str)return"";str=str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g,"a");str=str.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g,"e");str=str.replace(/ì|í|ị|ỉ|ĩ/g,"i");str=str.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g,"o");str=str.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g,"u");str=str.replace(/ỳ|ý|ỵ|ỷ|ỹ/g,"y");str=str.replace(/đ/g,"d");str=str.replace(/À|Á|Ạ|Ả|Ã|Â|Ầ|Ấ|Ậ|Ẩ|Ẫ|Ă|Ằ|Ắ|Ặ|Ẳ|Ẵ/g,"A");str=str.replace(/È|É|Ẹ|Ẻ|Ẽ|Ê|Ề|Ế|Ệ|Ể|Ễ/g,"E");str=str.replace(/Ì|Í|Ị|Ỉ|Ĩ/g,"I");str=str.replace(/Ò|Ó|Ọ|Ỏ|Õ|Ô|Ồ|Ố|Ộ|Ổ|Ỗ|Ơ|Ờ|Ớ|Ợ|Ở|Ỡ/g,"O");str=str.replace(/Ù|Ú|Ụ|Ủ|Ũ|Ư|Ừ|Ứ|Ự|Ử|Ữ/g,"U");str=str.replace(/Ỳ|Ý|Ỵ|Ỷ|Ỹ/g,"Y");str=str.replace(/Đ/g,"D");str=str.replace(/\u0300|\u0301|\u0303|\u0309|\u0323/g,"");str=str.replace(/\u02C6|\u0306|\u031B/g,"");return str.trim()}
         
-        // --- START: UPDATED FUNCTION ---
         function readNumberInVietnamese(number) {
             const units = ["", "một", "hai", "ba", "bốn", "năm", "sáu", "bảy", "tám", "chín"];
             const groupUnits = ["", " nghìn", " triệu", " tỷ", " nghìn tỷ", " triệu tỷ"];
@@ -178,7 +179,6 @@
                 if (!text) return "";
                 
                 let unit = groupUnits[chunks.length - 1 - index];
-                 // Avoid adding "nghìn" unit for numbers like 1,000,000 where the middle block is 000
                 if(parseInt(chunk) === 0 && unit === " nghìn") {
                     return "";
                 }
@@ -188,7 +188,6 @@
 
             return (result.charAt(0).toUpperCase() + result.slice(1)).trim() + " đồng";
         }
-        // --- END: UPDATED FUNCTION ---
 
         const BANK_MAP={"970422":"MBBank","970436":"Vietcombank","970415":"Vietinbank","970403":"BIDV","970418":"Techcombank","970448":"OCB","970405":"AgriBank","970432":"VPBank","970423":"TPBank"};
         
@@ -238,7 +237,6 @@
                          
                          const ids = Array.isArray(paramToIdMap[param]) ? paramToIdMap[param] : [paramToIdMap[param]];
                          
-                         // --- START: FIX FOR WEBSITE URL ---
                          if (param === 'website_studio') {
                              const aElement = document.getElementById(ids[0]);
                              if(aElement) {
@@ -251,9 +249,8 @@
                                      aElement.textContent = value;
                                  }
                              }
-                             continue; // Skip the generic setter below
+                             continue;
                          }
-                         // --- END: FIX FOR WEBSITE URL ---
 
                          ids.forEach(id => {
                              const element = document.getElementById(id);
@@ -305,7 +302,7 @@
                  demoParams.set('khuyen_mai_tong', '500000');
                  demoParams.set('phai_thanh_toan', '9000000');
                  demoParams.set('da_thanh_toan', '8000000');
-                 demoParams.set('con_lai', '1000000'); // Demo case for 1,000,000
+                 demoParams.set('con_lai', '1000000');
                  demoParams.set('ten_ky_kh', 'Tên Khách Hàng Ký');
                  demoParams.set('ten_ky_nv', 'Tên Nhân Viên Ký');
                  demoParams.set('stk', '0501000130594');
@@ -317,14 +314,12 @@
                     sanpham: "Gói chụp Premium", 
                     chitiet: "Gói", 
                     soluong: 1, 
-                    dongia: 8900000, 
                     thanhtien: 8900000, 
                     ghi_chu: "Bao gồm album"
                  }, { 
                     sanpham: "In ảnh cổng", 
                     chitiet: "Tấm", 
                     soluong: 1, 
-                    dongia: 600000, 
                     thanhtien: 600000, 
                     ghi_chu: "Kích thước 60x90"
                  }];
