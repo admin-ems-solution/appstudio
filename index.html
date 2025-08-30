@@ -12,12 +12,9 @@
     :root {
         --page-width: 190mm; 
         --main-padding: 10pt;
-        --dynamic-data-color: #000080; 
-        
-        /* --- START: CSS THÊM MỚI --- */
-        --border-color: #888; /* Màu xám đậm */
+        --dynamic-data-color: #1a2954; 
+        --border-color: #888;
         --border-style: 0.5px solid var(--border-color);
-        /* --- END: CSS THÊM MỚI --- */
     }
     body { font-family: 'Be Vietnam Pro', sans-serif; font-size: 9pt; line-height: 1.35; color: #212529; background-color: #f0f2f5; margin: 0; padding: 0; }
     
@@ -56,12 +53,12 @@
         text-align: right; 
         font-size: 9pt; 
         color: #6c757d; 
-        border-top: var(--border-style); /* Đã sửa */
+        border-top: var(--border-style);
     }
     .dynamic-data { color: var(--dynamic-data-color); font-weight: 500; }
 
     .header-content { padding: 25px var(--main-padding); } 
-    .header-content .header { display: flex; align-items: center; justify-content: space-between; border-bottom: var(--border-style); padding-bottom: 15px; } /* Đã sửa */
+    .header-content .header { display: flex; align-items: center; justify-content: space-between; border-bottom: var(--border-style); padding-bottom: 15px; }
     .header-left { display: flex; align-items: center; }
     .header-content .logo { width: 65px; height: 65px; flex-shrink: 0; }
     #contract-qr-container { width: 65px; height: 65px; flex-shrink: 0; }
@@ -73,7 +70,7 @@
     .main-title { text-align: center; font-size: 18pt; font-weight: 700; margin: 10px 0 5px 0; text-transform: uppercase; }
     .contract-meta { text-align: center; font-style: italic; color: #555; margin-bottom: 15px; }
     table { width: 100%; border-collapse: collapse; margin-bottom: 15px; font-size: 9pt; }
-    th, td { border: var(--border-style); padding: 6px 8px; text-align: left; vertical-align: top; word-break: break-word; } /* Đã sửa */
+    th, td { border: var(--border-style); padding: 6px 8px; text-align: left; vertical-align: top; word-break: break-word; }
     th { background-color: #e9ecef; font-weight: 700; text-align: center; }
     
     .price-cell {
@@ -82,18 +79,18 @@
     }
 
     .summary-and-payment { display: flex; justify-content: space-between; align-items: stretch; margin-top: 5px; margin-bottom: 20px; page-break-inside: avoid; }
-    .qr-payment-section { width: 58%; border: var(--border-style); padding: 15px; border-radius: 5px; box-sizing: border-box;} /* Đã sửa */
+    .qr-payment-section { width: 58%; border: var(--border-style); padding: 15px; border-radius: 5px; box-sizing: border-box;}
     .qr-payment-content { display: flex; align-items: center; text-align: left; height: 100%;}
     .qr-code { width: 140px; height: 140px; flex-shrink: 0; margin-right: 15px; display: flex; justify-content: center; align-items: center; }
-    .qr-code img { max-width: 100%; height: auto; border: var(--border-style); display: block; } /* Đã sửa */
+    .qr-code img { max-width: 100%; height: auto; border: var(--border-style); display: block; }
     .payment-instructions p { margin: 4px 0; font-size: 9pt; }
     
-    .summary-section { width: 40%; border: var(--border-style); padding: 15px; border-radius: 5px; box-sizing: border-box; } /* Đã sửa */
+    .summary-section { width: 40%; border: var(--border-style); padding: 15px; border-radius: 5px; box-sizing: border-box; }
     .summary-section .summary-table { margin-bottom: 0; }
-    .summary-table td { padding: 4px 8px; }
+    .summary-table td { padding: 4px 8px; border: none; } /* Bỏ border cho bảng con */
     .summary-table .highlight-red { color: #dc3545; font-weight: 700; }
     
-    .terms-section { margin-top: 15px; border-top: var(--border-style); padding-top: 10px; } /* Đã sửa */
+    .terms-section { margin-top: 15px; border-top: var(--border-style); padding-top: 10px; }
     .print-block { page-break-inside: avoid; margin-top: 15px; }
     .print-block h3 { font-size: 11pt; font-weight: 700; margin: 0 0 5px 0; }
     .print-block p, .print-block li { 
@@ -102,7 +99,7 @@
     }
     .print-block ul { padding-left: 20px; list-style-type: none; margin-block-start: 0; margin-block-end: 0; }
     .print-block ul li::before { content: "- "; }
-    .signature-block { display: flex; justify-content: space-around; text-align: center; margin-top: 40px; padding-top: 15px; border-top: var(--border-style); page-break-before: auto; } /* Đã sửa */
+    .signature-block { display: flex; justify-content: space-around; text-align: center; margin-top: 40px; padding-top: 15px; border-top: var(--border-style); page-break-inside: avoid; }
     .signature-block p {
         text-align: center;
     }
@@ -128,24 +125,38 @@
         }
     }
 
+    /* --- START: CSS ĐÃ SỬA --- */
     @media print {
-        body { background: none; }
-        .actions-container { display: none !important; }
-        .page-wrapper { padding: 0; }
+        body { 
+            background: none; 
+            margin: 0;
+            padding: 0;
+        }
+        .actions-container { 
+            display: none !important; 
+        }
+        .page-wrapper { 
+            padding: 0; 
+            margin: 0;
+        }
         .a4-page {
             box-shadow: none;
-            border: none;
+            border: none !important; /* Quan trọng: Xóa viền đen khi in */
+            outline: none !important;
             margin: 0;
             width: 100%;
+            height: auto;
+            page-break-after: always; /* Đảm bảo mỗi .a4-page là một trang riêng */
         }
         @page { 
-            size: A4;
-            margin: 10mm;
+            size: A4 portrait; /* Định dạng A4 dọc */
+            margin: 10mm; /* Căn lề cho trang in */
         }
         #print-container { display: table; width: 100%; }
-        #page-header { display: table-row-group; }
+        #page-header { display: table-header-group; }
         #page-footer { display: table-footer-group; }
     }
+    /* --- END: CSS ĐÃ SỬA --- */
 </style>
 </head>
 <body>
@@ -413,41 +424,41 @@
                 container.appendChild(qrImage);
             }
 
+            // --- START: JAVASCRIPT ĐÃ SỬA ---
             document.getElementById("download-pdf").addEventListener("click", () => {
                 const downloadBtn = document.getElementById('download-pdf');
                 const element = document.getElementById('a4-page-content');
                 const originalShadow = element.style.boxShadow;
-                const originalWidth = element.style.width;
 
                 downloadBtn.textContent = 'Đang xử lý...';
                 downloadBtn.disabled = true;
                 
                 element.style.boxShadow = 'none';
-                element.style.width = 'auto';
 
                 const filename = `HD_${document.getElementById('contract-id').textContent.trim()}_${document.getElementById('customer-name').textContent.trim()}.pdf`;
+                
                 const opt = { 
-                    margin: 10, 
-                    filename: filename, 
-                    image: { type: 'jpeg', quality: 0.98 }, 
+                    margin:       10,
+                    filename:     filename, 
+                    image:        { type: 'jpeg', quality: 0.98 }, 
                     html2canvas:  { scale: 2, useCORS: true, logging: false }, 
-                    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } 
+                    jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
+                    pagebreak:    { mode: ['css', 'legacy'] }
                 };
                 
                 html2pdf().from(element).set(opt).save().then(() => {
                     downloadBtn.textContent = '📄 Tải về PDF';
                     downloadBtn.disabled = false;
                     element.style.boxShadow = originalShadow;
-                    element.style.width = originalWidth;
                 }).catch(err => {
                     console.error("PDF generation failed:", err);
                     alert("Lỗi khi tạo PDF. Vui lòng thử lại.");
                     downloadBtn.textContent = '📄 Tải về PDF';
                     downloadBtn.disabled = false;
                     element.style.boxShadow = originalShadow;
-                    element.style.width = originalWidth;
                 });
             });
+            // --- END: JAVASCRIPT ĐÃ SỬA ---
 
             function injectHTMLStructure() {
                  document.querySelector(".header-content").innerHTML = `
