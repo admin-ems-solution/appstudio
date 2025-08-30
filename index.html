@@ -126,36 +126,48 @@
     }
 
     /* --- START: CSS ĐÃ SỬA --- */
-    @media print {
-        body { 
-            background: none; 
-            margin: 0;
-            padding: 0;
-        }
-        .actions-container { 
-            display: none !important; 
-        }
-        .page-wrapper { 
-            padding: 0; 
-            margin: 0;
-        }
-        .a4-page {
-            box-shadow: none;
-            border: none !important; /* Quan trọng: Xóa viền đen khi in */
-            outline: none !important;
-            margin: 0;
-            width: 100%;
-            height: auto;
-            page-break-after: always; /* Đảm bảo mỗi .a4-page là một trang riêng */
-        }
-        @page { 
-            size: A4 portrait; /* Định dạng A4 dọc */
-            margin: 10mm; /* Căn lề cho trang in */
-        }
-        #print-container { display: table; width: 100%; }
-        #page-header { display: table-header-group; }
-        #page-footer { display: table-footer-group; }
+   @media print {
+    html, body {
+        width: 210mm;
+        height: 297mm;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: none !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
     }
+
+    .page-wrapper {
+        margin: 0 !important;
+        padding: 0 !important;
+        background: none !important;
+        box-shadow: none !important;
+        border: none !important;
+    }
+
+    .a4-page {
+        width: 210mm !important; /* Đúng khổ A4 */
+        min-height: 297mm !important;
+        margin: 0 auto !important;
+        padding: 10mm !important; /* Có thể chỉnh padding bên trong */
+        background: #fff !important;
+        box-shadow: none !important;
+        border: none !important;
+        outline: none !important;
+        page-break-after: always;
+    }
+
+    @page {
+        size: A4 portrait;
+        margin: 0; /* Không có viền */
+    }
+
+    .actions-container,
+    .watermark {
+        display: none !important;
+    }
+}
+
     /* --- END: CSS ĐÃ SỬA --- */
 </style>
 </head>
@@ -438,13 +450,14 @@
                 const filename = `HD_${document.getElementById('contract-id').textContent.trim()}_${document.getElementById('customer-name').textContent.trim()}.pdf`;
                 
                 const opt = { 
-                    margin:       10,
-                    filename:     filename, 
-                    image:        { type: 'jpeg', quality: 0.98 }, 
-                    html2canvas:  { scale: 2, useCORS: true, logging: false }, 
-                    jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
-                    pagebreak:    { mode: ['css', 'legacy'] }
-                };
+                        margin:       0,  // Không có lề
+                        filename:     filename, 
+                        image: { type: 'jpeg', quality: 0.98 }, 
+                        html2canvas:  { scale: 2, useCORS: true, logging: false, backgroundColor: '#fff' }, 
+                        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
+                        pagebreak:    { mode: ['css', 'legacy'] }
+                    };
+
                 
                 html2pdf().from(element).set(opt).save().then(() => {
                     downloadBtn.textContent = '📄 Tải về PDF';
