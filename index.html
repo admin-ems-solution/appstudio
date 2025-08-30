@@ -16,22 +16,20 @@
     }
     body { font-family: 'Be Vietnam Pro', sans-serif; font-size: 9pt; line-height: 1.35; color: #212529; background-color: #f0f2f5; margin: 0; padding: 0; }
     
-    /* --- START: CSS ĐÃ SỬA (Giao diện Mobile-First) --- */
     .actions-container { 
         position: sticky; 
         top: 0; 
         display: flex; 
-        justify-content: center; /* Căn giữa cho đẹp trên mobile */
+        justify-content: center;
         align-items: center;
-        gap: 10px; /* Thêm khoảng cách giữa 2 nút */
+        gap: 10px;
         width: 100%; 
         background-color: #343a40; 
-        padding: 8px 15px; /* Giảm padding ngang một chút */
+        padding: 8px 15px;
         box-sizing: border-box;
         z-index: 2000; 
         box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     }
-    /* --- END: CSS ĐÃ SỬA --- */
 
     .actions-container button { background-color: #0d6efd; color: white; border: none; padding: 8px 16px; border-radius: 5px; font-size: 14px; font-weight: 500; cursor: pointer; }
     .actions-container button#download-pdf { background-color: #198754; }
@@ -105,26 +103,27 @@
     }
     .signature-block .name { margin-top: 60px; font-weight: 700; }
 
-    /* --- START: CSS THÊM MỚI (Giao diện Desktop) --- */
+    /* --- START: CSS ĐÃ SỬA (Giao diện Desktop) --- */
     @media (min-width: 768px) {
         .actions-container {
             position: fixed; /* Cố định vị trí trên màn hình */
             top: 20px;
-            left: 20px;
+            right: 20px; /* Chuyển sang phải */
+            left: auto; /* Bỏ thuộc tính left */
             width: auto; /* Chiều rộng tự động theo nội dung */
             flex-direction: column; /* Xếp chồng các nút */
-            align-items: flex-start; /* Căn nút sang trái */
+            align-items: flex-end; /* Căn nút sang phải */
             gap: 10px;
             padding: 15px;
             border-radius: 8px; /* Bo góc cho đẹp */
         }
 
         .actions-container button {
-             width: 100%; /* Cho 2 nút rộng bằng nhau */
-             text-align: left;
+             width: 100%; 
+             text-align: left; /* Giữ chữ căn trái cho dễ đọc */
         }
     }
-    /* --- END: CSS THÊM MỚI --- */
+    /* --- END: CSS ĐÃ SỬA --- */
 
     @media print {
         body { background: none; }
@@ -334,35 +333,46 @@
                  demoParams.set('phai_thanh_toan', '9000000');
                  demoParams.set('da_thanh_toan', '8000000');
                  demoParams.set('con_lai', '1000000');
+                 demo_params.set('chitiet_json', '[{"sanpham":"Gói chụp Premium","chitiet":"*Sản phẩm chính\\n- Album ảnh\\n- Ảnh cổng\\n*Khuyến mãi\\n- Tặng váy cưới","soluong":1,"thanhtien":8900000,"ghi_chu":"Bao gồm album"}]');
                  demoParams.set('ten_ky_kh', 'Tên Khách Hàng Ký');
                  demoParams.set('ten_ky_nv', 'Tên Nhân Viên Ký');
                  demoParams.set('stk', '0501000130594');
                  demoParams.set('chu_tai_khoan', '2H STUDIO');
                  demoParams.set('ma_bank', '970436');
                  populateFromUrl(demoParams);
-                 
-                 const demoServiceData = [{
-                    sanpham: "Gói chụp Premium", 
-                    chitiet: "Gói", 
-                    soluong: 1, 
-                    thanhtien: 8900000, 
-                    ghi_chu: "Bao gồm album"
-                 }, { 
-                    sanpham: "In ảnh cổng", 
-                    chitiet: "Tấm", 
-                    soluong: 1, 
-                    thanhtien: 600000, 
-                    ghi_chu: "Kích thước 60x90"
-                 }];
-                 populateServiceTable(demoServiceData);
             }
 
+            // --- START: JAVASCRIPT ĐÃ SỬA ---
             function populateServiceTable(data) {
-                 const tableBody = document.getElementById('service-table-body'); if (!tableBody) return; tableBody.innerHTML = ''; data.forEach((item, index) => { 
+                const tableBody = document.getElementById('service-table-body'); 
+                if (!tableBody) return; 
+                tableBody.innerHTML = ''; 
+
+                const formatDetailsText = (text) => {
+                    if (!text) return '';
+                    return text
+                        .split(/\\n/g)
+                        .map(line => {
+                            let trimmedLine = line.trim();
+                            if (trimmedLine.startsWith('*')) {
+                                return `<strong>${trimmedLine.substring(1).trim()}</strong>`;
+                            }
+                            if (trimmedLine.startsWith('-')) {
+                                return `🔸 ${trimmedLine.substring(1).trim()}`;
+                            }
+                            return trimmedLine;
+                        })
+                        .filter(line => line)
+                        .join('<br>');
+                };
+
+                data.forEach((item, index) => { 
                      const row = document.createElement('tr'); 
                      const thanhTienFormatted = (item.thanhtien || 0).toLocaleString('vi-VN');
-                     const chiTietFormatted = (item.chitiet || '').replace(/\\n/g, '<br>');
-                     const ghiChuFormatted = (item.ghi_chu || '').replace(/\\n/g, '<br>');
+                     
+                     const chiTietFormatted = formatDetailsText(item.chitiet);
+                     const ghiChuFormatted = formatDetailsText(item.ghi_chu);
+
                      row.innerHTML = `<td style="text-align: center;">${index + 1}</td>
                                       <td><span class="dynamic-data">${item.sanpham || ''}</span></td>
                                       <td><span class="dynamic-data">${chiTietFormatted}</span></td>
@@ -372,6 +382,7 @@
                      tableBody.appendChild(row); 
                 });
             }
+            // --- END: JAVASCRIPT ĐÃ SỬA ---
 
             function generatePaymentQRCode(data){
                 const qrContainer = document.getElementById("payment-qr-code-container");
