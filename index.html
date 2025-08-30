@@ -12,7 +12,12 @@
     :root {
         --page-width: 190mm; 
         --main-padding: 10pt;
-        --dynamic-data-color: #000080; 
+        --dynamic-data-color: #1a2954; 
+        
+        /* --- START: CSS THÊM MỚI --- */
+        --border-color: #888; /* Màu xám đậm */
+        --border-style: 0.5px solid var(--border-color);
+        /* --- END: CSS THÊM MỚI --- */
     }
     body { font-family: 'Be Vietnam Pro', sans-serif; font-size: 9pt; line-height: 1.35; color: #212529; background-color: #f0f2f5; margin: 0; padding: 0; }
     
@@ -51,12 +56,12 @@
         text-align: right; 
         font-size: 9pt; 
         color: #6c757d; 
-        border-top: 1px solid #dee2e6;
+        border-top: var(--border-style); /* Đã sửa */
     }
     .dynamic-data { color: var(--dynamic-data-color); font-weight: 500; }
 
     .header-content { padding: 25px var(--main-padding); } 
-    .header-content .header { display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #dee2e6; padding-bottom: 15px; }
+    .header-content .header { display: flex; align-items: center; justify-content: space-between; border-bottom: var(--border-style); padding-bottom: 15px; } /* Đã sửa */
     .header-left { display: flex; align-items: center; }
     .header-content .logo { width: 65px; height: 65px; flex-shrink: 0; }
     #contract-qr-container { width: 65px; height: 65px; flex-shrink: 0; }
@@ -68,7 +73,7 @@
     .main-title { text-align: center; font-size: 18pt; font-weight: 700; margin: 10px 0 5px 0; text-transform: uppercase; }
     .contract-meta { text-align: center; font-style: italic; color: #555; margin-bottom: 15px; }
     table { width: 100%; border-collapse: collapse; margin-bottom: 15px; font-size: 9pt; }
-    th, td { border: 1px solid #dee2e6; padding: 6px 8px; text-align: left; vertical-align: top; word-break: break-word; }
+    th, td { border: var(--border-style); padding: 6px 8px; text-align: left; vertical-align: top; word-break: break-word; } /* Đã sửa */
     th { background-color: #e9ecef; font-weight: 700; text-align: center; }
     
     .price-cell {
@@ -77,18 +82,18 @@
     }
 
     .summary-and-payment { display: flex; justify-content: space-between; align-items: stretch; margin-top: 5px; margin-bottom: 20px; page-break-inside: avoid; }
-    .qr-payment-section { width: 58%; border: 1px solid #e9ecef; padding: 15px; border-radius: 5px; box-sizing: border-box;}
+    .qr-payment-section { width: 58%; border: var(--border-style); padding: 15px; border-radius: 5px; box-sizing: border-box;} /* Đã sửa */
     .qr-payment-content { display: flex; align-items: center; text-align: left; height: 100%;}
     .qr-code { width: 140px; height: 140px; flex-shrink: 0; margin-right: 15px; display: flex; justify-content: center; align-items: center; }
-    .qr-code img { max-width: 100%; height: auto; border: 1px solid #ccc; display: block; }
+    .qr-code img { max-width: 100%; height: auto; border: var(--border-style); display: block; } /* Đã sửa */
     .payment-instructions p { margin: 4px 0; font-size: 9pt; }
     
-    .summary-section { width: 40%; border: 1px solid #e9ecef; padding: 15px; border-radius: 5px; box-sizing: border-box; }
+    .summary-section { width: 40%; border: var(--border-style); padding: 15px; border-radius: 5px; box-sizing: border-box; } /* Đã sửa */
     .summary-section .summary-table { margin-bottom: 0; }
     .summary-table td { padding: 4px 8px; }
     .summary-table .highlight-red { color: #dc3545; font-weight: 700; }
     
-    .terms-section { margin-top: 15px; border-top: 1px solid #dee2e6; padding-top: 10px; }
+    .terms-section { margin-top: 15px; border-top: var(--border-style); padding-top: 10px; } /* Đã sửa */
     .print-block { page-break-inside: avoid; margin-top: 15px; }
     .print-block h3 { font-size: 11pt; font-weight: 700; margin: 0 0 5px 0; }
     .print-block p, .print-block li { 
@@ -97,33 +102,31 @@
     }
     .print-block ul { padding-left: 20px; list-style-type: none; margin-block-start: 0; margin-block-end: 0; }
     .print-block ul li::before { content: "- "; }
-    .signature-block { display: flex; justify-content: space-around; text-align: center; margin-top: 40px; padding-top: 15px; border-top: 1px solid #dee2e6; page-break-before: auto; }
+    .signature-block { display: flex; justify-content: space-around; text-align: center; margin-top: 40px; padding-top: 15px; border-top: var(--border-style); page-break-before: auto; } /* Đã sửa */
     .signature-block p {
         text-align: center;
     }
     .signature-block .name { margin-top: 60px; font-weight: 700; }
 
-    /* --- START: CSS ĐÃ SỬA (Giao diện Desktop) --- */
     @media (min-width: 768px) {
         .actions-container {
-            position: fixed; /* Cố định vị trí trên màn hình */
+            position: fixed;
             top: 20px;
-            right: 20px; /* Chuyển sang phải */
-            left: auto; /* Bỏ thuộc tính left */
-            width: auto; /* Chiều rộng tự động theo nội dung */
-            flex-direction: column; /* Xếp chồng các nút */
-            align-items: flex-end; /* Căn nút sang phải */
+            right: 20px;
+            left: auto;
+            width: auto;
+            flex-direction: column;
+            align-items: flex-end;
             gap: 10px;
             padding: 15px;
-            border-radius: 8px; /* Bo góc cho đẹp */
+            border-radius: 8px;
         }
 
         .actions-container button {
              width: 100%; 
-             text-align: left; /* Giữ chữ căn trái cho dễ đọc */
+             text-align: left;
         }
     }
-    /* --- END: CSS ĐÃ SỬA --- */
 
     @media print {
         body { background: none; }
@@ -333,7 +336,7 @@
                  demoParams.set('phai_thanh_toan', '9000000');
                  demoParams.set('da_thanh_toan', '8000000');
                  demoParams.set('con_lai', '1000000');
-                 demo_params.set('chitiet_json', '[{"sanpham":"Gói chụp Premium","chitiet":"*Sản phẩm chính\\n- Album ảnh\\n- Ảnh cổng\\n*Khuyến mãi\\n- Tặng váy cưới","soluong":1,"thanhtien":8900000,"ghi_chu":"Bao gồm album"}]');
+                 demoParams.set('chitiet_json', '[{"sanpham":"Gói chụp Premium","chitiet":"*Sản phẩm chính\\n- Album ảnh\\n- Ảnh cổng\\n*Khuyến mãi\\n- Tặng váy cưới","soluong":1,"thanhtien":8900000,"ghi_chu":"Bao gồm album"}]');
                  demoParams.set('ten_ky_kh', 'Tên Khách Hàng Ký');
                  demoParams.set('ten_ky_nv', 'Tên Nhân Viên Ký');
                  demoParams.set('stk', '0501000130594');
@@ -342,7 +345,6 @@
                  populateFromUrl(demoParams);
             }
 
-            // --- START: JAVASCRIPT ĐÃ SỬA ---
             function populateServiceTable(data) {
                 const tableBody = document.getElementById('service-table-body'); 
                 if (!tableBody) return; 
@@ -382,7 +384,6 @@
                      tableBody.appendChild(row); 
                 });
             }
-            // --- END: JAVASCRIPT ĐÃ SỬA ---
 
             function generatePaymentQRCode(data){
                 const qrContainer = document.getElementById("payment-qr-code-container");
