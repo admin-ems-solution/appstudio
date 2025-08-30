@@ -16,12 +16,24 @@
     }
     body { font-family: 'Be Vietnam Pro', sans-serif; font-size: 9pt; line-height: 1.35; color: #212529; background-color: #f0f2f5; margin: 0; padding: 0; }
     
+    /* --- START: CSS ĐÃ SỬA (Giao diện Mobile-First) --- */
     .actions-container { 
-        position: sticky; top: 0; display: flex; justify-content: flex-end; align-items: center;
-        width: 100%; background-color: #343a40; padding: 8px 20px; box-sizing: border-box;
-        z-index: 2000; box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        position: sticky; 
+        top: 0; 
+        display: flex; 
+        justify-content: center; /* Căn giữa cho đẹp trên mobile */
+        align-items: center;
+        gap: 10px; /* Thêm khoảng cách giữa 2 nút */
+        width: 100%; 
+        background-color: #343a40; 
+        padding: 8px 15px; /* Giảm padding ngang một chút */
+        box-sizing: border-box;
+        z-index: 2000; 
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     }
-    .actions-container button { background-color: #0d6efd; color: white; border: none; padding: 8px 16px; border-radius: 5px; font-size: 14px; font-weight: 500; cursor: pointer; margin-left: 10px; }
+    /* --- END: CSS ĐÃ SỬA --- */
+
+    .actions-container button { background-color: #0d6efd; color: white; border: none; padding: 8px 16px; border-radius: 5px; font-size: 14px; font-weight: 500; cursor: pointer; }
     .actions-container button#download-pdf { background-color: #198754; }
     .actions-container button:disabled { background-color: #6c757d; cursor: not-allowed; }
 
@@ -92,6 +104,27 @@
         text-align: center;
     }
     .signature-block .name { margin-top: 60px; font-weight: 700; }
+
+    /* --- START: CSS THÊM MỚI (Giao diện Desktop) --- */
+    @media (min-width: 768px) {
+        .actions-container {
+            position: fixed; /* Cố định vị trí trên màn hình */
+            top: 20px;
+            left: 20px;
+            width: auto; /* Chiều rộng tự động theo nội dung */
+            flex-direction: column; /* Xếp chồng các nút */
+            align-items: flex-start; /* Căn nút sang trái */
+            gap: 10px;
+            padding: 15px;
+            border-radius: 8px; /* Bo góc cho đẹp */
+        }
+
+        .actions-container button {
+             width: 100%; /* Cho 2 nút rộng bằng nhau */
+             text-align: left;
+        }
+    }
+    /* --- END: CSS THÊM MỚI --- */
 
     @media print {
         body { background: none; }
@@ -328,12 +361,8 @@
                  const tableBody = document.getElementById('service-table-body'); if (!tableBody) return; tableBody.innerHTML = ''; data.forEach((item, index) => { 
                      const row = document.createElement('tr'); 
                      const thanhTienFormatted = (item.thanhtien || 0).toLocaleString('vi-VN');
-                     
-                     // === START: CODE ĐÃ SỬA ===
                      const chiTietFormatted = (item.chitiet || '').replace(/\\n/g, '<br>');
                      const ghiChuFormatted = (item.ghi_chu || '').replace(/\\n/g, '<br>');
-                     // === END: CODE ĐÃ SỬA ===
-
                      row.innerHTML = `<td style="text-align: center;">${index + 1}</td>
                                       <td><span class="dynamic-data">${item.sanpham || ''}</span></td>
                                       <td><span class="dynamic-data">${chiTietFormatted}</span></td>
