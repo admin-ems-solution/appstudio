@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hợp Đồng Cung Cấp Dịch Vụ</title>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    
+   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;700&display=swap');
+    :root {
+        --page-width: 190mm; 
+        --main-padding: 10pt;
+        --dynamic-data-color: #0d6efd; 
+    }
+    body { font-family: 'Be Vietnam Pro', sans-serif; font-size: 9pt; line-height: 1.35; color: #212529; background-color: #f0f2f5; margin: 0; padding: 0; }
+    
+    .actions-container { 
+        position: sticky; top: 0; display: flex; justify-content: flex-end; align-items: center;
+        width: 100%; background-color: #343a40; padding: 8px 20px; box-sizing: border-box;
+        z-index: 2000; box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+
+    .actions-container .dropdown { position: relative; display: inline-block; margin-left: 10px; }
+    .actions-container .dropdown-btn { background-color: #0d6efd; color: white; border: none; padding: 8px 16px; border-radius: 5px; font-size: 14px; font-weight: 500; cursor: pointer; }
+    .actions-container .dropdown-btn.download-btn { background-color: #198754; }
+    .actions-container .dropdown-content {
+        display: none; position: absolute; right: 0; background-color: #f1f1f1; min-width: 200px;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); z-index: 1; border-radius: 5px;
+    }
+    .actions-container .dropdown-content a {
+        color: black; padding: 12px 16px; text-decoration: none; display: block; font-size: 14px;
+    }
+    .actions-container .dropdown-content a:hover { background-color: #ddd; }
+    .actions-container .dropdown-content.show { display: block; }
+
+    .page-wrapper { display: flex; justify-content: center; padding: 20px 0; }
+    .a4-page { 
+        width: var(--page-width); 
+        background-color: white; 
+        margin: 0 auto; 
+        box-shadow: 0 0 15px rgba(0,0,0,0.1);
+        box-sizing: content-box;
+    }
+    #print-container { width: 100%; border-collapse: collapse; table-layout: fixed; }
+    #page-header, #page-footer { height: 1px; }
+    .header-content, .footer-content, .main-content { padding: var(--main-padding); box-sizing: border-box; }
+    .main-content { padding-top: 0; padding-bottom: 0; }
+    .footer-content { 
+        padding-top: 10px; 
+        text-align: right; 
+        font-size: 9pt; 
+        color: #6c757d; 
+        border-top: 1px solid #dee2e6;
+    }
+    .dynamic-data { color: var(--dynamic-data-color); font-weight: 500; }
+
+    .header-content { padding: 25px var(--main-padding); } 
+    .header-content .header { display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #dee2e6; padding-bottom: 15px; }
+    .header-left { display: flex; align-items: center; }
+    .header-content .logo { width: 65px; height: 65px; flex-shrink: 0; }
+    #contract-qr-container { width: 65px; height: 65px; flex-shrink: 0; }
+    #contract-qr-container img { width: 100%; height: 100%; display: block; }
+    .studio-info { padding-left: 15px !important; }
+    .studio-info h2 { font-size: 12pt; margin: 0; }
+    .studio-info p { font-size: 8.5pt; line-height: 1.3; margin: 0; }
+
+    .main-title { text-align: center; font-size: 18pt; font-weight: 700; margin: 10px 0 5px 0; text-transform: uppercase; }
+    .contract-meta { text-align: center; font-style: italic; color: #555; margin-bottom: 15px; }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 15px; font-size: 9pt; }
+    th, td { border: 1px solid #dee2e6; padding: 6px 8px; text-align: left; vertical-align: top; word-break: break-word; }
+    th { background-color: #e9ecef; font-weight: 700; text-align: center; }
+    
+    .price-cell {
+        white-space: nowrap;
+        text-align: right !important;
+    }
+
+    .summary-and-payment { display: flex; justify-content: space-between; align-items: stretch; margin-top: 5px; margin-bottom: 20px; page-break-inside: avoid; }
+    .qr-payment-section { width: 58%; border: 1px solid #e9ecef; padding: 15px; border-radius: 5px; box-sizing: border-box;}
+    .qr-payment-content { display: flex; align-items: center; text-align: left; height: 100%;}
+    .qr-code { width: 140px; height: 140px; flex-shrink: 0; margin-right: 15px; display: flex; justify-content: center; align-items: center; }
+    .qr-code img { max-width: 100%; height: auto; border: 1px solid #ccc; display: block; }
+    .payment-instructions p { margin: 4px 0; font-size: 9pt; }
+    
+    .summary-section { width: 40%; border: 1px solid #e9ecef; padding: 15px; border-radius: 5px; box-sizing: border-box; }
+    .summary-section .summary-table { margin-bottom: 0; }
+    .summary-table td { padding: 4px 8px; }
+    .summary-table .highlight-red { color: #dc3545; font-weight: 700; }
+    
+    .terms-section { margin-top: 15px; border-top: 1px solid #dee2e6; padding-top: 10px; }
+    .print-block { page-break-inside: avoid; margin-top: 15px; }
+    .print-block h3 { font-size: 11pt; font-weight: 700; margin: 0 0 5px 0; }
+    .print-block p, .print-block li { 
+        margin-bottom: 4px;
+        text-align: justify;
+    }
+    .print-block ul { padding-left: 20px; list-style-type: none; margin-block-start: 0; margin-block-end: 0; }
+    .print-block ul li::before { content: "- "; }
+    .signature-block { display: flex; justify-content: space-around; text-align: center; margin-top: 40px; padding-top: 15px; border-top: 1px solid #dee2e6; page-break-before: auto; }
+    .signature-block p {
+        text-align: center;
+    }
+    .signature-block .name { margin-top: 60px; font-weight: 700; }
+
+    @media print {
+        body { background: none; }
+        .actions-container { display: none !important; }
+        .page-wrapper { padding: 0; }
+        .a4-page {
+            box-shadow: none;
+            border: none;
+            margin: 0;
+            width: 100%;
+        }
+        @page { 
+            size: A4;
+            margin: 10mm;
+        }
+        #print-container { display: table; width: 100%; }
+        #page-header { display: table-row-group; }
+        #page-footer { display: table-footer-group; }
+    }
+</style>
+</head>
+<body>
+    <div class="actions-container">
+        <div class="dropdown">
+            <button id="print-dropdown-btn" class="dropdown-btn">🖨️ In Hợp Đồng ▾</button>
+            <div id="print-dropdown-content" class="dropdown-content">
+                <a href="#" id="print-service-action">Hợp đồng Dịch vụ</a>
+                <a href="#" id="print-dress-action">Hợp đồng Váy</a>
+                <a href="#" id="print-family-action">Hợp đồng Baby & GĐ</a>
+            </div>
+        </div>
+        <div class="dropdown">
+            <button id="download-dropdown-btn" class="dropdown-btn download-btn">📄 Tải về PDF ▾</button>
+            <div id="download-dropdown-content" class="dropdown-content">
+                <a href="#" id="download-service-action">Hợp đồng Dịch vụ</a>
+                <a href="#" id="download-dress-action">Hợp đồng Váy</a>
+                <a href="#" id="download-family-action">Hợp đồng Baby & GĐ</a>
+            </div>
+        </div>
+    </div>
+    <div class="page-wrapper">
+        <div class="a4-page" id="a4-page-content">
+            <table id="print-container">
+                <thead id="page-header"><tr><td><div class="header-content"></div></td></tr></thead>
+                <tbody><tr><td><div class="main-content"></div></td></tr></tbody>
+                <tfoot id="page-footer"><tr><td><div class="footer-content"><span class="page-number"></span></div></td></tr></tfoot>
+            </table>
+        </div>
+    </div>
+    
+    <script>
+        let globalServiceData = []; 
+
+        const CONTRACT_TERMS_SERVICE = `
+            <div class="print-block">
+                <h3>Hình thức thanh toán:</h3>
+                <ul><li>Lần 1 : 20% ( đặt cọc )</li><li>Lần 2 : 70% (cuối buổi chụp hình)</li><li>Lần 3 : 10% ( khi nhận ảnh in )</li></ul>
+                <p><strong>Phương thức thanh toán:</strong> Chuyển khoản hoặc Tiền mặt</p>
+                <p><strong>Hai bên thống nhất ký hợp đồng với những điều khoản như sau:</strong></p>
+            </div>
+            <div class="print-block">
+                <h3>Điều 1: Trách nhiệm và quyền lợi của các Bên</h3>
+                <p><strong>1.1. Trách nhiệm và quyền lợi của bên A:</strong></p>
+                <ul><li>Bên A có trách nhiệm thanh toán cho Bên B phí dịch vụ đúng hạn theo hình thức thanh toán nêu trên.</li><li>Bên A được nhận toàn bộ sản phẩm theo phần chi tiết của hợp đồng này.</li><li>Trường hợp bên A hủy hợp đồng sẽ mất toàn bộ tiền đặt cọc.</li><li>Bên A được quyền hoãn chụp hình (quay video) 01 lần mà không bị tính phí nhưng phải báo trước cho bên B muộn nhất 3 ngày trước ngày chụp.</li><li>Nếu bên A tiếp tục phát sinh việc hoãn lịch thì sẽ chịu chi phí phát sinh: 1.000.000 VND/lần.</li><li>Bên A được quyền hoãn chụp hình 01 lần vào ngày chụp trong trường hợp khách quan thời tiết xấu, tuy nhiên Bên A phải thanh toán các chi phí cố định đã phát sinh trong ngày này - VD: Hoa tay, thuê xe, trang điểm.</li><li>Bên A tự chịu trách nhiệm về an toàn cá nhân trong quá trình chụp ảnh, quay phim.</li><li>Trường hợp bên A hủy hợp đồng sau khi chụp đã copy toàn bộ file gốc sẽ không nhận lại được tiền thanh toán 2 lần đặt cọc.</li><li>Trường hợp bên A muốn copy file Raw, sẽ thanh toán hết phí dịch vụ.</li></ul>
+                <p><strong>1.2. Trách nhiệm và quyền lợi của Bên B:</strong></p>
+                <ul><li>Bên B có trách nhiệm thực hiện đầy đủ các nội dung nghiệp vụ tương ứng với các dịch vụ ký kết, được niêm yết công khai kèm theo báo giá.</li><li>Bên B đảm bảo thực hiện hợp đồng này với chất lượng cao và nhiệt tình với công việc, đúng nguyên tắc minh bạch, trung thực, uy tín, khách quan và bí mật về thông tin cá nhân của khách hàng.</li></ul>
+            </div>
+            <div class="print-block">
+                <h3>Điều 2: Cam kết thực hiện</h3>
+                <ul><li>Hai bên cam kết thực hiện tất cả các điều khoản đã ghi trong hợp đồng.</li><li>Trong quá trình thực hiện nếu gặp khó khăn hai Bên phải kịp thời thông báo cho nhau, cần thiết thì trao đổi bằng văn bản tìm giải pháp thích hợp.</li></ul>
+                <p>Hợp đồng này được lập thành 02 bản có giá trị như nhau, Bên A giữ 01 bản, Bên B giữ 01 bản và có hiệu lực kể từ ngày ký hợp đồng, cho đến khi bên B hoàn thành các dịch vụ quy định tại Điều 1 và Bên A thanh toán xong phí dịch vụ cho Bên B thì hợp đồng này xem như được thanh lý hoặc cả hai bên cùng thống nhất chấm dứt hợp đồng bằng văn bản.</p>
+                <ul><li>Các điều khoản dịch vụ được sử dụng trong vòng 1 năm tính từ ngày ký hợp đồng.</li></ul>
+            </div>
+            <div class="signature-block print-block">
+                <div class="customer-signature"><p style="font-weight: 700;">Khách hàng</p><p style="font-size: 9pt; color: #6c757d; font-style: italic;">(Ký và ghi họ tên)</p><p class="name" id="customer-signature-name" class="dynamic-data"></p></div><div class="staff-signature"><p style="font-weight: 700;">Nhân viên tư vấn</p><p style="font-size: 9pt; color: #6c757d; font-style: italic;">(Ký và ghi họ tên)</p><p class="name" id="staff-signature-name" class="dynamic-data"></p></div><div class="studio-signature"><p style="font-weight: 700;" id="studio-signature-name-top"></p><p style="font-size: 9pt; color: #6c757d; font-style: italic;">(Ký và ghi họ tên)</p><p class="name" id="studio-signature-name-bottom"></p></div>
+            </div>`;
+            
+        const CONTRACT_TERMS_DRESS = `
+            <div class="print-block">
+                <p><strong>Hai bên thống nhất ký hợp đồng với những điều khoản như sau:</strong></p>
+                <h3>Điều 1: Nội dung dịch vụ</h3>
+                <p>Bên B đồng ý cung cấp cho Bên A các dịch vụ như bảng trên :</p>
+                <p><strong>Hiện trạng váy:</strong> ...............................................................................................................................</p>
+                <p><strong>Phụ kiện nhận được:</strong> ....................................................................................................................</p>
+                <h3>Điều 2: Phí dịch vụ và phương thức thanh toán</h3>
+                <p><strong>Hình thức cọc làm tin:</strong></p>
+                <p style="padding-left: 20px;">☐ Đặt cọc căn cước, giấy tờ xe</p>
+                <p style="padding-left: 20px;">☐ Đặt cọc tiền mặt</p>
+                <p><strong>Hình thức thanh toán:</strong></p>
+                <p style="padding-left: 20px;">2H STUDIO - HOÀNG CẦU: ACB - 33070607 - NGUYỄN THỊ ANH</p>
+                <h3>Điều 3: Trách nhiệm và quyền lợi của các Bên</h3>
+                <p><strong>1. Trách nhiệm và quyền lợi của bên A.</strong></p>
+                <ul><li>Bên A có trách nhiệm thanh toán cho Bên B phí dịch vụ theo Điều 1-2 đúng hạn.</li><li>Trường hợp bên A hủy hợp đồng váy sẽ không được hoàn lại phí thanh toán.</li><li>Bên A được nhận toàn bộ sản phẩm theo phần chi tiết của hợp đồng này.</li><li>Trường hợp bên A làm váy bị dính rượu vang, phẩm màu nhiều trên 1 bàn tay sẽ khấu hao 500-800k tùy theo chất liệu váy.</li><li>Trường hợp bên A làm mất hoặc hư hại hoàn toàn váy sẽ đền toàn bộ phí cọc làm tin.</li><li>Trường hợp bên A làm hư hỏng váy, bị dính chất phẩm không giặt được, váy bị quá bẩn, hiện trạng váy không được như cam kết ở điều 1:<ul style="padding-left: 20px; list-style-type: circle;"><li>Studio giữ lại váy và cọc váy (chờ xử lý 4-5 ngày), xử lý được sẽ hoàn lại phí cọc cho dâu rể.</li><li>Trường hợp váy không xử lý được studio buộc phải trừ khấu hao vào phí cọc váy (30% - 80% phí cọc váy).</li></ul></li><li>Trường hợp bên A không trả đồ đúng ngày trong hợp đồng, chi phí phát sinh là 500k/ 1 ngày.</li><li>Trường hợp bên A tự ý sửa đồ khi chưa có sự đồng ý của bên B, thì sẽ đền giá trị tương ứng với đồ đã sửa.</li><li>Khi trả váy kèm theo hợp đồng lấy váy.</li></ul>
+                <p><strong>2. Trách nhiệm và quyền lợi của Bên B.</strong></p>
+                <ul><li>Bên B có trách nhiệm thực hiện đầy đủ các nội dung nghiệp vụ tương ứng với các dịch vụ ký kết, được niêm yết công khai kèm theo báo giá, sau khi nhận được hiện trạng váy theo đúng quy định tiêu chuẩn như điều 1 sẽ hoàn lại phí đặt cọc cho bên A.</li><li>Bên B đảm bảo thực hiện hợp đồng này với chất lượng cao và nhiệt tình với công việc, đúng nguyên tắc minh bạch, trung thực, uy tín, khách quan và bí mật về thông tin cá nhân của khách hàng.</li></ul>
+            </div>
+            <div class="print-block">
+                <h3>Cam kết thực hiện</h3>
+                <ul><li>Hai bên cam kết thực hiện tất cả các điều khoản đã ghi trong hợp đồng.</li><li>Trong quá trình thực hiện nếu gặp khó khăn hai Bên phải kịp thời thông báo cho nhau, cần thiết thì trao đổi bằng văn bản tìm giải pháp thích hợp.</li></ul>
+                <p>Hợp đồng này được lập thành 02 bản có giá trị như nhau, Bên A giữ 01 bản, Bên B giữ 01 bản và có hiệu lực kể từ ngày ký hợp đồng, cho đến khi bên B hoàn thành các dịch vụ quy định tại Điều 1 và Bên A thanh toán xong phí dịch vụ cho Bên B thì hợp đồng này xem như được thanh lý hoặc cả hai bên cùng thống nhất chấm dứt hợp đồng bằng văn bản.</p>
+            </div>
+            <div class="signature-block print-block">
+                <div class="customer-signature"><p style="font-weight: 700;">Khách hàng</p><p style="font-size: 9pt; color: #6c757d; font-style: italic;">(Ký và ghi họ tên)</p><p class="name" id="customer-signature-name" class="dynamic-data"></p></div><div class="staff-signature"><p style="font-weight: 700;">Nhân viên tư vấn</p><p style="font-size: 9pt; color: #6c757d; font-style: italic;">(Ký và ghi họ tên)</p><p class="name" id="staff-signature-name" class="dynamic-data"></p></div><div class="studio-signature"><p style="font-weight: 700;" id="studio-signature-name-top"></p><p style="font-size: 9pt; color: #6c757d; font-style: italic;">(Ký và ghi họ tên)</p><p class="name" id="studio-signature-name-bottom"></p></div>
+            </div>`;
+        
+        const CONTRACT_TERMS_FAMILY = `
+            <div class="print-block">
+                <h3>Hình Thức Thanh Toán</h3>
+                <ul><li>Lần 1: 50% (đặt cọc)</li><li>Lần 2: 50% (cuối buổi chụp)</li></ul>
+                <h3>Điều Khoản Hợp Đồng</h3>
+                <p><strong>Hai bên thống nhất ký hợp đồng với những điều khoản như sau:</strong></p>
+                <ul><li>Bên A có trách nhiệm thanh toán cho bên B phí dịch vụ đúng hạn theo hình thức thanh toán nêu trên.</li><li>Bên A chịu rủi ro sản phẩm theo chi tiết của hợp đồng.</li><li>Trường hợp bên A huỷ hợp đồng sẽ mất toàn bộ phí cọc.</li><li>Bên A được quyền chọn chụp hình 1 lần mà không bị tính phí nhưng phải báo trước ngày chụp 5 ngày.</li><li>Bên B đảm bảo thực hiện hợp đồng này với chất lượng cao và nhiệt tình, với công việc, trung thực, uy tín, khách quan và bảo mật về thông tin của khách hàng.</li></ul>
+                <p><strong>Lưu ý:</strong> Gói chụp chỉ áp dụng cho các trang phục và concept có sẵn tại studio, các concept khác theo sở thích setup thêm của khách sẽ tự thuê hoặc studio thuê hộ và trả phí.</p>
+            </div>
+            <div class="print-block">
+                <h3>Cam kết thực hiện</h3>
+                <ul><li>Hai bên cam kết thực hiện tất cả các điều khoản đã ghi trong hợp đồng.</li><li>Trong quá trình thực hiện nếu gặp khó khăn hai Bên phải kịp thời thông báo cho nhau, cần thiết thì trao đổi bằng văn bản tìm giải pháp thích hợp.</li></ul>
+                <p>Hợp đồng này được lập thành 02 bản có giá trị như nhau, Bên A giữ 01 bản, Bên B giữ 01 bản và có hiệu lực kể từ ngày ký hợp đồng, cho đến khi bên B hoàn thành các dịch vụ quy định tại Điều 1 và Bên A thanh toán xong phí dịch vụ cho Bên B thì hợp đồng này xem như được thanh lý hoặc cả hai bên cùng thống nhất chấm dứt hợp đồng bằng văn bản.</p>
+                <ul><li>Các điều khoản dịch vụ được sử dụng trong vòng 1 năm tính từ ngày ký hợp đồng.</li></ul>
+            </div>
+             <div class="signature-block print-block">
+                <div class="customer-signature"><p style="font-weight: 700;">Khách hàng</p><p style="font-size: 9pt; color: #6c757d; font-style: italic;">(Ký và ghi họ tên)</p><p class="name" id="customer-signature-name" class="dynamic-data"></p></div><div class="staff-signature"><p style="font-weight: 700;">Nhân viên tư vấn</p><p style="font-size: 9pt; color: #6c757d; font-style: italic;">(Ký và ghi họ tên)</p><p class="name" id="staff-signature-name" class="dynamic-data"></p></div><div class="studio-signature"><p style="font-weight: 700;" id="studio-signature-name-top"></p><p style="font-size: 9pt; color: #6c757d; font-style: italic;">(Ký và ghi họ tên)</p><p class="name" id="studio-signature-name-bottom"></p></div>
+            </div>`;
+
+        function removeVietnameseTones(str) {if(!str)return"";str=str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g,"a");str=str.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g,"e");str=str.replace(/ì|í|ị|ỉ|ĩ/g,"i");str=str.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g,"o");str=str.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g,"u");str=str.replace(/ỳ|ý|ỵ|ỷ|ỹ/g,"y");str=str.replace(/đ/g,"d");str=str.replace(/À|Á|Ạ|Ả|Ã|Â|Ầ|Ấ|Ậ|Ẩ|Ẫ|Ă|Ằ|Ắ|Ặ|Ẳ|Ẵ/g,"A");str=str.replace(/È|É|Ẹ|Ẻ|Ẽ|Ê|Ề|Ế|Ệ|Ể|Ễ/g,"E");str=str.replace(/Ì|Í|Ị|Ỉ|Ĩ/g,"I");str=str.replace(/Ò|Ó|Ọ|Ỏ|Õ|Ô|Ồ|Ố|Ộ|Ổ|Ỗ|Ơ|Ờ|Ớ|Ợ|Ở|Ỡ/g,"O");str=str.replace(/Ù|Ú|Ụ|Ủ|Ũ|Ư|Ừ|Ứ|Ự|Ử|Ữ/g,"U");str=str.replace(/Ỳ|Ý|Ỵ|Ỷ|Ỹ/g,"Y");str=str.replace(/Đ/g,"D");str=str.replace(/\u0300|\u0301|\u0303|\u0309|\u0323/g,"");str=str.replace(/\u02C6|\u0306|\u031B/g,"");return str.trim()}
+        function readNumberInVietnamese(number) { const units=["","một","hai","ba","bốn","năm","sáu","bảy","tám","chín"],groupUnits=[""," nghìn"," triệu"," tỷ"," nghìn tỷ"," triệu tỷ"];function convertBlock(e){if("000"===e)return"";let t=parseInt(e[0]),r=parseInt(e[1]),n=parseInt(e[2]),i="";return t>0&&(i+=units[t]+" trăm"),0===r&&n>0?i+=t>0?" linh "+units[n]:units[n]:1===r?(i+=" mười",5===n?i+=" lăm":n>0&&(i+=" "+units[n])):r>1&&(i+=" "+units[r]+" mươi",1===n?i+=" mốt":5===n?i+=" lăm":n>0&&(i+=" "+units[n])),i.trim()}let numStr=String(parseInt(number,10));if("0"===numStr)return"Không đồng";let chunks=[];for(;numStr.length>0;)chunks.unshift(numStr.slice(-3)),numStr=numStr.slice(0,-3);const result=chunks.map((e,t)=>{for(;e.length<3;)e="0"+e;const r=convertBlock(e);if(!r)return"";let n=groupUnits[chunks.length-1-t];return 0===parseInt(e)&&" nghìn"===n?"":r+n}).filter(Boolean).join(" ");return(result.charAt(0).toUpperCase()+result.slice(1)).trim()+" đồng"}
+        const BANK_MAP={"970422":"MBBank","970436":"Vietcombank","970415":"Vietinbank","970403":"BIDV","970418":"Techcombank","970448":"OCB","970405":"AgriBank","970432":"VPBank","970423":"TPBank"};
+        
+        document.addEventListener('DOMContentLoaded', function(){
+            injectHTMLStructure();
+            renderContractTerms('service'); 
+
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('ma_hd') && urlParams.get('ma_hd').trim() !== '') {
+                populateFromUrl(urlParams);
+            } else {
+                runDemoMode();
+            }
+            
+            function setupDropdowns() {
+                const dropdownBtns = document.querySelectorAll('.dropdown-btn');
+                
+                dropdownBtns.forEach(btn => {
+                    btn.addEventListener('click', function(event) {
+                        event.stopPropagation();
+                        closeAllDropdowns(this.nextElementSibling);
+                        this.nextElementSibling.classList.toggle('show');
+                    });
+                });
+                
+                document.getElementById('print-service-action').addEventListener('click', (e) => { e.preventDefault(); renderContractTerms('service'); setTimeout(() => window.print(), 100); });
+                document.getElementById('print-dress-action').addEventListener('click', (e) => { e.preventDefault(); renderContractTerms('dress'); setTimeout(() => window.print(), 100); });
+                document.getElementById('print-family-action').addEventListener('click', (e) => { e.preventDefault(); renderContractTerms('family'); setTimeout(() => window.print(), 100); });
+
+                document.getElementById('download-service-action').addEventListener('click', (e) => { e.preventDefault(); downloadAsPdf('service', 'HD_Dich_Vu'); });
+                document.getElementById('download-dress-action').addEventListener('click', (e) => { e.preventDefault(); downloadAsPdf('dress', 'HD_Vay'); });
+                document.getElementById('download-family-action').addEventListener('click', (e) => { e.preventDefault(); downloadAsPdf('family', 'HD_Baby_GD'); });
+            }
+
+            function closeAllDropdowns(exceptThisOne = null) {
+                const dropdowns = document.querySelectorAll('.dropdown-content');
+                dropdowns.forEach(dropdown => {
+                    if (dropdown !== exceptThisOne && dropdown.classList.contains('show')) {
+                        dropdown.classList.remove('show');
+                    }
+                });
+            }
+
+            window.onclick = function(event) {
+                if (!event.target.matches('.dropdown-btn')) {
+                    closeAllDropdowns();
+                }
+            }
+            
+            setupDropdowns();
+
+            function populateFromUrl(params) {
+                 const paramToIdMap = { 
+                     ten_studio: ['studio-name', 'studio-signature
