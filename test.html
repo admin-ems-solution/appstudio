@@ -154,9 +154,7 @@
     </div>
     
     <script>
-        // === START: KHAI BÁO BIẾN TOÀN CỤC ĐỂ LƯU DỮ LIỆU JSON ===
         let globalServiceData = []; 
-        // === END ===
 
         const CONTRACT_TERMS_SERVICE = `
             <div class="print-block">
@@ -184,25 +182,28 @@
             
         const CONTRACT_TERMS_DRESS = `
             <div class="print-block">
+                <h3>Hình thức thanh toán:</h3>
+                <p><strong>Hình thức cọc làm tin:</strong></p>
+                <ul style="padding-left: 40px; list-style-type: '☐ '; "><li>Đặt cọc căn cước, giấy tờ xe</li><li>Đặt cọc tiền mặt</li></ul>
+                <p><strong>Phương thức thanh toán:</strong> Chuyển khoản hoặc Tiền mặt.</p>
+                <ul style="padding-left: 40px;"><li>Thông tin chuyển khoản: 2H STUDIO - HOÀNG CẦU: ACB - 33070607 - NGUYỄN THỊ ANH</li></ul>
                 <p><strong>Hai bên thống nhất ký hợp đồng với những điều khoản như sau:</strong></p>
-                <h3>Điều 1: Nội dung dịch vụ</h3>
-                <p>Bên B đồng ý cung cấp cho Bên A các dịch vụ như bảng trên :</p>
+            </div>
+            <div class="print-block">
+                <h3>Điều 1: Nội dung dịch vụ và hiện trạng sản phẩm</h3>
+                <p>Bên B đồng ý cung cấp cho Bên A các dịch vụ như bảng chi tiết sản phẩm.</p>
                 <p><strong>Hiện trạng váy:</strong> ...............................................................................................................................</p>
                 <p><strong>Phụ kiện nhận được:</strong> ....................................................................................................................</p>
-                <h3>Điều 2: Phí dịch vụ và phương thức thanh toán</h3>
-                <p><strong>Hình thức cọc làm tin:</strong></p>
-                <p style="padding-left: 20px;">☐ Đặt cọc căn cước, giấy tờ xe</p>
-                <p style="padding-left: 20px;">☐ Đặt cọc tiền mặt</p>
-                <p><strong>Hình thức thanh toán:</strong></p>
-                <p style="padding-left: 20px;">2H STUDIO - HOÀNG CẦU: ACB - 33070607 - NGUYỄN THỊ ANH</p>
-                <h3>Điều 3: Trách nhiệm và quyền lợi của các Bên</h3>
-                <p><strong>1. Trách nhiệm và quyền lợi của bên A.</strong></p>
-                <ul><li>Bên A có trách nhiệm thanh toán cho Bên B phí dịch vụ theo Điều 1-2 đúng hạn.</li><li>Trường hợp bên A hủy hợp đồng váy sẽ không được hoàn lại phí thanh toán.</li><li>Bên A được nhận toàn bộ sản phẩm theo phần chi tiết của hợp đồng này.</li><li>Trường hợp bên A làm váy bị dính rượu vang, phẩm màu nhiều trên 1 bàn tay sẽ khấu hao 500-800k tùy theo chất liệu váy.</li><li>Trường hợp bên A làm mất hoặc hư hại hoàn toàn váy sẽ đền toàn bộ phí cọc làm tin.</li><li>Trường hợp bên A làm hư hỏng váy, bị dính chất phẩm không giặt được, váy bị quá bẩn, hiện trạng váy không được như cam kết ở điều 1:<ul style="padding-left: 20px; list-style-type: circle;"><li>Studio giữ lại váy và cọc váy (chờ xử lý 4-5 ngày), xử lý được sẽ hoàn lại phí cọc cho dâu rể.</li><li>Trường hợp váy không xử lý được studio buộc phải trừ khấu hao vào phí cọc váy (30% - 80% phí cọc váy).</li></ul></li><li>Trường hợp bên A không trả đồ đúng ngày trong hợp đồng, chi phí phát sinh là 500k/ 1 ngày.</li><li>Trường hợp bên A tự ý sửa đồ khi chưa có sự đồng ý của bên B, thì sẽ đền giá trị tương ứng với đồ đã sửa.</li><li>Khi trả váy kèm theo hợp đồng lấy váy.</li></ul>
-                <p><strong>2. Trách nhiệm và quyền lợi của Bên B.</strong></p>
+            </div>
+            <div class="print-block">
+                <h3>Điều 2: Trách nhiệm và quyền lợi của các Bên</h3>
+                <p><strong>2.1. Trách nhiệm và quyền lợi của bên A:</strong></p>
+                <ul><li>Bên A có trách nhiệm thanh toán cho Bên B phí dịch vụ đúng hạn.</li><li>Trường hợp bên A hủy hợp đồng váy sẽ không được hoàn lại phí thanh toán.</li><li>Bên A được nhận toàn bộ sản phẩm theo phần chi tiết của hợp đồng này.</li><li>Trường hợp bên A làm váy bị dính rượu vang, phẩm màu nhiều trên 1 bàn tay sẽ khấu hao 500-800k tùy theo chất liệu váy.</li><li>Trường hợp bên A làm mất hoặc hư hại hoàn toàn váy sẽ đền toàn bộ phí cọc làm tin.</li><li>Trường hợp bên A làm hư hỏng váy, bị dính chất phẩm không giặt được, váy bị quá bẩn, hiện trạng váy không được như cam kết ở điều 1:<ul style="padding-left: 20px; list-style-type: circle;"><li>Studio giữ lại váy và cọc váy (chờ xử lý 4-5 ngày), xử lý được sẽ hoàn lại phí cọc cho dâu rể.</li><li>Trường hợp váy không xử lý được studio buộc phải trừ khấu hao vào phí cọc váy (30% - 80% phí cọc váy).</li></ul></li><li>Trường hợp bên A không trả đồ đúng ngày trong hợp đồng, chi phí phát sinh là 500k/ 1 ngày.</li><li>Trường hợp bên A tự ý sửa đồ khi chưa có sự đồng ý của bên B, thì sẽ đền giá trị tương ứng với đồ đã sửa.</li><li>Khi trả váy kèm theo hợp đồng lấy váy.</li></ul>
+                <p><strong>2.2. Trách nhiệm và quyền lợi của Bên B:</strong></p>
                 <ul><li>Bên B có trách nhiệm thực hiện đầy đủ các nội dung nghiệp vụ tương ứng với các dịch vụ ký kết, được niêm yết công khai kèm theo báo giá, sau khi nhận được hiện trạng váy theo đúng quy định tiêu chuẩn như điều 1 sẽ hoàn lại phí đặt cọc cho bên A.</li><li>Bên B đảm bảo thực hiện hợp đồng này với chất lượng cao và nhiệt tình với công việc, đúng nguyên tắc minh bạch, trung thực, uy tín, khách quan và bí mật về thông tin cá nhân của khách hàng.</li></ul>
             </div>
             <div class="print-block">
-                <h3>Cam kết thực hiện</h3>
+                <h3>Điều 3: Cam kết thực hiện</h3>
                 <ul><li>Hai bên cam kết thực hiện tất cả các điều khoản đã ghi trong hợp đồng.</li><li>Trong quá trình thực hiện nếu gặp khó khăn hai Bên phải kịp thời thông báo cho nhau, cần thiết thì trao đổi bằng văn bản tìm giải pháp thích hợp.</li></ul>
                 <p>Hợp đồng này được lập thành 02 bản có giá trị như nhau, Bên A giữ 01 bản, Bên B giữ 01 bản và có hiệu lực kể từ ngày ký hợp đồng, cho đến khi bên B hoàn thành các dịch vụ quy định tại Điều 1 và Bên A thanh toán xong phí dịch vụ cho Bên B thì hợp đồng này xem như được thanh lý hoặc cả hai bên cùng thống nhất chấm dứt hợp đồng bằng văn bản.</p>
             </div>
@@ -212,15 +213,17 @@
         
         const CONTRACT_TERMS_FAMILY = `
             <div class="print-block">
-                <h3>Hình Thức Thanh Toán</h3>
+                <h3>Hình thức thanh toán:</h3>
                 <ul><li>Lần 1: 50% (đặt cọc)</li><li>Lần 2: 50% (cuối buổi chụp)</li></ul>
-                <h3>Điều Khoản Hợp Đồng</h3>
                 <p><strong>Hai bên thống nhất ký hợp đồng với những điều khoản như sau:</strong></p>
+            </div>
+            <div class="print-block">
+                 <h3>Điều 1: Điều khoản chung</h3>
                 <ul><li>Bên A có trách nhiệm thanh toán cho bên B phí dịch vụ đúng hạn theo hình thức thanh toán nêu trên.</li><li>Bên A chịu rủi ro sản phẩm theo chi tiết của hợp đồng.</li><li>Trường hợp bên A huỷ hợp đồng sẽ mất toàn bộ phí cọc.</li><li>Bên A được quyền chọn chụp hình 1 lần mà không bị tính phí nhưng phải báo trước ngày chụp 5 ngày.</li><li>Bên B đảm bảo thực hiện hợp đồng này với chất lượng cao và nhiệt tình, với công việc, trung thực, uy tín, khách quan và bảo mật về thông tin của khách hàng.</li></ul>
                 <p><strong>Lưu ý:</strong> Gói chụp chỉ áp dụng cho các trang phục và concept có sẵn tại studio, các concept khác theo sở thích setup thêm của khách sẽ tự thuê hoặc studio thuê hộ và trả phí.</p>
             </div>
             <div class="print-block">
-                <h3>Cam kết thực hiện</h3>
+                <h3>Điều 2: Cam kết thực hiện</h3>
                 <ul><li>Hai bên cam kết thực hiện tất cả các điều khoản đã ghi trong hợp đồng.</li><li>Trong quá trình thực hiện nếu gặp khó khăn hai Bên phải kịp thời thông báo cho nhau, cần thiết thì trao đổi bằng văn bản tìm giải pháp thích hợp.</li></ul>
                 <p>Hợp đồng này được lập thành 02 bản có giá trị như nhau, Bên A giữ 01 bản, Bên B giữ 01 bản và có hiệu lực kể từ ngày ký hợp đồng, cho đến khi bên B hoàn thành các dịch vụ quy định tại Điều 1 và Bên A thanh toán xong phí dịch vụ cho Bên B thì hợp đồng này xem như được thanh lý hoặc cả hai bên cùng thống nhất chấm dứt hợp đồng bằng văn bản.</p>
                 <ul><li>Các điều khoản dịch vụ được sử dụng trong vòng 1 năm tính từ ngày ký hợp đồng.</li></ul>
@@ -298,23 +301,13 @@
                      nhan_vien: 'staff-name', 
                      dien_thoai_nv: 'staff-phone', 
                      chuc_vu_nv: 'staff-title', 
-                     thanh_tien: 'subtotal', 
-                     tong_phat_sinh: 'additional-cost', 
-                     khuyen_mai_tong: 'total-promotion',
-                     phai_thanh_toan: 'total-due', 
-                     da_thanh_toan: 'amount-paid', 
-                     con_lai: 'amount-remaining', 
                      ten_ky_kh: 'customer-signature-name', 
                      ten_ky_nv: 'staff-signature-name' 
                  };
-
+                
                  for (const param in paramToIdMap) {
                      if (params.has(param)) {
                          let value = decodeURIComponent(params.get(param));
-                         if (['thanh_tien', 'tong_phat_sinh', 'khuyen_mai_tong', 'phai_thanh_toan', 'da_thanh_toan', 'con_lai'].includes(param)) {
-                             value = parseFloat(value.replace(/,/g, '') || 0).toLocaleString('vi-VN');
-                         }
-                         
                          const ids = Array.isArray(paramToIdMap[param]) ? paramToIdMap[param] : [paramToIdMap[param]];
                          
                          if (param === 'website_studio') {
@@ -351,21 +344,16 @@
                  document.getElementById('payment-info').textContent = params.get('ma_hd') || 'N/A';
                  document.title = "HĐ " + params.get('ma_hd') + " - " + (params.get('ten_chi_nhanh') || '');
 
-                 // === START: LƯU DỮ LIỆU JSON VÀO BIẾN TOÀN CỤC ===
                  if (params.has('chitiet_json')) { 
                     try { 
                         globalServiceData = JSON.parse(decodeURIComponent(params.get('chitiet_json')));
-                        populateServiceTable(null); // Gọi lần đầu không lọc
                     } catch(e) { 
                         console.error("Error parsing JSON:", e); 
                     } 
                  }
-                 // === END ===
-
+                 renderContractTerms('service'); // Render the default view after populating base data
                  generatePaymentQRCode({ bin: params.get('ma_bank'), accountNo: params.get('stk'), accountName: params.get('chu_tai_khoan'), amount: parseInt((params.get('con_lai') || "0").replace(/[^0-9]/g, ''), 10), info: params.get('ma_hd') });
                  generateContractQRCode(params.get('ma_hd')); 
-                 const conLaiRaw = (params.get('con_lai') || "0").replace(/[^0-9]/g, '');
-                 document.getElementById('amount-in-words').textContent = readNumberInVietnamese(conLaiRaw);
             }
 
             function runDemoMode() {
@@ -387,12 +375,18 @@
                  demoParams.set('nhan_vien', 'NHÂN VIÊN DEMO');
                  demoParams.set('dien_thoai_nv', '0987654321');
                  demoParams.set('chuc_vu_nv', 'Nhân viên');
+                 // General financial params
                  demoParams.set('thanh_tien', '9500000');
                  demoParams.set('tong_phat_sinh', '0');
                  demoParams.set('khuyen_mai_tong', '500000');
                  demoParams.set('phai_thanh_toan', '9000000');
                  demoParams.set('da_thanh_toan', '8000000');
                  demoParams.set('con_lai', '1000000');
+                 // Dress-specific financial params
+                 demoParams.set('thanh_tien_vay', '2000000');
+                 demoParams.set('khuyen_mai_vay', '0');
+                 demoParams.set('phai_thanh_toan_vay', '2000000');
+                 
                  demoParams.set('ten_ky_kh', 'Tên Khách Hàng Ký');
                  demoParams.set('ten_ky_nv', 'Tên Nhân Viên Ký');
                  demoParams.set('stk', '0501000130594');
@@ -400,15 +394,26 @@
                  demoParams.set('ma_bank', '970436');
                  populateFromUrl(demoParams);
                  
-                 globalServiceData = [{ sanpham: "Gói chụp Premium", chitiet: "Gói", soluong: 1, thanhtien: 8900000, ghi_chu: "Bao gồm album", loai_dich_vu: "Gói Chụp" }, { sanpham: "Váy cưới Lux", chitiet: "Thuê ngày cưới", soluong: 1, thanhtien: 2000000, ghi_chu: "Mã váy V01", loai_dich_vu: "Trang phục" }, { sanpham: "In ảnh cổng", chitiet: "Tấm", soluong: 1, thanhtien: 600000, ghi_chu: "Kích thước 60x90", loai_dich_vu: "Sản phẩm lẻ" }];
-                 populateServiceTable(null);
+                 globalServiceData = [{ sanpham: "Gói chụp Premium", chitiet: "Gói", soluong: 1, thanhtien: 8900000, ghi_chu: "Bao gồm album", loai_dich_vu: "Gói Chụp" }, { sanpham: "Váy cưới Lux", chitiet: "Thuê ngày cưới", soluong: 1, thanhtien: 2000000, ghi_chu: "Mã váy V01", loai_dich_vu: "Trang phục", ngay_lay: "30/08/2025", ngay_tra: "02/09/2025" }, { sanpham: "In ảnh cổng", chitiet: "Tấm", soluong: 1, thanhtien: 600000, ghi_chu: "Kích thước 60x90", loai_dich_vu: "Sản phẩm lẻ" }];
             }
+            
+            function populateServiceTable(filterType, contractType) {
+                const table = document.querySelector('.main-content table');
+                if (!table) return;
 
-            // === START: CẬP NHẬT HÀM POPULATE VỚI LOGIC LỌC ===
-            function populateServiceTable(filterType) {
-                 const tableBody = document.getElementById('service-table-body');
-                 if (!tableBody) return;
-                 tableBody.innerHTML = '';
+                const thead = table.querySelector('thead');
+                const colgroup = table.querySelector('colgroup');
+                const tableBody = table.querySelector('tbody#service-table-body');
+                
+                tableBody.innerHTML = '';
+
+                if (contractType === 'dress') {
+                    colgroup.innerHTML = `<col style="width: 7%;"><col style="width: 25%;"><col style="width: 10%;"><col style="width: 15%;"><col style="width: 14%;"><col style="width: 14%;"><col style="width: 15%;">`;
+                    thead.innerHTML = `<tr><th>STT</th><th>Sản phẩm</th><th>Số lượng</th><th>Thành tiền</th><th>Ngày lấy</th><th>Ngày trả</th><th>Ghi chú</th></tr>`;
+                } else {
+                    colgroup.innerHTML = `<col style="width: 7%;"><col style="width: 22%;"><col style="width: 35.5%;"><col style="width: 8%;"><col style="width: 13.5%;"><col style="width: 14%;">`;
+                    thead.innerHTML = `<tr><th>STT</th><th>Sản phẩm</th><th>Chi tiết</th><th>Số lượng</th><th>Thành tiền</th><th>Ghi chú</th></tr>`;
+                }
                  
                  const dataToDisplay = filterType 
                     ? globalServiceData.filter(item => item.loai_dich_vu === filterType)
@@ -417,20 +422,28 @@
                  dataToDisplay.forEach((item, index) => { 
                      const row = document.createElement('tr'); 
                      const thanhTienFormatted = (item.thanhtien || 0).toLocaleString('vi-VN');
-                     
-                     const chiTietFormatted = (item.chitiet || '').replace(/\\n/g, '<br>');
                      const ghiChuFormatted = (item.ghi_chu || '').replace(/\\n/g, '<br>');
 
-                     row.innerHTML = `<td style="text-align: center;">${index + 1}</td>
-                                      <td><span class="dynamic-data">${item.sanpham || ''}</span></td>
-                                      <td><span class="dynamic-data">${chiTietFormatted}</span></td>
-                                      <td style="text-align: center;"><span class="dynamic-data">${item.soluong || 0}</span></td>
-                                      <td class="price-cell"><span class="dynamic-data">${thanhTienFormatted}</span></td>
-                                      <td><span class="dynamic-data">${ghiChuFormatted}</span></td>`; 
+                     if (contractType === 'dress') {
+                         row.innerHTML = `<td style="text-align: center;">${index + 1}</td>
+                                          <td><span class="dynamic-data">${item.sanpham || ''}</span></td>
+                                          <td style="text-align: center;"><span class="dynamic-data">${item.soluong || 0}</span></td>
+                                          <td class="price-cell"><span class="dynamic-data">${thanhTienFormatted}</span></td>
+                                          <td><span class="dynamic-data">${item.ngay_lay || ''}</span></td>
+                                          <td><span class="dynamic-data">${item.ngay_tra || ''}</span></td>
+                                          <td><span class="dynamic-data">${ghiChuFormatted}</span></td>`;
+                     } else {
+                         const chiTietFormatted = (item.chitiet || '').replace(/\\n/g, '<br>');
+                         row.innerHTML = `<td style="text-align: center;">${index + 1}</td>
+                                          <td><span class="dynamic-data">${item.sanpham || ''}</span></td>
+                                          <td><span class="dynamic-data">${chiTietFormatted}</span></td>
+                                          <td style="text-align: center;"><span class="dynamic-data">${item.soluong || 0}</span></td>
+                                          <td class="price-cell"><span class="dynamic-data">${thanhTienFormatted}</span></td>
+                                          <td><span class="dynamic-data">${ghiChuFormatted}</span></td>`; 
+                     }
                      tableBody.appendChild(row); 
                 });
             }
-            // === END ===
 
             function generatePaymentQRCode(data){const qrContainer=document.getElementById("payment-qr-code-container"),amount=(data.amount||0).toString().replace(/,/g,""),bankBin=data.bin||"",accountNumber=data.accountNo||"",accountName=data.accountName||"";if(!bankBin||!accountNumber||parseInt(amount)<0)return void(qrContainer.innerHTML='<p style="color: red; font-size: 0.9em;">Lỗi: Dữ liệu thanh toán không hợp lệ.</p>');const accountNameForURL=encodeURIComponent(removeVietnameseTones(accountName).toUpperCase()),qrApiUrl=`https://img.vietqr.io/image/${bankBin}-${accountNumber}-compact.png?amount=${amount}&addInfo=${encodeURIComponent(data.info||"")}&accountName=${accountNameForURL}`,qrImage=new Image;qrImage.crossOrigin="anonymous",qrContainer.innerHTML="Đang tạo mã QR...",qrImage.onload=()=>{qrContainer.innerHTML="",qrContainer.appendChild(qrImage)},qrImage.onerror=()=>{qrContainer.innerHTML='<p style="color: red; font-size: 0.9em;">Không thể tạo mã QR. Vui lòng kiểm tra lại STK/Ngân hàng.</p>'},qrImage.src=qrApiUrl}
             function generateContractQRCode(e){const t=document.getElementById("contract-qr-container");if(!t||!e)return;const r=`https://api.qrserver.com/v1/create-qr-code/?size=65x65&data=${encodeURIComponent(e)}&qzone=1&format=svg`,n=new Image;n.src=r,n.alt=`QR Code for ${e}`,t.innerHTML="",t.appendChild(n)}
@@ -446,7 +459,7 @@
                     element.style.boxShadow = 'none';
                     const filename = `${fileNamePrefix}_${document.getElementById('contract-id').textContent.trim()}_${document.getElementById('customer-name').textContent.trim()}.pdf`;
                     const opt = { 
-                        margin: 10, 
+                        margin: 10,
                         filename: filename, 
                         image: { type: 'jpeg', quality: 0.98 }, 
                         html2canvas:  { scale: 2, useCORS: true, logging: false }, 
@@ -469,25 +482,89 @@
             }
             
             function renderContractTerms(type) {
-                const container = document.querySelector('.terms-section');
+                const termsContainer = document.querySelector('.terms-section');
                 const titleElement = document.getElementById('main-contract-title');
-                if (!container || !titleElement) return;
+                const summaryContainer = document.getElementById('summary-section-container');
+                const urlParams = new URLSearchParams(window.location.search);
 
+                if (!termsContainer || !titleElement || !summaryContainer) return;
+                
                 if (type === 'dress') {
-                    container.innerHTML = CONTRACT_TERMS_DRESS;
+                    // --- RENDER DRESS CONTRACT ---
+                    termsContainer.innerHTML = CONTRACT_TERMS_DRESS;
                     titleElement.textContent = 'HỢP ĐỒNG CUNG CẤP TRANG PHỤC';
-                    populateServiceTable('Trang phục'); // Lọc theo 'Trang phục'
-                } else if (type === 'family') {
-                    container.innerHTML = CONTRACT_TERMS_FAMILY;
-                    titleElement.textContent = 'HỢP ĐỒNG BABY & GIA ĐÌNH';
-                    populateServiceTable(null); // Không lọc
-                } else { 
-                    container.innerHTML = CONTRACT_TERMS_SERVICE;
-                    titleElement.textContent = 'HỢP ĐỒNG CUNG CẤP DỊCH VỤ';
-                    populateServiceTable(null); // Không lọc
+                    populateServiceTable('Trang phục', 'dress');
+
+                    // Create and inject the SIMPLIFIED summary table for DRESS
+                    const dressSummaryHTML = `
+                        <table class="summary-table">
+                            <tbody>
+                                <tr><td>Thành tiền:</td><td style="text-align:right;"><span id="subtotal" class="dynamic-data"></span></td></tr>
+                                <tr><td>Khuyến mãi:</td><td style="text-align:right;"><span id="total-promotion" class="dynamic-data"></span></td></tr>
+                                <tr><td style="font-weight: 700;">Phải TT:</td><td style="text-align:right; font-weight: 700;"><span id="total-due" class="dynamic-data"></span></td></tr>
+                                <tr><td colspan="2">(Bằng chữ: <span id="amount-in-words" class="dynamic-data"></span>)</td></tr>
+                            </tbody>
+                        </table>`;
+                    summaryContainer.innerHTML = dressSummaryHTML;
+
+                    // Populate with DRESS-SPECIFIC URL params
+                    const thanhTienVay = parseFloat(urlParams.get('thanh_tien_vay')?.replace(/,/g, '') || 0);
+                    const khuyenMaiVay = parseFloat(urlParams.get('khuyen_mai_vay')?.replace(/,/g, '') || 0);
+                    const phaiThanhToanVay = parseFloat(urlParams.get('phai_thanh_toan_vay')?.replace(/,/g, '') || 0);
+                    
+                    document.getElementById('subtotal').textContent = thanhTienVay.toLocaleString('vi-VN');
+                    document.getElementById('total-promotion').textContent = khuyenMaiVay.toLocaleString('vi-VN');
+                    document.getElementById('total-due').textContent = phaiThanhToanVay.toLocaleString('vi-VN');
+                    document.getElementById('amount-in-words').textContent = readNumberInVietnamese(phaiThanhToanVay);
+
+                } else {
+                    // --- RENDER SERVICE OR FAMILY CONTRACT ---
+                    // Create and inject the FULL summary table for SERVICE/FAMILY
+                    const defaultSummaryHTML = `
+                        <table class="summary-table">
+                            <tbody>
+                                <tr><td>Thành tiền:</td><td style="text-align:right;"><span id="subtotal" class="dynamic-data"></span></td></tr>
+                                <tr><td>Khuyến mãi:</td><td style="text-align:right;"><span id="total-promotion" class="dynamic-data"></span></td></tr>
+                                <tr><td>Phát sinh:</td><td style="text-align:right;"><span id="additional-cost" class="dynamic-data"></span></td></tr>
+                                <tr><td style="font-weight: 700;">Phải TT:</td><td style="text-align:right; font-weight: 700;"><span id="total-due" class="dynamic-data"></span></td></tr>
+                                <tr><td>Đã TT:</td><td style="text-align:right;"><span id="amount-paid" class="dynamic-data"></span></td></tr>
+                                <tr><td class="highlight-red">Còn Lại:</td><td style="text-align:right;"><span class="dynamic-data highlight-red" id="amount-remaining"></span></td></tr>
+                                <tr><td colspan="2">(Bằng chữ: <span id="amount-in-words" class="dynamic-data"></span>)</td></tr>
+                            </tbody>
+                        </table>`;
+                    summaryContainer.innerHTML = defaultSummaryHTML;
+
+                    // Populate with GENERAL URL params
+                    const financialParams = {
+                        thanh_tien: 'subtotal',
+                        tong_phat_sinh: 'additional-cost',
+                        khuyen_mai_tong: 'total-promotion',
+                        phai_thanh_toan: 'total-due',
+                        da_thanh_toan: 'amount-paid',
+                        con_lai: 'amount-remaining'
+                    };
+                    for(const param in financialParams){
+                        const el = document.getElementById(financialParams[param]);
+                        if(el){
+                            const value = parseFloat(urlParams.get(param)?.replace(/,/g, '') || 0);
+                            el.textContent = value.toLocaleString('vi-VN');
+                        }
+                    }
+                    const conLaiRaw = (urlParams.get('con_lai') || "0").replace(/[^0-9]/g, '');
+                    document.getElementById('amount-in-words').textContent = readNumberInVietnamese(conLaiRaw);
+
+                    if (type === 'family') {
+                        termsContainer.innerHTML = CONTRACT_TERMS_FAMILY;
+                        titleElement.textContent = 'HỢP ĐỒNG BABY & GIA ĐÌNH';
+                        populateServiceTable(null, 'family');
+                    } else { // service
+                        termsContainer.innerHTML = CONTRACT_TERMS_SERVICE;
+                        titleElement.textContent = 'HỢP ĐỒNG CUNG CẤP DỊCH VỤ';
+                        populateServiceTable(null, 'service');
+                    }
                 }
                 
-                const urlParams = new URLSearchParams(window.location.search);
+                // Populate signature names (common for all types)
                 const ten_ky_kh = urlParams.get('ten_ky_kh') || (urlParams.has('ma_hd') ? '' : 'Tên Khách Hàng Ký');
                 const ten_ky_nv = urlParams.get('ten_ky_nv') || (urlParams.has('ma_hd') ? '' : 'Tên Nhân Viên Ký');
                 const ten_studio = urlParams.get('ten_studio') || (urlParams.has('ma_hd') ? '' : '2H STUDIO');
@@ -508,7 +585,7 @@
 
             function injectHTMLStructure() {
                  document.querySelector(".header-content").innerHTML = `<header class="header"><div class="header-left"><div class="logo"><img id="studio-logo-img" alt="Studio Logo" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;"></div><div class="studio-info"><h2 id="studio-name"></h2><p><strong>Địa chỉ:</strong> <span id="studio-address"></span></p><p><strong>Website:</strong> <a id="studio-website" href="#" target="_blank"></a> | <strong>Email:</strong> <span id="studio-email"></span></p><p><strong>Điện thoại:</strong> <span id="studio-phone"></span> | <strong>Zalo:</strong> <span id="studio-zalo"></span></p></div></div><div id="contract-qr-container" title="Mã hợp đồng"></div></header>`;
-                 document.querySelector(".main-content").innerHTML = `<div><h1 class="main-title" id="main-contract-title">HỢP ĐỒNG CUNG CẤP DỊCH VỤ</h1><div class="contract-meta">Số: <span id="contract-id" class="dynamic-data"></span> | Ngày: <span id="contract-date" class="dynamic-data"></span></div><p><strong><span id="branch-name-main"></span></strong> Gửi tới quý khách hàng hoá đơn dịch vụ như sau:</p><div class="info-grid" style="display:flex; justify-content:space-between; margin-bottom:20px;"><div class="customer-info" style="width:50%;"><p><strong>Khách hàng:</strong> <span id="customer-name" class="dynamic-data"></span></p><p><strong>Điện thoại:</strong> <span id="customer-phone" class="dynamic-data"></span></p><p><strong>Địa chỉ:</strong> <span id="customer-address" class="dynamic-data"></span></p></div><div class="staff-info" style="width: 40%;"><p><strong>Nhân viên:</strong> <span id="staff-name" class="dynamic-data"></span></p><p><strong>Điện thoại NV:</strong> <span id="staff-phone" class="dynamic-data"></span></p><p><strong>Chức Vụ:</strong> <span id="staff-title" class="dynamic-data"></span></p></div></div><table style="table-layout: fixed;"><colgroup><col style="width: 7%;"><col style="width: 22%;"><col style="width: 35.5%;"><col style="width: 8%;"><col style="width: 13.5%;"><col style="width: 14%;"></colgroup><thead><tr><th>STT</th><th>Sản phẩm</th><th>Chi tiết</th><th>Số lượng</th><th>Thành tiền</th><th>Ghi chú</th></tr></thead><tbody id="service-table-body"></tbody></table></div><div class="summary-and-payment"><div class="qr-payment-section"><div class="qr-payment-content"><div class="qr-code" id="payment-qr-code-container"></div><div class="payment-instructions"><p style="font-weight: bold;">QUÉT MÃ QR ĐỂ THANH TOÁN:</p><p>- STK: <span id="payment-stk" class="dynamic-data"></span></p><p>- Chủ tài khoản: <span id="payment-account-name" class="dynamic-data"></span></p><p>- Nội dung CK: <span id="payment-info" class="dynamic-data"></span></p></div></div></div><div class="summary-section"><table class="summary-table"><tbody><tr><td>Thành tiền:</td><td style="text-align:right;"><span id="subtotal" class="dynamic-data"></span></td></tr><tr><td>Khuyến mãi:</td><td style="text-align:right;"><span id="total-promotion" class="dynamic-data"></span></td></tr><tr><td>Phát sinh:</td><td style="text-align:right;"><span id="additional-cost" class="dynamic-data"></span></td></tr><tr><td style="font-weight: 700;">Phải TT:</td><td style="text-align:right; font-weight: 700;"><span id="total-due" class="dynamic-data"></span></td></tr><tr><td>Đã TT:</td><td style="text-align:right;"><span id="amount-paid" class="dynamic-data"></span></td></tr><tr><td class="highlight-red">Còn Lại:</td><td style="text-align:right;"><span class="dynamic-data highlight-red" id="amount-remaining"></span></td></tr><tr><td colspan="2">(Bằng chữ: <span id="amount-in-words" class="dynamic-data"></span>)</td></tr></tbody></table></div></div><div class="terms-section"></div>`;
+                 document.querySelector(".main-content").innerHTML = `<div><h1 class="main-title" id="main-contract-title">HỢP ĐỒNG CUNG CẤP DỊCH VỤ</h1><div class="contract-meta">Số: <span id="contract-id" class="dynamic-data"></span> | Ngày: <span id="contract-date" class="dynamic-data"></span></div><p><strong><span id="branch-name-main"></span></strong> Gửi tới quý khách hàng hoá đơn dịch vụ như sau:</p><div class="info-grid" style="display:flex; justify-content:space-between; margin-bottom:20px;"><div class="customer-info" style="width:50%;"><p><strong>Khách hàng:</strong> <span id="customer-name" class="dynamic-data"></span></p><p><strong>Điện thoại:</strong> <span id="customer-phone" class="dynamic-data"></span></p><p><strong>Địa chỉ:</strong> <span id="customer-address" class="dynamic-data"></span></p></div><div class="staff-info" style="width: 40%;"><p><strong>Nhân viên:</strong> <span id="staff-name" class="dynamic-data"></span></p><p><strong>Điện thoại NV:</strong> <span id="staff-phone" class="dynamic-data"></span></p><p><strong>Chức Vụ:</strong> <span id="staff-title" class="dynamic-data"></span></p></div></div><table style="table-layout: fixed;"><colgroup></colgroup><thead></thead><tbody id="service-table-body"></tbody></table></div><div class="summary-and-payment"><div class="qr-payment-section"><div class="qr-payment-content"><div class="qr-code" id="payment-qr-code-container"></div><div class="payment-instructions"><p style="font-weight: bold;">QUÉT MÃ QR ĐỂ THANH TOÁN:</p><p>- STK: <span id="payment-stk" class="dynamic-data"></span></p><p>- Chủ tài khoản: <span id="payment-account-name" class="dynamic-data"></span></p><p>- Nội dung CK: <span id="payment-info" class="dynamic-data"></span></p></div></div></div><div class="summary-section" id="summary-section-container"></div></div><div class="terms-section"></div>`;
             }
         });
     </script>
