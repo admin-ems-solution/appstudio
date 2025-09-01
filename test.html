@@ -331,7 +331,18 @@
                          ids.forEach(id => {
                             const element = document.getElementById(id);
                              if (element) {
-                                 element.textContent = value;
+                                 // Thay đổi: Định dạng lại ngày tháng
+                                 if (id === 'contract-date') {
+                                     const dateParts = value.split('/');
+                                     // Chuyển từ MM/DD/YYYY sang DD/MM/YYYY
+                                     if (dateParts.length === 3) {
+                                        element.textContent = `${dateParts[1]}/${dateParts[0]}/${dateParts[2]}`;
+                                     } else {
+                                        element.textContent = value; // Giữ nguyên nếu không đúng định dạng
+                                     }
+                                 } else {
+                                     element.textContent = value;
+                                 }
                              }
                          });
                      }
@@ -376,7 +387,7 @@
                  demoParams.set('dienthoai_studio', '0854623566');
                  demoParams.set('zalo_studio', '2H studio');
                  demoParams.set('ma_hd', 'HD-DEMO-001');
-                 demoParams.set('ngay_hd', new Date().toLocaleDateString('vi-VN'));
+                 demoParams.set('ngay_hd', '08/31/2025'); // Dùng định dạng MM/DD/YYYY để test
                  demoParams.set('khach_hang', 'KHÁCH HÀNG DEMO');
                  demoParams.set('dien_thoai_kh', '0123456789');
                  demoParams.set('dia_chi_kh', 'Hà Nội');
@@ -421,9 +432,11 @@
                 tableBody.innerHTML = '';
 
                 if (contractType === 'dress') {
-                    colgroup.innerHTML = `<col style="width: 5%;"><col style="width: 12.5%;"><col style="width: 8%;"><col style="width: 12%;"><col style="width: 12%;"><col style="width: 13%;"><col style="width: 13%;"><col style="width: 24.5%;">`;
+                    // Thay đổi: Cập nhật chiều rộng cột cho HĐ Váy
+                    colgroup.innerHTML = `<col style="width: 5%;"><col style="width: 17.5%;"><col style="width: 8%;"><col style="width: 12%;"><col style="width: 12%;"><col style="width: 13%;"><col style="width: 13%;"><col style="width: 19.5%;">`;
                     thead.innerHTML = `<tr><th>STT</th><th>Sản phẩm</th><th>Số lượng</th><th>Thành tiền</th><th>Số tiền KM</th><th>Ngày lấy</th><th>Ngày trả</th><th>Ghi chú</th></tr>`;
                 } else {
+                    // Giữ nguyên chiều rộng cột cho các HĐ khác
                     colgroup.innerHTML = `<col style="width: 5%;"><col style="width: 11%;"><col style="width: 33%;"><col style="width: 8%;"><col style="width: 13%;"><col style="width: 13%;"><col style="width: 17%;">`;
                     thead.innerHTML = `<tr><th>STT</th><th>Sản phẩm</th><th>Chi tiết</th><th>Số lượng</th><th>Thành tiền</th><th>Số tiền KM</th><th>Ghi chú</th></tr>`;
                 }
@@ -526,7 +539,7 @@
                     // Populate with DRESS-SPECIFIC URL params
                     const thanhTienVay = parseFloat(urlParams.get('thanh_tien_vay')?.replace(/,/g, '') || 0);
                     const khuyenMaiVay = parseFloat(urlParams.get('khuyen_mai_vay')?.replace(/,/g, '') || 0);
-                    const phaiThanhToanVay = parseFloat(url_params.get('phai_thanh_toan_vay')?.replace(/,/g, '') || 0);
+                    const phaiThanhToanVay = parseFloat(urlParams.get('phai_thanh_toan_vay')?.replace(/,/g, '') || 0);
                     
                     document.getElementById('subtotal').textContent = thanhTienVay.toLocaleString('vi-VN');
                     document.getElementById('total-promotion').textContent = khuyenMaiVay.toLocaleString('vi-VN');
