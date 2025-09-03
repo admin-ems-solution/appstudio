@@ -284,7 +284,6 @@
             
             setupDropdowns();
 
-            // SỬA ĐỔI BẮT ĐẦU TẠI ĐÂY
             function populateFromUrl(params) {
                  const paramToIdMap = { 
                      ten_studio: ['studio-name', 'studio-signature-name-top', 'studio-signature-name-bottom'],
@@ -294,7 +293,7 @@
                      email_studio: 'studio-email',
                      dienthoai_studio: 'studio-phone',
                      zalo_studio: 'studio-zalo',
-                     ma_hd: ['contract-id', 'payment-info'], // Thêm: Cập nhật nội dung chuyển khoản
+                     ma_hd: ['contract-id', 'payment-info'], 
                      ngay_hd: 'contract-date', 
                      khach_hang: 'customer-name', 
                      dien_thoai_kh: 'customer-phone', 
@@ -307,7 +306,6 @@
                      ngay_chup: 'shooting-date',
                      gio_chup: 'shooting-time',
                      dia_diem_chup: 'shooting-location',
-                     // Thêm mới: Map cho thông tin thanh toán
                      stk: 'payment-account-number',
                      chu_tai_khoan: 'payment-account-name'
                  };
@@ -368,13 +366,11 @@
                  
                  generateContractQRCode(params.get('ma_hd'));
 
-                 // Thêm mới: Lấy thông tin thanh toán động từ URL
                  const maHd = params.get('ma_hd') || '';
                  const bankBin = decodeURIComponent(params.get('ma_bank') || '');
                  const accountNumber = decodeURIComponent(params.get('stk') || '');
                  const accountName = decodeURIComponent(params.get('chu_tai_khoan') || '');
 
-                 // Thay đổi: Truyền thông tin động vào hàm tạo QR
                  generatePaymentQRCode({ 
                      bin: bankBin,
                      accountNo: accountNumber, 
@@ -383,7 +379,6 @@
                      info: maHd
                  });
             }
-            // SỬA ĐỔI KẾT THÚC TẠI ĐÂY
 
             function runDemoMode() {
                  document.body.insertAdjacentHTML('beforeend', '<div style="position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%) rotate(-45deg); font-size: 80pt; color: rgba(0, 0, 0, 0.05); font-weight: 700; text-transform: uppercase; pointer-events: none; z-index: 1000; display: block;">BẢN NHÁP</div>');
@@ -407,23 +402,18 @@
                  demoParams.set('ngay_chup', '30/08/2025');
                  demoParams.set('gio_chup', '8:00 AM');
                  demoParams.set('dia_diem_chup', 'Phim trường Smiley Ville');
-                 // General financial params
                  demoParams.set('thanh_tien', '9500000');
                  demoParams.set('tong_phat_sinh', '0');
                  demoParams.set('khuyen_mai_tong', '500000');
                  demoParams.set('phai_thanh_toan', '9000000');
                  demoParams.set('da_thanh_toan', '8000000');
                  demoParams.set('con_lai', '1000000');
-                 // Dress-specific financial params
                  demoParams.set('thanh_tien_vay', '2000000');
                  demoParams.set('khuyen_mai_vay', '0');
                  demoParams.set('phai_thanh_toan_vay', '2000000');
-                 
                  demoParams.set('ten_ky_kh', 'Tên Khách Hàng Ký');
                  demoParams.set('ten_ky_nv', 'Tên Nhân Viên Ký');
-
-                 // Thêm thông tin bank cho DEMO
-                 demoParams.set('ma_bank', '970422'); // MB Bank
+                 demoParams.set('ma_bank', '970422');
                  demoParams.set('stk', '9395966');
                  demoParams.set('chu_tai_khoan', 'PHẠM VĂN ÁNH');
                  
@@ -436,6 +426,7 @@
                 ];
             }
             
+            // ===== SỬA ĐỔI BẮT ĐẦU TẠI ĐÂY =====
             function populateServiceTable(filterType, contractType) {
                 const table = document.querySelector('.main-content table');
                 if (!table) return;
@@ -462,7 +453,9 @@
                      const row = document.createElement('tr'); 
                      const thanhTienFormatted = (item.thanhtien || 0).toLocaleString('vi-VN');
                      const soTienKmFormatted = (item.sotien_km || 0).toLocaleString('vi-VN');
-                     const ghiChuFormatted = (item.ghi_chu || '').replace(/\\n/g, '<br>');
+                     
+                     // Thay đổi: Tìm ký tự xuống dòng (\n) thay vì chuỗi "\\n"
+                     const ghiChuFormatted = (item.ghi_chu || '').replace(/\n/g, '<br>');
 
                      if (contractType === 'dress') {
                          row.innerHTML = `<td style="text-align: center;">${index + 1}</td>
@@ -474,7 +467,9 @@
                                           <td><span class="dynamic-data">${item.ngay_tra || ''}</span></td>
                                           <td><span class="dynamic-data">${ghiChuFormatted}</span></td>`;
                      } else {
-                         const chiTietFormatted = (item.chitiet || '').replace(/\\n/g, '<br>');
+                         // Thay đổi: Tìm ký tự xuống dòng (\n) thay vì chuỗi "\\n"
+                         const chiTietFormatted = (item.chitiet || '').replace(/\n/g, '<br>');
+
                          row.innerHTML = `<td style="text-align: center;">${index + 1}</td>
                                           <td><span class="dynamic-data">${item.sanpham || ''}</span></td>
                                           <td><span class="dynamic-data">${chiTietFormatted}</span></td>
@@ -486,6 +481,7 @@
                      tableBody.appendChild(row); 
                 });
             }
+            // ===== SỬA ĐỔI KẾT THÚC TẠI ĐÂY =====
 
             function generatePaymentQRCode(data){const qrContainer=document.getElementById("payment-qr-container"),amount=(data.amount||0).toString().replace(/,/g,""),bankBin=data.bin||"",accountNumber=data.accountNo||"",accountName=data.accountName||"";if(!bankBin||!accountNumber)return void(qrContainer.innerHTML='<p style="color: red; font-size: 0.9em;">Lỗi.</p>');const accountNameForURL=encodeURIComponent(removeVietnameseTones(accountName).toUpperCase()),qrApiUrl=`https://img.vietqr.io/image/${bankBin}-${accountNumber}-compact.png?amount=${amount}&addInfo=${encodeURIComponent(data.info||"")}&accountName=${accountNameForURL}`,qrImage=new Image;qrImage.crossOrigin="anonymous",qrContainer.innerHTML="...",qrImage.onload=()=>{qrContainer.innerHTML="",qrContainer.appendChild(qrImage)},qrImage.onerror=()=>{qrContainer.innerHTML='<p style="color: red; font-size: 0.9em;">Lỗi QR.</p>'},qrImage.src=qrApiUrl}
             function generateContractQRCode(e){const t=document.getElementById("contract-qr-container");if(!t||!e)return;const r=`https://api.qrserver.com/v1/create-qr-code/?size=65x65&data=${encodeURIComponent(e)}&qzone=1&format=svg`,n=new Image;n.src=r,n.alt=`QR Code for ${e}`,t.innerHTML="",t.appendChild(n)}
@@ -615,13 +611,11 @@
                 }
             }
 
-            // SỬA ĐỔI BẮT ĐẦU TẠI ĐÂY
             function injectHTMLStructure() {
                  document.querySelector(".header-content").innerHTML = `<header class="header"><div class="header-left"><div class="logo"><img id="studio-logo-img" alt="Studio Logo" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;" onerror="this.style.display='none';"></div><div class="studio-info"><h2 id="studio-name"></h2><p><strong>Địa chỉ:</strong> <span id="studio-address"></span></p><p><strong>Website:</strong> <a id="studio-website" href="#" target="_blank"></a> | <strong>Email:</strong> <span id="studio-email"></span></p><p><strong>Điện thoại:</strong> <span id="studio-phone"></span> | <strong>Zalo:</strong> <span id="studio-zalo"></span></p></div></div><div id="contract-qr-container" title="Mã hợp đồng"></div></header>`;
                  
                  document.querySelector(".main-content").innerHTML = `<div><h1 class="main-title" id="main-contract-title">HỢP ĐỒNG CUNG CẤP DỊCH VỤ</h1><div class="contract-meta">Số: <span id="contract-id" class="dynamic-data"></span> | Ngày: <span id="contract-date" class="dynamic-data"></span></div><p><strong><span id="branch-name-main"></span></strong> Gửi tới quý khách hàng hoá đơn dịch vụ như sau:</p><div class="info-grid" style="display:flex; justify-content:space-between; margin-bottom:20px;"><div class="customer-info" style="width:50%;"><p><strong>Khách hàng:</strong> <span id="customer-name" class="dynamic-data"></span></p><p><strong>Điện thoại:</strong> <span id="customer-phone" class="dynamic-data"></span></p><p><strong>Địa chỉ:</strong> <span id="customer-address" class="dynamic-data"></span></p></div><div class="staff-info" style="width: 40%;"><p><strong>Nhân viên:</strong> <span id="staff-name" class="dynamic-data"></span></p><p><strong>Điện thoại NV:</strong> <span id="staff-phone" class="dynamic-data"></span></p><p><strong>Chức Vụ:</strong> <span id="staff-title" class="dynamic-data"></span></p></div></div><table style="table-layout: fixed;"><colgroup></colgroup><thead></thead><tbody id="service-table-body"></tbody></table></div><div class="summary-and-payment-wrapper"><div class="left-column"><table class="shooting-info-table"><tbody><tr><td><strong>Ngày chụp:</strong></td><td style="text-align:right;"><span id="shooting-date" class="dynamic-data"></span></td></tr><tr><td><strong>Giờ chụp:</strong></td><td style="text-align:right;"><span id="shooting-time" class="dynamic-data"></span></td></tr><tr><td><strong>Địa điểm chụp:</strong></td><td style="text-align:right;"><span id="shooting-location" class="dynamic-data"></span></td></tr></tbody></table><div class="qr-payment-section"><div class="qr-payment-content"><div class="qr-code" id="payment-qr-container"></div><div class="payment-instructions"><p style="font-weight: bold;">QUÉT MÃ QR ĐỂ THANH TOÁN:</p><p>- STK: <span class="dynamic-data" id="payment-account-number"></span></p><p>- Chủ tài khoản: <span class="dynamic-data" id="payment-account-name"></span></p><p>- Nội dung CK: <span class="dynamic-data" id="payment-info"></span></p></div></div></div></div><div class="right-column" id="summary-section-container"></div></div><div class="terms-section"></div>`;
             }
-            // SỬA ĐỔI KẾT THÚC TẠI ĐÂY
         });
     </script>
 </body>
