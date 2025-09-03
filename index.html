@@ -77,6 +77,11 @@
         text-align: right !important;
     }
     
+    /* ===== THÊM MỚI LỚP CSS TẠI ĐÂY ===== */
+    .pre-line-text {
+        white-space: pre-line;
+    }
+    
     .summary-and-payment-wrapper { display: flex; justify-content: space-between; align-items: stretch; margin-top: 5px; margin-bottom: 20px; page-break-inside: avoid; border: 1px solid #e9ecef; padding: 15px; border-radius: 5px; }
     .left-column { width: 58%; }
     .shooting-info-table { margin-bottom: 15px; }
@@ -420,13 +425,14 @@
                  populateFromUrl(demoParams);
                  
                  globalServiceData = [
-                    { sanpham: "Gói chụp Premium", chitiet: "Gói", soluong: 1, thanhtien: 8900000, sotien_km: 500000, ghi_chu: "Bao gồm album", loai_dich_vu: "Gói Chụp" }, 
+                    { sanpham: "Gói chụp Premium", chitiet: "Gói\nBao gồm nhiều dòng", soluong: 1, thanhtien: 8900000, sotien_km: 500000, ghi_chu: "Bao gồm album\nKhông lấy quà tặng", loai_dich_vu: "Gói Chụp" }, 
                     { sanpham: "Váy cưới Lux", chitiet: "Thuê ngày cưới", soluong: 1, thanhtien: 2000000, sotien_km: 0, ghi_chu: "Mã váy V01", loai_dich_vu: "Trang phục", ngay_lay: "30/08/2025", ngay_tra: "02/09/2025" }, 
                     { sanpham: "In ảnh cổng", chitiet: "Tấm", soluong: 1, thanhtien: 600000, sotien_km: 0, ghi_chu: "Kích thước 60x90", loai_dich_vu: "Sản phẩm lẻ" }
                 ];
+                 renderContractTerms('service');
             }
             
-            // ===== SỬA ĐỔI BẮT ĐẦU TẠI ĐÂY =====
+            // ===== HÀM ĐÃ ĐƯỢC CẬP NHẬT TẠI ĐÂY =====
             function populateServiceTable(filterType, contractType) {
                 const table = document.querySelector('.main-content table');
                 if (!table) return;
@@ -453,9 +459,6 @@
                      const row = document.createElement('tr'); 
                      const thanhTienFormatted = (item.thanhtien || 0).toLocaleString('vi-VN');
                      const soTienKmFormatted = (item.sotien_km || 0).toLocaleString('vi-VN');
-                     
-                     // Thay đổi: Tìm ký tự xuống dòng (\n) thay vì chuỗi "\\n"
-                     const ghiChuFormatted = (item.ghi_chu || '').replace(/\n/g, '<br>');
 
                      if (contractType === 'dress') {
                          row.innerHTML = `<td style="text-align: center;">${index + 1}</td>
@@ -465,23 +468,19 @@
                                           <td class="price-cell"><span class="dynamic-data">${soTienKmFormatted}</span></td>
                                           <td><span class="dynamic-data">${item.ngay_lay || ''}</span></td>
                                           <td><span class="dynamic-data">${item.ngay_tra || ''}</span></td>
-                                          <td><span class="dynamic-data">${ghiChuFormatted}</span></td>`;
+                                          <td class="pre-line-text"><span class="dynamic-data">${item.ghi_chu || ''}</span></td>`;
                      } else {
-                         // Thay đổi: Tìm ký tự xuống dòng (\n) thay vì chuỗi "\\n"
-                         const chiTietFormatted = (item.chitiet || '').replace(/\n/g, '<br>');
-
                          row.innerHTML = `<td style="text-align: center;">${index + 1}</td>
                                           <td><span class="dynamic-data">${item.sanpham || ''}</span></td>
-                                          <td><span class="dynamic-data">${chiTietFormatted}</span></td>
+                                          <td class="pre-line-text"><span class="dynamic-data">${item.chitiet || ''}</span></td>
                                           <td style="text-align: center;"><span class="dynamic-data">${item.soluong || 0}</span></td>
                                           <td class="price-cell"><span class="dynamic-data">${thanhTienFormatted}</span></td>
                                           <td class="price-cell"><span class="dynamic-data">${soTienKmFormatted}</span></td>
-                                          <td><span class="dynamic-data">${ghiChuFormatted}</span></td>`; 
+                                          <td class="pre-line-text"><span class="dynamic-data">${item.ghi_chu || ''}</span></td>`; 
                      }
                      tableBody.appendChild(row); 
                 });
             }
-            // ===== SỬA ĐỔI KẾT THÚC TẠI ĐÂY =====
 
             function generatePaymentQRCode(data){const qrContainer=document.getElementById("payment-qr-container"),amount=(data.amount||0).toString().replace(/,/g,""),bankBin=data.bin||"",accountNumber=data.accountNo||"",accountName=data.accountName||"";if(!bankBin||!accountNumber)return void(qrContainer.innerHTML='<p style="color: red; font-size: 0.9em;">Lỗi.</p>');const accountNameForURL=encodeURIComponent(removeVietnameseTones(accountName).toUpperCase()),qrApiUrl=`https://img.vietqr.io/image/${bankBin}-${accountNumber}-compact.png?amount=${amount}&addInfo=${encodeURIComponent(data.info||"")}&accountName=${accountNameForURL}`,qrImage=new Image;qrImage.crossOrigin="anonymous",qrContainer.innerHTML="...",qrImage.onload=()=>{qrContainer.innerHTML="",qrContainer.appendChild(qrImage)},qrImage.onerror=()=>{qrContainer.innerHTML='<p style="color: red; font-size: 0.9em;">Lỗi QR.</p>'},qrImage.src=qrApiUrl}
             function generateContractQRCode(e){const t=document.getElementById("contract-qr-container");if(!t||!e)return;const r=`https://api.qrserver.com/v1/create-qr-code/?size=65x65&data=${encodeURIComponent(e)}&qzone=1&format=svg`,n=new Image;n.src=r,n.alt=`QR Code for ${e}`,t.innerHTML="",t.appendChild(n)}
