@@ -77,11 +77,6 @@
         text-align: right !important;
     }
     
-    /* ===== THÊM MỚI LỚP CSS TẠI ĐÂY ===== */
-    .pre-line-text {
-        white-space: pre-line;
-    }
-    
     .summary-and-payment-wrapper { display: flex; justify-content: space-between; align-items: stretch; margin-top: 5px; margin-bottom: 20px; page-break-inside: avoid; border: 1px solid #e9ecef; padding: 15px; border-radius: 5px; }
     .left-column { width: 58%; }
     .shooting-info-table { margin-bottom: 15px; }
@@ -460,6 +455,10 @@
                      const thanhTienFormatted = (item.thanhtien || 0).toLocaleString('vi-VN');
                      const soTienKmFormatted = (item.sotien_km || 0).toLocaleString('vi-VN');
 
+                     // Thay thế ký tự xuống dòng (\n) bằng thẻ <br>
+                     const ghiChuFormatted = (item.ghi_chu || '').replace(/\n/g, '<br>');
+                     const chiTietFormatted = (item.chitiet || '').replace(/\n/g, '<br>');
+
                      if (contractType === 'dress') {
                          row.innerHTML = `<td style="text-align: center;">${index + 1}</td>
                                           <td><span class="dynamic-data">${item.sanpham || ''}</span></td>
@@ -468,15 +467,15 @@
                                           <td class="price-cell"><span class="dynamic-data">${soTienKmFormatted}</span></td>
                                           <td><span class="dynamic-data">${item.ngay_lay || ''}</span></td>
                                           <td><span class="dynamic-data">${item.ngay_tra || ''}</span></td>
-                                          <td class="pre-line-text"><span class="dynamic-data">${item.ghi_chu || ''}</span></td>`;
+                                          <td><span class="dynamic-data">${ghiChuFormatted}</span></td>`;
                      } else {
                          row.innerHTML = `<td style="text-align: center;">${index + 1}</td>
                                           <td><span class="dynamic-data">${item.sanpham || ''}</span></td>
-                                          <td class="pre-line-text"><span class="dynamic-data">${item.chitiet || ''}</span></td>
+                                          <td><span class="dynamic-data">${chiTietFormatted}</span></td>
                                           <td style="text-align: center;"><span class="dynamic-data">${item.soluong || 0}</span></td>
                                           <td class="price-cell"><span class="dynamic-data">${thanhTienFormatted}</span></td>
                                           <td class="price-cell"><span class="dynamic-data">${soTienKmFormatted}</span></td>
-                                          <td class="pre-line-text"><span class="dynamic-data">${item.ghi_chu || ''}</span></td>`; 
+                                          <td><span class="dynamic-data">${ghiChuFormatted}</span></td>`; 
                      }
                      tableBody.appendChild(row); 
                 });
