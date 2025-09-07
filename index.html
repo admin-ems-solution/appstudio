@@ -238,7 +238,6 @@
         
         document.addEventListener('DOMContentLoaded', function(){
             injectHTMLStructure();
-            // Bỏ hàm render mặc định ở đây, vì populateFromUrl sẽ gọi nó
             
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.has('ma_hd') && urlParams.get('ma_hd').trim() !== '') {
@@ -258,9 +257,12 @@
                     });
                 });
                 
-                document.getElementById('print-service-action').addEventListener('click', (e) => { e.preventDefault(); renderContractTerms('service'); setTimeout(() => window.print(), 100); });
-                document.getElementById('print-dress-action').addEventListener('click', (e) => { e.preventDefault(); renderContractTerms('dress'); setTimeout(() => window.print(), 100); });
-                document.getElementById('print-family-action').addEventListener('click', (e) => { e.preventDefault(); renderContractTerms('family'); setTimeout(() => window.print(), 100); });
+                // ===== CẬP NHẬT LOGIC SỰ KIỆN CLICK =====
+                // Bây giờ, các hành động sẽ gọi render và truyền vào hành động (in/tải) như một callback
+                // để đảm bảo mã QR được cập nhật trước khi thực hiện.
+                document.getElementById('print-service-action').addEventListener('click', (e) => { e.preventDefault(); renderContractTerms('service', () => window.print()); });
+                document.getElementById('print-dress-action').addEventListener('click', (e) => { e.preventDefault(); renderContractTerms('dress', () => window.print()); });
+                document.getElementById('print-family-action').addEventListener('click', (e) => { e.preventDefault(); renderContractTerms('family', () => window.print()); });
 
                 document.getElementById('download-service-action').addEventListener('click', (e) => { e.preventDefault(); downloadAsPdf('service', 'HD_Dich_Vu'); });
                 document.getElementById('download-dress-action').addEventListener('click', (e) => { e.preventDefault(); downloadAsPdf('dress', 'HD_Vay'); });
@@ -363,13 +365,8 @@
                     } 
                  }
                  
-                 // Luôn hiển thị hợp đồng dịch vụ làm mặc định
                  renderContractTerms('service'); 
-                 
                  generateContractQRCode(params.get('ma_hd'));
-                 
-                 // --- ĐÃ GỠ BỎ LOGIC TẠO QR THANH TOÁN TẠI ĐÂY ---
-                 // Nó đã được chuyển vào hàm renderContractTerms
             }
 
             function runDemoMode() {
@@ -470,13 +467,17 @@
                      tableBody.appendChild(row); 
                 });
             }
-
-            function generatePaymentQRCode(data){const qrContainer=document.getElementById("payment-qr-container"),amount=(data.amount||0).toString().replace(/,/g,""),bankBin=data.bin||"",accountNumber=data.accountNo||"",accountName=data.accountName||"";if(!bankBin||!accountNumber)return void(qrContainer.innerHTML='<p style="color: red; font-size: 0.9em;">Lỗi.</p>');const accountNameForURL=encodeURIComponent(removeVietnameseTones(accountName).toUpperCase()),qrApiUrl=`https://img.vietqr.io/image/${bankBin}-${accountNumber}-compact.png?amount=${amount}&addInfo=${encodeURIComponent(data.info||"")}&accountName=${accountNameForURL}`,qrImage=new Image;qrImage.crossOrigin="anonymous",qrContainer.innerHTML="...",qrImage.onload=()=>{qrContainer.innerHTML="",qrContainer.appendChild(qrImage)},qrImage.onerror=()=>{qrContainer.innerHTML='<p style="color: red; font-size: 0.9em;">Lỗi QR.</p>'},qrImage.src=qrApiUrl}
+            
+            // ===== CẬP NHẬT: HÀM TẠO QR CHẤP NHẬN MỘT CALLBACK =====
+            // Callback này sẽ được gọi sau khi ảnh QR đã tải xong.
+            function generatePaymentQRCode(data, callback){const qrContainer=document.getElementById("payment-qr-container"),amount=(data.amount||0).toString().replace(/,/g,""),bankBin=data.bin||"",accountNumber=data.accountNo||"",accountName=data.accountName||"";if(!bankBin||!accountNumber){qrContainer.innerHTML='<p style="color: red; font-size: 0.9em;">Lỗi.</p>';if(callback)callback();return}const accountNameForURL=encodeURIComponent(removeVietnameseTones(accountName).toUpperCase()),qrApiUrl=`https://img.vietqr.io/image/${bankBin}-${accountNumber}-compact.png?amount=${amount}&addInfo=${encodeURIComponent(data.info||"")}&accountName=${accountNameForURL}`,qrImage=new Image;qrImage.crossOrigin="anonymous",qrContainer.innerHTML="...",qrImage.onload=()=>{qrContainer.innerHTML="",qrContainer.appendChild(qrImage);if(callback)callback()},qrImage.onerror=()=>{qrContainer.innerHTML='<p style="color: red; font-size: 0.9em;">Lỗi QR.</p>';if(callback)callback()},qrImage.src=qrApiUrl}
+            
             function generateContractQRCode(e){const t=document.getElementById("contract-qr-container");if(!t||!e)return;const r=`https://api.qrserver.com/v1/create-qr-code/?size=65x65&data=${encodeURIComponent(e)}&qzone=1&format=svg`,n=new Image;n.src=r,n.alt=`QR Code for ${e}`,t.innerHTML="",t.appendChild(n)}
             
+            // ===== CẬP NHẬT: HÀM TẢI PDF =====
+            // Bây giờ hàm này sẽ render hợp đồng và truyền vào hành động tạo PDF như một callback.
             function downloadAsPdf(contractType, fileNamePrefix) {
-                renderContractTerms(contractType); 
-                setTimeout(() => {
+                const generateAndSavePdf = () => {
                     const dropdownBtns = document.querySelectorAll('.dropdown-btn');
                     const element = document.getElementById('a4-page-content');
                     const originalShadow = element.style.boxShadow;
@@ -504,11 +505,14 @@
                         document.getElementById('download-dropdown-btn').innerHTML = '📄 Tải về PDF ▾';
                         closeAllDropdowns();
                     });
-                }, 100);
+                };
+                
+                renderContractTerms(contractType, generateAndSavePdf);
             }
             
-            // ===== HÀM ĐÃ ĐƯỢC CẬP NHẬT ĐỂ SỬA LỖI QR CODE =====
-            function renderContractTerms(type) {
+            // ===== CẬP NHẬT: HÀM RENDER CHÍNH =====
+            // Hàm này chấp nhận một callback và truyền nó cho hàm generatePaymentQRCode.
+            function renderContractTerms(type, onReadyCallback) {
                 const termsContainer = document.querySelector('.terms-section');
                 const titleElement = document.getElementById('main-contract-title');
                 const summaryContainer = document.getElementById('summary-section-container');
@@ -516,7 +520,7 @@
 
                 if (!termsContainer || !titleElement || !summaryContainer) return;
 
-                let amountForQrCode = 0; // Biến để lưu số tiền cho mã QR
+                let amountForQrCode = 0;
                 
                 if (type === 'dress') {
                     termsContainer.innerHTML = CONTRACT_TERMS_DRESS;
@@ -541,10 +545,9 @@
                     document.getElementById('total-due').textContent = phaiThanhToanVay.toLocaleString('vi-VN');
                     document.getElementById('amount-in-words').textContent = readNumberInVietnamese(phaiThanhToanVay);
                     
-                    // CẬP NHẬT: Lấy số tiền "Phải TT" của HĐ Váy cho mã QR
                     amountForQrCode = phaiThanhToanVay;
 
-                } else { // Áp dụng cho 'service' và 'family'
+                } else {
                     const defaultSummaryHTML = `
                         <table class="summary-table">
                             <tbody>
@@ -576,21 +579,28 @@
                     const conLaiRaw = (urlParams.get('con_lai') || "0").replace(/[^0-9]/g, '');
                     document.getElementById('amount-in-words').textContent = readNumberInVietnamese(conLaiRaw);
 
-                    // CẬP NHẬT: Lấy số tiền "Còn lại" cho mã QR
                     amountForQrCode = parseInt(conLaiRaw, 10);
 
                     if (type === 'family') {
                         termsContainer.innerHTML = CONTRACT_TERMS_FAMILY;
                         titleElement.textContent = 'HỢP ĐỒNG BABY & GIA ĐÌNH';
                         populateServiceTable(null, 'family');
-                    } else { // service
+                    } else {
                         termsContainer.innerHTML = CONTRACT_TERMS_SERVICE;
                         titleElement.textContent = 'HỢP ĐỒNG CUNG CẤP DỊCH VỤ';
                         populateServiceTable(null, 'service');
                     }
                 }
+                
+                const ten_ky_kh = urlParams.get('ten_ky_kh') || (urlParams.has('ma_hd') ? '' : 'Tên Khách Hàng Ký');
+                const ten_ky_nv = urlParams.get('ten_ky_nv') || (urlParams.has('ma_hd') ? '' : 'Tên Nhân Viên Ký');
+                const ten_studio = urlParams.get('ten_studio') || (urlParams.has('ma_hd') ? '' : '2H STUDIO');
 
-                // CẬP NHẬT: Tạo lại mã QR thanh toán mỗi khi render lại hợp đồng
+                if (document.getElementById('customer-signature-name')) document.getElementById('customer-signature-name').textContent = ten_ky_kh;
+                if (document.getElementById('staff-signature-name')) document.getElementById('staff-signature-name').textContent = ten_ky_nv;
+                if (document.getElementById('studio-signature-name-top')) document.getElementById('studio-signature-name-top').textContent = ten_studio;
+                if (document.getElementById('studio-signature-name-bottom')) document.getElementById('studio-signature-name-bottom').textContent = ten_studio;
+
                 const maHd = urlParams.get('ma_hd') || '';
                 const bankBin = decodeURIComponent(urlParams.get('ma_bank') || '');
                 const accountNumber = decodeURIComponent(urlParams.get('stk') || '');
@@ -601,25 +611,7 @@
                      accountName: accountName, 
                      amount: amountForQrCode, 
                      info: maHd
-                 });
-                
-                // Cập nhật tên ký
-                const ten_ky_kh = urlParams.get('ten_ky_kh') || (urlParams.has('ma_hd') ? '' : 'Tên Khách Hàng Ký');
-                const ten_ky_nv = urlParams.get('ten_ky_nv') || (urlParams.has('ma_hd') ? '' : 'Tên Nhân Viên Ký');
-                const ten_studio = urlParams.get('ten_studio') || (urlParams.has('ma_hd') ? '' : '2H STUDIO');
-
-                if (document.getElementById('customer-signature-name')) {
-                    document.getElementById('customer-signature-name').textContent = ten_ky_kh;
-                }
-                if (document.getElementById('staff-signature-name')) {
-                    document.getElementById('staff-signature-name').textContent = ten_ky_nv;
-                }
-                if (document.getElementById('studio-signature-name-top')) {
-                    document.getElementById('studio-signature-name-top').textContent = ten_studio;
-                }
-                if (document.getElementById('studio-signature-name-bottom')) {
-                    document.getElementById('studio-signature-name-bottom').textContent = ten_studio;
-                }
+                 }, onReadyCallback); // Truyền callback vào đây
             }
 
             function injectHTMLStructure() {
