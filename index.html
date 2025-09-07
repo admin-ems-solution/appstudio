@@ -238,8 +238,8 @@
         
         document.addEventListener('DOMContentLoaded', function(){
             injectHTMLStructure();
-            renderContractTerms('service'); 
-
+            // Bỏ hàm render mặc định ở đây, vì populateFromUrl sẽ gọi nó
+            
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.has('ma_hd') && urlParams.get('ma_hd').trim() !== '') {
                 populateFromUrl(urlParams);
@@ -362,22 +362,14 @@
                         console.error("Error parsing JSON:", e); 
                     } 
                  }
+                 
+                 // Luôn hiển thị hợp đồng dịch vụ làm mặc định
                  renderContractTerms('service'); 
                  
                  generateContractQRCode(params.get('ma_hd'));
-
-                 const maHd = params.get('ma_hd') || '';
-                 const bankBin = decodeURIComponent(params.get('ma_bank') || '');
-                 const accountNumber = decodeURIComponent(params.get('stk') || '');
-                 const accountName = decodeURIComponent(params.get('chu_tai_khoan') || '');
-
-                 generatePaymentQRCode({ 
-                     bin: bankBin,
-                     accountNo: accountNumber, 
-                     accountName: accountName, 
-                     amount: parseInt((params.get('con_lai') || "0").replace(/[^0-9]/g, ''), 10), 
-                     info: maHd
-                 });
+                 
+                 // --- ĐÃ GỠ BỎ LOGIC TẠO QR THANH TOÁN TẠI ĐÂY ---
+                 // Nó đã được chuyển vào hàm renderContractTerms
             }
 
             function runDemoMode() {
@@ -427,7 +419,6 @@
                  renderContractTerms('service');
             }
             
-            // ===== HÀM ĐÃ ĐƯỢC CẬP NHẬT TẠI ĐÂY =====
             function populateServiceTable(filterType, contractType) {
                 const table = document.querySelector('.main-content table');
                 if (!table) return;
@@ -455,7 +446,6 @@
                      const thanhTienFormatted = (item.thanhtien || 0).toLocaleString('vi-VN');
                      const soTienKmFormatted = (item.sotien_km || 0).toLocaleString('vi-VN');
 
-                     // Thay thế ký tự xuống dòng (\n) bằng thẻ <br>
                      const ghiChuFormatted = (item.ghi_chu || '').replace(/\n/g, '<br>');
                      const chiTietFormatted = (item.chitiet || '').replace(/\n/g, '<br>');
 
@@ -517,6 +507,7 @@
                 }, 100);
             }
             
+            // ===== HÀM ĐÃ ĐƯỢC CẬP NHẬT ĐỂ SỬA LỖI QR CODE =====
             function renderContractTerms(type) {
                 const termsContainer = document.querySelector('.terms-section');
                 const titleElement = document.getElementById('main-contract-title');
@@ -524,6 +515,8 @@
                 const urlParams = new URLSearchParams(window.location.search);
 
                 if (!termsContainer || !titleElement || !summaryContainer) return;
+
+                let amountForQrCode = 0; // Biến để lưu số tiền cho mã QR
                 
                 if (type === 'dress') {
                     termsContainer.innerHTML = CONTRACT_TERMS_DRESS;
@@ -547,8 +540,11 @@
                     document.getElementById('total-promotion').textContent = khuyenMaiVay.toLocaleString('vi-VN');
                     document.getElementById('total-due').textContent = phaiThanhToanVay.toLocaleString('vi-VN');
                     document.getElementById('amount-in-words').textContent = readNumberInVietnamese(phaiThanhToanVay);
+                    
+                    // CẬP NHẬT: Lấy số tiền "Phải TT" của HĐ Váy cho mã QR
+                    amountForQrCode = phaiThanhToanVay;
 
-                } else {
+                } else { // Áp dụng cho 'service' và 'family'
                     const defaultSummaryHTML = `
                         <table class="summary-table">
                             <tbody>
@@ -580,6 +576,9 @@
                     const conLaiRaw = (urlParams.get('con_lai') || "0").replace(/[^0-9]/g, '');
                     document.getElementById('amount-in-words').textContent = readNumberInVietnamese(conLaiRaw);
 
+                    // CẬP NHẬT: Lấy số tiền "Còn lại" cho mã QR
+                    amountForQrCode = parseInt(conLaiRaw, 10);
+
                     if (type === 'family') {
                         termsContainer.innerHTML = CONTRACT_TERMS_FAMILY;
                         titleElement.textContent = 'HỢP ĐỒNG BABY & GIA ĐÌNH';
@@ -590,7 +589,21 @@
                         populateServiceTable(null, 'service');
                     }
                 }
+
+                // CẬP NHẬT: Tạo lại mã QR thanh toán mỗi khi render lại hợp đồng
+                const maHd = urlParams.get('ma_hd') || '';
+                const bankBin = decodeURIComponent(urlParams.get('ma_bank') || '');
+                const accountNumber = decodeURIComponent(urlParams.get('stk') || '');
+                const accountName = decodeURIComponent(urlParams.get('chu_tai_khoan') || '');
+                generatePaymentQRCode({ 
+                     bin: bankBin,
+                     accountNo: accountNumber, 
+                     accountName: accountName, 
+                     amount: amountForQrCode, 
+                     info: maHd
+                 });
                 
+                // Cập nhật tên ký
                 const ten_ky_kh = urlParams.get('ten_ky_kh') || (urlParams.has('ma_hd') ? '' : 'Tên Khách Hàng Ký');
                 const ten_ky_nv = urlParams.get('ten_ky_nv') || (urlParams.has('ma_hd') ? '' : 'Tên Nhân Viên Ký');
                 const ten_studio = urlParams.get('ten_studio') || (urlParams.has('ma_hd') ? '' : '2H STUDIO');
