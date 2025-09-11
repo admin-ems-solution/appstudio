@@ -30,7 +30,7 @@
     }
     .actions-container .action-btn.select-btn { background-color: #6c757d; }
     .actions-container .action-btn.download-pdf-btn { background-color: #198754; }
-    .actions-container .action-btn.download-img-btn { background-color: #fd7e14; } /* Orange for Image Button */
+    .actions-container .action-btn.download-img-btn { background-color: #fd7e14; }
     
     .actions-container .dropdown-content {
         display: none; position: absolute; right: 0; background-color: #f1f1f1; min-width: 200px;
@@ -162,7 +162,7 @@
     
     <script>
         let globalServiceData = []; 
-        let currentContractType = 'service'; // To track the currently selected contract
+        let currentContractType = 'service';
 
         const CONTRACT_TERMS_SERVICE = `
             <div class="print-block">
@@ -373,7 +373,7 @@
             function runDemoMode() {
                  document.body.insertAdjacentHTML('beforeend', '<div style="position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%) rotate(-45deg); font-size: 80pt; color: rgba(0, 0, 0, 0.05); font-weight: 700; text-transform: uppercase; pointer-events: none; z-index: 1000; display: block;">BẢN NHÁP</div>');
                  const demoParams = new URLSearchParams();
-                 demoParams.set('logo_url', 'https://scontent.fsgn2-6.fna.fbcdn.net/v/t39.30808-6/274489412_1388888508225332_3112485830184052132_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=6UFIS_ClcLEQ7kNvwELXjBZ&_nc_oc=AdmyGu3tXEesz-U3QQ3TkufiXrAsnlpuJgRLwf0SHxStw3L-vpIGeaw4TZ6d2EkZaE4&_nc_zt=23&_nc_ht=scontent.fsgn2-6.fna&_nc_gid=BbGYZsNaWzblm0tLvHhfTQ&oh=00_AfWEb38bc0Un-ycVgv1XZO-tNTBfVmpCHfUALr49vuJCaQ&oe=68B1DBA0');
+                 demoParams.set('logo_url', 'https://www.appsheet.com/template/gettablefileurl?appName=YourAppName-12345&tableName=chi_nhanh&fileName=chi_nhanh_Images%2Flogo.png'); // Example of a valid AppSheet URL
                  demoParams.set('ten_studio', '2H STUDIO');
                  demoParams.set('ten_chi_nhanh', '2H STUDIO - SƠN TÂY');
                  demoParams.set('diachi_studio', '566 Chùa Thông - Sơn Tây - Hà Nội');
@@ -410,7 +410,7 @@
                  populateFromUrl(demoParams);
                  
                  globalServiceData = [
-                    { sanpham: "Gói chụp Premium", chitiet: "Gói\nBao gồm nhiều dòng", soluong: 1, thanhtien: 8900000, sotien_km: 500000, ghi_chu: "Bao gồm album\nKhông lấy quà tặng", loai_dich_vu: "Gói Chụp" }, 
+                    { sanpham: "Gói chụp Premium", chitiet: "Gói\\nBao gồm nhiều dòng", soluong: 1, thanhtien: 8900000, sotien_km: 500000, ghi_chu: "Bao gồm album\\nKhông lấy quà tặng", loai_dich_vu: "Gói Chụp" }, 
                     { sanpham: "Váy cưới Lux", chitiet: "Thuê ngày cưới", soluong: 1, thanhtien: 2000000, sotien_km: 0, ghi_chu: "Mã váy V01", loai_dich_vu: "Trang phục", ngay_lay: "30/08/2025", ngay_tra: "02/09/2025" }, 
                     { sanpham: "In ảnh cổng", chitiet: "Tấm", soluong: 1, thanhtien: 600000, sotien_km: 0, ghi_chu: "Kích thước 60x90", loai_dich_vu: "Sản phẩm lẻ" }
                 ];
@@ -444,8 +444,11 @@
                      const thanhTienFormatted = (item.thanhtien || 0).toLocaleString('vi-VN');
                      const soTienKmFormatted = (item.sotien_km || 0).toLocaleString('vi-VN');
 
-                     const ghiChuFormatted = (item.ghi_chu || '').replace(/\n/g, '<br>');
-                     const chiTietFormatted = (item.chitiet || '').replace(/\n/g, '<br>');
+                     // --- START: LINE BREAK FIX ---
+                     // Replace both literal "\\n" and actual "\n" newlines with <br> tags.
+                     const ghiChuFormatted = (item.ghi_chu || '').replace(/\\n/g, '<br>').replace(/\n/g, '<br>');
+                     const chiTietFormatted = (item.chitiet || '').replace(/\\n/g, '<br>').replace(/\n/g, '<br>');
+                     // --- END: LINE BREAK FIX ---
 
                      if (contractType === 'dress') {
                          row.innerHTML = `<td style="text-align: center;">${index + 1}</td>
@@ -531,7 +534,7 @@
                     element.style.boxShadow = 'none';
                     const filename = `${getFileNamePrefix()}_${document.getElementById('contract-id').textContent.trim()}_${document.getElementById('customer-name').textContent.trim()}.jpg`;
                     const options = {
-                        scale: 3, // ~300 DPI for high-quality print
+                        scale: 3,
                         useCORS: true,
                         logging: false
                     };
@@ -539,7 +542,7 @@
                     html2canvas(element, options).then(canvas => {
                         const link = document.createElement('a');
                         link.download = filename;
-                        link.href = canvas.toDataURL('image/jpeg', 0.95); // High quality JPEG
+                        link.href = canvas.toDataURL('image/jpeg', 0.95);
                         link.click();
                     }).catch(err => {
                         console.error("Image generation failed:", err);
@@ -553,7 +556,7 @@
             }
             
             function renderContractTerms(type, onReadyCallback) {
-                currentContractType = type; // Update the global state
+                currentContractType = type;
                 
                 const termsContainer = document.querySelector('.terms-section');
                 const titleElement = document.getElementById('main-contract-title');
