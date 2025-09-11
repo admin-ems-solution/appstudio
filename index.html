@@ -257,9 +257,6 @@
                     });
                 });
                 
-                // ===== CẬP NHẬT LOGIC SỰ KIỆN CLICK =====
-                // Bây giờ, các hành động sẽ gọi render và truyền vào hành động (in/tải) như một callback
-                // để đảm bảo mã QR được cập nhật trước khi thực hiện.
                 document.getElementById('print-service-action').addEventListener('click', (e) => { e.preventDefault(); renderContractTerms('service', () => window.print()); });
                 document.getElementById('print-dress-action').addEventListener('click', (e) => { e.preventDefault(); renderContractTerms('dress', () => window.print()); });
                 document.getElementById('print-family-action').addEventListener('click', (e) => { e.preventDefault(); renderContractTerms('family', () => window.print()); });
@@ -468,14 +465,10 @@
                 });
             }
             
-            // ===== CẬP NHẬT: HÀM TẠO QR CHẤP NHẬN MỘT CALLBACK =====
-            // Callback này sẽ được gọi sau khi ảnh QR đã tải xong.
             function generatePaymentQRCode(data, callback){const qrContainer=document.getElementById("payment-qr-container"),amount=(data.amount||0).toString().replace(/,/g,""),bankBin=data.bin||"",accountNumber=data.accountNo||"",accountName=data.accountName||"";if(!bankBin||!accountNumber){qrContainer.innerHTML='<p style="color: red; font-size: 0.9em;">Lỗi.</p>';if(callback)callback();return}const accountNameForURL=encodeURIComponent(removeVietnameseTones(accountName).toUpperCase()),qrApiUrl=`https://img.vietqr.io/image/${bankBin}-${accountNumber}-compact.png?amount=${amount}&addInfo=${encodeURIComponent(data.info||"")}&accountName=${accountNameForURL}`,qrImage=new Image;qrImage.crossOrigin="anonymous",qrContainer.innerHTML="...",qrImage.onload=()=>{qrContainer.innerHTML="",qrContainer.appendChild(qrImage);if(callback)callback()},qrImage.onerror=()=>{qrContainer.innerHTML='<p style="color: red; font-size: 0.9em;">Lỗi QR.</p>';if(callback)callback()},qrImage.src=qrApiUrl}
             
             function generateContractQRCode(e){const t=document.getElementById("contract-qr-container");if(!t||!e)return;const r=`https://api.qrserver.com/v1/create-qr-code/?size=65x65&data=${encodeURIComponent(e)}&qzone=1&format=svg`,n=new Image;n.src=r,n.alt=`QR Code for ${e}`,t.innerHTML="",t.appendChild(n)}
             
-            // ===== CẬP NHẬT: HÀM TẢI PDF =====
-            // Bây giờ hàm này sẽ render hợp đồng và truyền vào hành động tạo PDF như một callback.
             function downloadAsPdf(contractType, fileNamePrefix) {
                 const generateAndSavePdf = () => {
                     const dropdownBtns = document.querySelectorAll('.dropdown-btn');
@@ -485,13 +478,17 @@
                     document.getElementById('download-dropdown-btn').textContent = 'Đang xử lý...';
                     element.style.boxShadow = 'none';
                     const filename = `${fileNamePrefix}_${document.getElementById('contract-id').textContent.trim()}_${document.getElementById('customer-name').textContent.trim()}.pdf`;
+                    
+                    // --- START: EDIT FOR PDF MARGIN ---
                     const opt = { 
-                        margin: 10,
+                        margin: [10, 5, 5, 10], // Lề: [Trên, Trái, Dưới, Phải] in mm
                         filename: filename, 
                         image: { type: 'jpeg', quality: 0.98 }, 
                         html2canvas:  { scale: 2, useCORS: true, logging: false }, 
                         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } 
                     };
+                    // --- END: EDIT FOR PDF MARGIN ---
+
                     html2pdf().from(element).set(opt).save().then(() => {
                         element.style.boxShadow = originalShadow;
                         dropdownBtns.forEach(btn => btn.disabled = false);
@@ -510,8 +507,6 @@
                 renderContractTerms(contractType, generateAndSavePdf);
             }
             
-            // ===== CẬP NHẬT: HÀM RENDER CHÍNH =====
-            // Hàm này chấp nhận một callback và truyền nó cho hàm generatePaymentQRCode.
             function renderContractTerms(type, onReadyCallback) {
                 const termsContainer = document.querySelector('.terms-section');
                 const titleElement = document.getElementById('main-contract-title');
@@ -524,25 +519,16 @@
                 let amountForQrCode = 0;
                 
                 if (type === 'dress') {
-                    // --- START: EDIT FOR DRESS CONTRACT ---
                     termsContainer.innerHTML = CONTRACT_TERMS_DRESS;
                     titleElement.textContent = 'HỢP ĐỒNG CUNG CẤP TRANG PHỤC';
                     populateServiceTable('Trang phục', 'dress');
-                    
-                    // Xóa mục thông tin ngày, giờ, địa điểm chụp
                     shootingInfoTable.style.display = 'none';
-                    
-                    // Xóa mục thông tin thành tiền, Khuyến mãi, phải TT, Đọc số bằng chữ
                     summaryContainer.innerHTML = '';
-                    
                     const phaiThanhToanVay = parseFloat(urlParams.get('phai_thanh_toan_vay')?.replace(/,/g, '') || 0);
                     amountForQrCode = phaiThanhToanVay;
-                    // --- END: EDIT FOR DRESS CONTRACT ---
 
                 } else {
-                    // Hiện lại mục thông tin ngày, giờ, địa điểm chụp cho các HĐ khác
                     shootingInfoTable.style.display = 'table';
-                    
                     const defaultSummaryHTML = `
                         <table class="summary-table">
                             <tbody>
@@ -606,7 +592,7 @@
                      accountName: accountName, 
                      amount: amountForQrCode, 
                      info: maHd
-                 }, onReadyCallback); // Truyền callback vào đây
+                 }, onReadyCallback);
             }
 
             function injectHTMLStructure() {
