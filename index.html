@@ -516,38 +516,33 @@
                 const termsContainer = document.querySelector('.terms-section');
                 const titleElement = document.getElementById('main-contract-title');
                 const summaryContainer = document.getElementById('summary-section-container');
+                const shootingInfoTable = document.querySelector('.shooting-info-table');
                 const urlParams = new URLSearchParams(window.location.search);
 
-                if (!termsContainer || !titleElement || !summaryContainer) return;
+                if (!termsContainer || !titleElement || !summaryContainer || !shootingInfoTable) return;
 
                 let amountForQrCode = 0;
                 
                 if (type === 'dress') {
+                    // --- START: EDIT FOR DRESS CONTRACT ---
                     termsContainer.innerHTML = CONTRACT_TERMS_DRESS;
                     titleElement.textContent = 'HỢP ĐỒNG CUNG CẤP TRANG PHỤC';
                     populateServiceTable('Trang phục', 'dress');
-                    const dressSummaryHTML = `
-                        <table class="summary-table">
-                            <tbody>
-                                <tr><td>Thành tiền:</td><td style="text-align:right;"><span id="subtotal" class="dynamic-data"></span></td></tr>
-                                <tr><td>Khuyến mãi:</td><td style="text-align:right;"><span id="total-promotion" class="dynamic-data"></span></td></tr>
-                                <tr><td style="font-weight: 700;">Phải TT:</td><td style="text-align:right; font-weight: 700;"><span id="total-due" class="dynamic-data"></span></td></tr>
-                                <tr><td colspan="2">(Bằng chữ: <span id="amount-in-words" class="dynamic-data"></span>)</td></tr>
-                            </tbody>
-                        </table>`;
-                    summaryContainer.innerHTML = dressSummaryHTML;
-                    const thanhTienVay = parseFloat(urlParams.get('thanh_tien_vay')?.replace(/,/g, '') || 0);
-                    const khuyenMaiVay = parseFloat(urlParams.get('khuyen_mai_vay')?.replace(/,/g, '') || 0);
+                    
+                    // Xóa mục thông tin ngày, giờ, địa điểm chụp
+                    shootingInfoTable.style.display = 'none';
+                    
+                    // Xóa mục thông tin thành tiền, Khuyến mãi, phải TT, Đọc số bằng chữ
+                    summaryContainer.innerHTML = '';
+                    
                     const phaiThanhToanVay = parseFloat(urlParams.get('phai_thanh_toan_vay')?.replace(/,/g, '') || 0);
-                    
-                    document.getElementById('subtotal').textContent = thanhTienVay.toLocaleString('vi-VN');
-                    document.getElementById('total-promotion').textContent = khuyenMaiVay.toLocaleString('vi-VN');
-                    document.getElementById('total-due').textContent = phaiThanhToanVay.toLocaleString('vi-VN');
-                    document.getElementById('amount-in-words').textContent = readNumberInVietnamese(phaiThanhToanVay);
-                    
                     amountForQrCode = phaiThanhToanVay;
+                    // --- END: EDIT FOR DRESS CONTRACT ---
 
                 } else {
+                    // Hiện lại mục thông tin ngày, giờ, địa điểm chụp cho các HĐ khác
+                    shootingInfoTable.style.display = 'table';
+                    
                     const defaultSummaryHTML = `
                         <table class="summary-table">
                             <tbody>
