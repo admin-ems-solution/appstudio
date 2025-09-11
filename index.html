@@ -6,6 +6,7 @@
     <title>Hợp Đồng Cung Cấp Dịch Vụ</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     
    <style>
     @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;700&display=swap');
@@ -22,9 +23,15 @@
         z-index: 2000; box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     }
 
-    .actions-container .dropdown { position: relative; display: inline-block; margin-left: 10px; }
-    .actions-container .dropdown-btn { background-color: #0d6efd; color: white; border: none; padding: 8px 16px; border-radius: 5px; font-size: 14px; font-weight: 500; cursor: pointer; }
-    .actions-container .dropdown-btn.download-btn { background-color: #198754; }
+    .actions-container .dropdown { position: relative; display: inline-block; }
+    .actions-container .action-btn { 
+        background-color: #0d6efd; color: white; border: none; padding: 8px 16px; border-radius: 5px; 
+        font-size: 14px; font-weight: 500; cursor: pointer; margin-left: 10px;
+    }
+    .actions-container .action-btn.select-btn { background-color: #6c757d; }
+    .actions-container .action-btn.download-pdf-btn { background-color: #198754; }
+    .actions-container .action-btn.download-img-btn { background-color: #fd7e14; } /* Orange for Image Button */
+    
     .actions-container .dropdown-content {
         display: none; position: absolute; right: 0; background-color: #f1f1f1; min-width: 200px;
         box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); z-index: 1; border-radius: 5px;
@@ -130,21 +137,18 @@
 <body>
     <div class="actions-container">
         <div class="dropdown">
-            <button id="print-dropdown-btn" class="dropdown-btn">🖨️ In Hợp Đồng ▾</button>
-            <div id="print-dropdown-content" class="dropdown-content">
-                <a href="#" id="print-service-action">Hợp đồng Dịch vụ</a>
-                <a href="#" id="print-dress-action">Hợp đồng Váy</a>
-                <a href="#" id="print-family-action">Hợp đồng Baby & GĐ</a>
+            <button id="select-contract-btn" class="action-btn select-btn">📑 Chọn Hợp Đồng ▾</button>
+            <div id="select-contract-content" class="dropdown-content">
+                <a href="#" id="select-service-action">Hợp đồng Dịch vụ</a>
+                <a href="#" id="select-dress-action">Hợp đồng Váy</a>
+                <a href="#" id="select-family-action">Hợp đồng Baby & GĐ</a>
             </div>
         </div>
-        <div class="dropdown">
-            <button id="download-dropdown-btn" class="dropdown-btn download-btn">📄 Tải về PDF ▾</button>
-            <div id="download-dropdown-content" class="dropdown-content">
-                <a href="#" id="download-service-action">Hợp đồng Dịch vụ</a>
-                <a href="#" id="download-dress-action">Hợp đồng Váy</a>
-                <a href="#" id="download-family-action">Hợp đồng Baby & GĐ</a>
-            </div>
-        </div>
+
+        <button id="print-action" class="action-btn">🖨️ In Hợp Đồng</button>
+        <button id="download-pdf-action" class="action-btn download-pdf-btn">📄 Tải về PDF</button>
+        <button id="download-img-action" class="action-btn download-img-btn">🖼️ Tải Hình Ảnh</button>
+
     </div>
     <div class="page-wrapper">
         <div class="a4-page" id="a4-page-content">
@@ -158,6 +162,7 @@
     
     <script>
         let globalServiceData = []; 
+        let currentContractType = 'service'; // To track the currently selected contract
 
         const CONTRACT_TERMS_SERVICE = `
             <div class="print-block">
@@ -246,24 +251,23 @@
                 runDemoMode();
             }
             
-            function setupDropdowns() {
-                const dropdownBtns = document.querySelectorAll('.dropdown-btn');
-                
-                dropdownBtns.forEach(btn => {
-                    btn.addEventListener('click', function(event) {
-                        event.stopPropagation();
-                        closeAllDropdowns(this.nextElementSibling);
-                        this.nextElementSibling.classList.toggle('show');
-                    });
+            function setupActionButtons() {
+                const selectBtn = document.getElementById('select-contract-btn');
+                const selectContent = document.getElementById('select-contract-content');
+
+                selectBtn.addEventListener('click', function(event) {
+                    event.stopPropagation();
+                    closeAllDropdowns(selectContent);
+                    selectContent.classList.toggle('show');
                 });
                 
-                document.getElementById('print-service-action').addEventListener('click', (e) => { e.preventDefault(); renderContractTerms('service', () => window.print()); });
-                document.getElementById('print-dress-action').addEventListener('click', (e) => { e.preventDefault(); renderContractTerms('dress', () => window.print()); });
-                document.getElementById('print-family-action').addEventListener('click', (e) => { e.preventDefault(); renderContractTerms('family', () => window.print()); });
-
-                document.getElementById('download-service-action').addEventListener('click', (e) => { e.preventDefault(); downloadAsPdf('service', 'HD_Dich_Vu'); });
-                document.getElementById('download-dress-action').addEventListener('click', (e) => { e.preventDefault(); downloadAsPdf('dress', 'HD_Vay'); });
-                document.getElementById('download-family-action').addEventListener('click', (e) => { e.preventDefault(); downloadAsPdf('family', 'HD_Baby_GD'); });
+                document.getElementById('select-service-action').addEventListener('click', (e) => { e.preventDefault(); renderContractTerms('service', closeAllDropdowns); });
+                document.getElementById('select-dress-action').addEventListener('click', (e) => { e.preventDefault(); renderContractTerms('dress', closeAllDropdowns); });
+                document.getElementById('select-family-action').addEventListener('click', (e) => { e.preventDefault(); renderContractTerms('family', closeAllDropdowns); });
+                
+                document.getElementById('print-action').addEventListener('click', (e) => { e.preventDefault(); renderContractTerms(currentContractType, () => window.print()); });
+                document.getElementById('download-pdf-action').addEventListener('click', (e) => { e.preventDefault(); downloadAsPdf(); });
+                document.getElementById('download-img-action').addEventListener('click', (e) => { e.preventDefault(); downloadAsJpg(); });
             }
 
             function closeAllDropdowns(exceptThisOne = null) {
@@ -276,12 +280,12 @@
             }
 
             window.onclick = function(event) {
-                if (!event.target.matches('.dropdown-btn')) {
+                if (!event.target.matches('.action-btn')) {
                     closeAllDropdowns();
                 }
             }
             
-            setupDropdowns();
+            setupActionButtons();
 
             function populateFromUrl(params) {
                  const paramToIdMap = { 
@@ -469,45 +473,88 @@
             
             function generateContractQRCode(e){const t=document.getElementById("contract-qr-container");if(!t||!e)return;const r=`https://api.qrserver.com/v1/create-qr-code/?size=65x65&data=${encodeURIComponent(e)}&qzone=1&format=svg`,n=new Image;n.src=r,n.alt=`QR Code for ${e}`,t.innerHTML="",t.appendChild(n)}
             
-            function downloadAsPdf(contractType, fileNamePrefix) {
+            function getFileNamePrefix() {
+                switch(currentContractType) {
+                    case 'dress': return 'HD_Vay';
+                    case 'family': return 'HD_Baby_GD';
+                    default: return 'HD_Dich_Vu';
+                }
+            }
+            
+            function setButtonsState(disabled, message = '') {
+                document.getElementById('print-action').disabled = disabled;
+                const pdfBtn = document.getElementById('download-pdf-action');
+                const imgBtn = document.getElementById('download-img-action');
+                pdfBtn.disabled = disabled;
+                imgBtn.disabled = disabled;
+                if(disabled) {
+                    if (message.includes('PDF')) pdfBtn.textContent = 'Đang xử lý...';
+                    if (message.includes('IMG')) imgBtn.textContent = 'Đang xử lý...';
+                } else {
+                    pdfBtn.innerHTML = '📄 Tải về PDF';
+                    imgBtn.innerHTML = '🖼️ Tải Hình Ảnh';
+                }
+            }
+
+            function downloadAsPdf() {
                 const generateAndSavePdf = () => {
-                    const dropdownBtns = document.querySelectorAll('.dropdown-btn');
+                    setButtonsState(true, 'PDF');
                     const element = document.getElementById('a4-page-content');
                     const originalShadow = element.style.boxShadow;
-                    dropdownBtns.forEach(btn => btn.disabled = true );
-                    document.getElementById('download-dropdown-btn').textContent = 'Đang xử lý...';
                     element.style.boxShadow = 'none';
-                    const filename = `${fileNamePrefix}_${document.getElementById('contract-id').textContent.trim()}_${document.getElementById('customer-name').textContent.trim()}.pdf`;
-                    
-                    // --- START: EDIT FOR PDF MARGIN ---
+                    const filename = `${getFileNamePrefix()}_${document.getElementById('contract-id').textContent.trim()}_${document.getElementById('customer-name').textContent.trim()}.pdf`;
                     const opt = { 
-                        margin: [10, 5, 5, 10], // Lề: [Trên, Trái, Dưới, Phải] in mm
+                        margin: [10, 5, 5, 10],
                         filename: filename, 
                         image: { type: 'jpeg', quality: 0.98 }, 
-                        html2canvas:  { scale: 2, useCORS: true, logging: false }, 
+                        html2canvas: { scale: 2, useCORS: true, logging: false }, 
                         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } 
                     };
-                    // --- END: EDIT FOR PDF MARGIN ---
-
                     html2pdf().from(element).set(opt).save().then(() => {
                         element.style.boxShadow = originalShadow;
-                        dropdownBtns.forEach(btn => btn.disabled = false);
-                        document.getElementById('download-dropdown-btn').innerHTML = '📄 Tải về PDF ▾';
-                        closeAllDropdowns();
+                        setButtonsState(false);
                     }).catch(err => {
                         console.error("PDF generation failed:", err);
                         alert("Lỗi khi tạo PDF. Vui lòng thử lại.");
                         element.style.boxShadow = originalShadow;
-                        dropdownBtns.forEach(btn => btn.disabled = false);
-                        document.getElementById('download-dropdown-btn').innerHTML = '📄 Tải về PDF ▾';
-                        closeAllDropdowns();
+                        setButtonsState(false);
                     });
                 };
-                
-                renderContractTerms(contractType, generateAndSavePdf);
+                renderContractTerms(currentContractType, generateAndSavePdf);
+            }
+
+            function downloadAsJpg() {
+                const generateAndSaveJpg = () => {
+                    setButtonsState(true, 'IMG');
+                    const element = document.getElementById('a4-page-content');
+                    const originalShadow = element.style.boxShadow;
+                    element.style.boxShadow = 'none';
+                    const filename = `${getFileNamePrefix()}_${document.getElementById('contract-id').textContent.trim()}_${document.getElementById('customer-name').textContent.trim()}.jpg`;
+                    const options = {
+                        scale: 3, // ~300 DPI for high-quality print
+                        useCORS: true,
+                        logging: false
+                    };
+
+                    html2canvas(element, options).then(canvas => {
+                        const link = document.createElement('a');
+                        link.download = filename;
+                        link.href = canvas.toDataURL('image/jpeg', 0.95); // High quality JPEG
+                        link.click();
+                    }).catch(err => {
+                        console.error("Image generation failed:", err);
+                        alert("Lỗi khi tạo hình ảnh. Vui lòng thử lại.");
+                    }).finally(() => {
+                        element.style.boxShadow = originalShadow;
+                        setButtonsState(false);
+                    });
+                };
+                renderContractTerms(currentContractType, generateAndSaveJpg);
             }
             
             function renderContractTerms(type, onReadyCallback) {
+                currentContractType = type; // Update the global state
+                
                 const termsContainer = document.querySelector('.terms-section');
                 const titleElement = document.getElementById('main-contract-title');
                 const summaryContainer = document.getElementById('summary-section-container');
@@ -596,7 +643,8 @@
             }
 
             function injectHTMLStructure() {
-                 document.querySelector(".header-content").innerHTML = `<header class="header"><div class="header-left"><div class="logo"><img id="studio-logo-img" alt="Studio Logo" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;" onerror="this.style.display='none';"></div><div class="studio-info"><h2 id="studio-name"></h2><p><strong>Địa chỉ:</strong> <span id="studio-address"></span></p><p><strong>Website:</strong> <a id="studio-website" href="#" target="_blank"></a> | <strong>Email:</strong> <span id="studio-email"></span></p><p><strong>Điện thoại:</strong> <span id="studio-phone"></span> | <strong>Zalo:</strong> <span id="studio-zalo"></span></p></div></div><div id="contract-qr-container" title="Mã hợp đồng"></div></header>`;
+                 const transparentPixel = "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=";
+                 document.querySelector(".header-content").innerHTML = `<header class="header"><div class="header-left"><div class="logo"><img id="studio-logo-img" src="${transparentPixel}" alt="Studio Logo" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;" onerror="this.style.display='none';"></div><div class="studio-info"><h2 id="studio-name"></h2><p><strong>Địa chỉ:</strong> <span id="studio-address"></span></p><p><strong>Website:</strong> <a id="studio-website" href="#" target="_blank"></a> | <strong>Email:</strong> <span id="studio-email"></span></p><p><strong>Điện thoại:</strong> <span id="studio-phone"></span> | <strong>Zalo:</strong> <span id="studio-zalo"></span></p></div></div><div id="contract-qr-container" title="Mã hợp đồng"></div></header>`;
                  
                  document.querySelector(".main-content").innerHTML = `<div><h1 class="main-title" id="main-contract-title">HỢP ĐỒNG CUNG CẤP DỊCH VỤ</h1><div class="contract-meta">Số: <span id="contract-id" class="dynamic-data"></span> | Ngày: <span id="contract-date" class="dynamic-data"></span></div><p><strong><span id="branch-name-main"></span></strong> Gửi tới quý khách hàng hoá đơn dịch vụ như sau:</p><div class="info-grid" style="display:flex; justify-content:space-between; margin-bottom:20px;"><div class="customer-info" style="width:50%;"><p><strong>Khách hàng:</strong> <span id="customer-name" class="dynamic-data"></span></p><p><strong>Điện thoại:</strong> <span id="customer-phone" class="dynamic-data"></span></p><p><strong>Địa chỉ:</strong> <span id="customer-address" class="dynamic-data"></span></p></div><div class="staff-info" style="width: 40%;"><p><strong>Nhân viên:</strong> <span id="staff-name" class="dynamic-data"></span></p><p><strong>Điện thoại NV:</strong> <span id="staff-phone" class="dynamic-data"></span></p><p><strong>Chức Vụ:</strong> <span id="staff-title" class="dynamic-data"></span></p></div></div><table style="table-layout: fixed;"><colgroup></colgroup><thead></thead><tbody id="service-table-body"></tbody></table></div><div class="summary-and-payment-wrapper"><div class="left-column"><table class="shooting-info-table"><tbody><tr><td><strong>Ngày chụp:</strong></td><td style="text-align:right;"><span id="shooting-date" class="dynamic-data"></span></td></tr><tr><td><strong>Giờ chụp:</strong></td><td style="text-align:right;"><span id="shooting-time" class="dynamic-data"></span></td></tr><tr><td><strong>Địa điểm chụp:</strong></td><td style="text-align:right;"><span id="shooting-location" class="dynamic-data"></span></td></tr></tbody></table><div class="qr-payment-section"><div class="qr-payment-content"><div class="qr-code" id="payment-qr-container"></div><div class="payment-instructions"><p style="font-weight: bold;">QUÉT MÃ QR ĐỂ THANH TOÁN:</p><p>- STK: <span class="dynamic-data" id="payment-account-number"></span></p><p>- Chủ tài khoản: <span class="dynamic-data" id="payment-account-name"></span></p><p>- Nội dung CK: <span class="dynamic-data" id="payment-info"></span></p></div></div></div></div><div class="right-column" id="summary-section-container"></div></div><div class="terms-section"></div>`;
             }
