@@ -506,13 +506,22 @@
                     const originalShadow = element.style.boxShadow;
                     element.style.boxShadow = 'none';
                     const filename = `${getFileNamePrefix()}_${document.getElementById('contract-id').textContent.trim()}_${document.getElementById('customer-name').textContent.trim()}.pdf`;
+                    
+                    // START: UPDATED CODE
                     const opt = { 
                         margin: [10, 5, 5, 10],
                         filename: filename, 
                         image: { type: 'jpeg', quality: 0.98 }, 
-                        html2canvas: { scale: 2, useCORS: true, logging: false }, 
+                        html2canvas: { 
+                            scale: 2, 
+                            useCORS: true, 
+                            logging: false, 
+                            letterRendering: true // Fix for font rendering issue
+                        }, 
                         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } 
                     };
+                    // END: UPDATED CODE
+
                     html2pdf().from(element).set(opt).save().then(() => {
                         element.style.boxShadow = originalShadow;
                         setButtonsState(false);
@@ -533,11 +542,15 @@
                     const originalShadow = element.style.boxShadow;
                     element.style.boxShadow = 'none';
                     const filename = `${getFileNamePrefix()}_${document.getElementById('contract-id').textContent.trim()}_${document.getElementById('customer-name').textContent.trim()}.jpg`;
+                    
+                    // START: UPDATED CODE
                     const options = {
                         scale: 3,
                         useCORS: true,
-                        logging: false
+                        logging: false,
+                        letterRendering: true // Fix for font rendering issue
                     };
+                    // END: UPDATED CODE
 
                     html2canvas(element, options).then(canvas => {
                         const link = document.createElement('a');
