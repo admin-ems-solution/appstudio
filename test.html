@@ -84,6 +84,13 @@
         text-align: right !important;
     }
     
+    /* --- START: NEW CSS RULE --- */
+    .date-cell {
+        white-space: normal !important; /* Allow content to wrap */
+        word-break: break-all;      /* Break long text without spaces */
+    }
+    /* --- END: NEW CSS RULE --- */
+
     .summary-and-payment-wrapper { display: flex; justify-content: space-between; align-items: stretch; margin-top: 5px; margin-bottom: 20px; page-break-inside: avoid; border: 1px solid #e9ecef; padding: 15px; border-radius: 5px; }
     .left-column { width: 58%; }
     .shooting-info-table { margin-bottom: 15px; }
@@ -241,6 +248,17 @@
         function removeVietnameseTones(str) {if(!str)return"";str=str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g,"a");str=str.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g,"e");str=str.replace(/ì|í|ị|ỉ|ĩ/g,"i");str=str.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g,"o");str=str.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g,"u");str=str.replace(/ỳ|ý|ỵ|ỷ|ỹ/g,"y");str=str.replace(/đ/g,"d");str=str.replace(/À|Á|Ạ|Ả|Ã|Â|Ầ|Ấ|Ậ|Ẩ|Ẫ|Ă|Ằ|Ắ|Ặ|Ẳ|Ẵ/g,"A");str=str.replace(/È|É|Ẹ|Ẻ|Ẽ|Ê|Ề|Ế|Ệ|Ể|Ễ/g,"E");str=str.replace(/Ì|Í|Ị|Ỉ|Ĩ/g,"I");str=str.replace(/Ò|Ó|Ọ|Ỏ|Õ|Ô|Ồ|Ố|Ộ|Ổ|Ỗ|Ơ|Ờ|Ớ|Ợ|Ở|Ỡ/g,"O");str=str.replace(/Ù|Ú|Ụ|Ủ|Ũ|Ư|Ừ|Ứ|Ự|Ử|Ữ/g,"U");str=str.replace(/Ỳ|Ý|Ỵ|Ỷ|Ỹ/g,"Y");str=str.replace(/Đ/g,"D");str=str.replace(/\u0300|\u0301|\u0303|\u0309|\u0323/g,"");str=str.replace(/\u02C6|\u0306|\u031B/g,"");return str.trim()}
         function readNumberInVietnamese(number) { const units=["","một","hai","ba","bốn","năm","sáu","bảy","tám","chín"],groupUnits=[""," nghìn"," triệu"," tỷ"," nghìn tỷ"," triệu tỷ"];function convertBlock(e){if("000"===e)return"";let t=parseInt(e[0]),r=parseInt(e[1]),n=parseInt(e[2]),i="";return t>0&&(i+=units[t]+" trăm"),0===r&&n>0?i+=t>0?" linh "+units[n]:units[n]:1===r?(i+=" mười",5===n?i+=" lăm":n>0&&(i+=" "+units[n])):r>1&&(i+=" "+units[r]+" mươi",1===n?i+=" mốt":5===n?i+=" lăm":n>0&&(i+=" "+units[n])),i.trim()}let numStr=String(parseInt(number,10));if("0"===numStr)return"Không đồng";let chunks=[];for(;numStr.length>0;)chunks.unshift(numStr.slice(-3)),numStr=numStr.slice(0,-3);const result=chunks.map((e,t)=>{for(;e.length<3;)e="0"+e;const r=convertBlock(e);if(!r)return"";let n=groupUnits[chunks.length-1-t];return 0===parseInt(e)&&" nghìn"===n?"":r+n}).filter(Boolean).join(" ");return(result.charAt(0).toUpperCase()+result.slice(1)).trim()+" đồng"}
         
+        function getDirectGoogleDriveUrl(url) {
+            if (url && url.includes('drive.google.com')) {
+                const match = url.match(/file\/d\/([a-zA-Z0-9_-]+)/);
+                if (match && match[1]) {
+                    const fileId = match[1];
+                    return `https://drive.google.com/uc?export=view&id=${fileId}`;
+                }
+            }
+            return url;
+        }
+
         document.addEventListener('DOMContentLoaded', function(){
             injectHTMLStructure();
             
@@ -352,8 +370,11 @@
                  }
                  
                  if (params.has('logo_url')) {
+                    const originalUrl = decodeURIComponent(params.get('logo_url'));
                     const logoImg = document.getElementById('studio-logo-img');
-                    if (logoImg) logoImg.src = decodeURIComponent(params.get('logo_url'));
+                    if (logoImg) {
+                        logoImg.src = getDirectGoogleDriveUrl(originalUrl);
+                    }
                  }
                  
                  document.title = "HĐ " + params.get('ma_hd') + " - " + (params.get('ten_chi_nhanh') || '');
@@ -373,7 +394,7 @@
             function runDemoMode() {
                  document.body.insertAdjacentHTML('beforeend', '<div style="position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%) rotate(-45deg); font-size: 80pt; color: rgba(0, 0, 0, 0.05); font-weight: 700; text-transform: uppercase; pointer-events: none; z-index: 1000; display: block;">BẢN NHÁP</div>');
                  const demoParams = new URLSearchParams();
-                 demoParams.set('logo_url', 'https://www.appsheet.com/template/gettablefileurl?appName=YourAppName-12345&tableName=chi_nhanh&fileName=chi_nhanh_Images%2Flogo.png'); // Example of a valid AppSheet URL
+                 demoParams.set('logo_url', 'https://drive.google.com/file/d/1SndaR3Qwhz0BCAepfKvaOHquA3V4oT3e/view?usp=sharing');
                  demoParams.set('ten_studio', '2H STUDIO');
                  demoParams.set('ten_chi_nhanh', '2H STUDIO - SƠN TÂY');
                  demoParams.set('diachi_studio', '566 Chùa Thông - Sơn Tây - Hà Nội');
@@ -411,7 +432,7 @@
                  
                  globalServiceData = [
                     { sanpham: "Gói chụp Premium", chitiet: "Gói\\nBao gồm nhiều dòng", soluong: 1, thanhtien: 8900000, sotien_km: 500000, ghi_chu: "Bao gồm album\\nKhông lấy quà tặng", loai_dich_vu: "Gói Chụp" }, 
-                    { sanpham: "Váy cưới Lux", chitiet: "Thuê ngày cưới", soluong: 1, thanhtien: 2000000, sotien_km: 0, ghi_chu: "Mã váy V01", loai_dich_vu: "Trang phục", ngay_lay: "30/08/2025", ngay_tra: "02/09/2025" }, 
+                    { sanpham: "Váy cưới Lux", chitiet: "Thuê ngày cưới", soluong: 1, thanhtien: 12000000, sotien_km: 500000, ghi_chu: "Mã váy V01", loai_dich_vu: "Trang phục", ngay_lay: "30/08/2025", ngay_tra: "02/09/2025" }, 
                     { sanpham: "In ảnh cổng", chitiet: "Tấm", soluong: 1, thanhtien: 600000, sotien_km: 0, ghi_chu: "Kích thước 60x90", loai_dich_vu: "Sản phẩm lẻ" }
                 ];
                  renderContractTerms('service');
@@ -428,7 +449,7 @@
                 tableBody.innerHTML = '';
 
                 if (contractType === 'dress') {
-                    colgroup.innerHTML = `<col style="width: 4%;"><col style="width: 18%;"><col style="width: 6%;"><col style="width: 11%;"><col style="width: 11%;"><col style="width: 11%;"><col style="width: 10%;"><col style="width: 10%;"><col style="width: 19%;">`;
+                    colgroup.innerHTML = `<col style="width: 4%;"><col style="width: 16%;"><col style="width: 6%;"><col style="width: 13%;"><col style="width: 13%;"><col style="width: 13%;"><col style="width: 9%;"><col style="width: 9%;"><col style="width: 17%;">`;
                     thead.innerHTML = `<tr><th>STT</th><th>Sản phẩm</th><th>Số lượng</th><th>Thành tiền</th><th>Số tiền KM</th><th>Còn lại</th><th>Ngày lấy</th><th>Ngày trả</th><th>Ghi chú</th></tr>`;
                 } else {
                     colgroup.innerHTML = `<col style="width: 5%;"><col style="width: 11%;"><col style="width: 33%;"><col style="width: 8%;"><col style="width: 13%;"><col style="width: 13%;"><col style="width: 17%;">`;
@@ -443,22 +464,22 @@
                      const row = document.createElement('tr'); 
                      const thanhTienFormatted = (item.thanhtien || 0).toLocaleString('vi-VN');
                      const soTienKmFormatted = (item.sotien_km || 0).toLocaleString('vi-VN');
-                     
                      const conLaiFormatted = ((item.thanhtien || 0) - (item.sotien_km || 0)).toLocaleString('vi-VN');
-
                      const ghiChuFormatted = (item.ghi_chu || '').replace(/\\n/g, '<br>').replace(/\n/g, '<br>');
                      const chiTietFormatted = (item.chitiet || '').replace(/\\n/g, '<br>').replace(/\n/g, '<br>');
 
                      if (contractType === 'dress') {
+                         // --- START: MODIFIED ROW HTML ---
                          row.innerHTML = `<td style="text-align: center;">${index + 1}</td>
                                           <td><span class="dynamic-data">${item.sanpham || ''}</span></td>
                                           <td style="text-align: center;"><span class="dynamic-data">${item.soluong || 0}</span></td>
                                           <td class="price-cell"><span class="dynamic-data">${thanhTienFormatted}</span></td>
                                           <td class="price-cell"><span class="dynamic-data">${soTienKmFormatted}</span></td>
                                           <td class="price-cell"><span class="dynamic-data">${conLaiFormatted}</span></td>
-                                          <td><span class="dynamic-data">${item.ngay_lay || ''}</span></td>
-                                          <td><span class="dynamic-data">${item.ngay_tra || ''}</span></td>
+                                          <td class="date-cell"><span class="dynamic-data">${item.ngay_lay || ''}</span></td>
+                                          <td class="date-cell"><span class="dynamic-data">${item.ngay_tra || ''}</span></td>
                                           <td><span class="dynamic-data">${ghiChuFormatted}</span></td>`;
+                         // --- END: MODIFIED ROW HTML ---
                      } else {
                          row.innerHTML = `<td style="text-align: center;">${index + 1}</td>
                                           <td><span class="dynamic-data">${item.sanpham || ''}</span></td>
