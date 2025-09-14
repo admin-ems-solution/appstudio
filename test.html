@@ -428,8 +428,8 @@
                 tableBody.innerHTML = '';
 
                 if (contractType === 'dress') {
-                    colgroup.innerHTML = `<col style="width: 5%;"><col style="width: 17.5%;"><col style="width: 8%;"><col style="width: 12%;"><col style="width: 12%;"><col style="width: 13%;"><col style="width: 13%;"><col style="width: 19.5%;">`;
-                    thead.innerHTML = `<tr><th>STT</th><th>Sản phẩm</th><th>Số lượng</th><th>Thành tiền</th><th>Số tiền KM</th><th>Ngày lấy</th><th>Ngày trả</th><th>Ghi chú</th></tr>`;
+                    colgroup.innerHTML = `<col style="width: 4%;"><col style="width: 18%;"><col style="width: 6%;"><col style="width: 11%;"><col style="width: 11%;"><col style="width: 11%;"><col style="width: 10%;"><col style="width: 10%;"><col style="width: 19%;">`;
+                    thead.innerHTML = `<tr><th>STT</th><th>Sản phẩm</th><th>Số lượng</th><th>Thành tiền</th><th>Số tiền KM</th><th>Còn lại</th><th>Ngày lấy</th><th>Ngày trả</th><th>Ghi chú</th></tr>`;
                 } else {
                     colgroup.innerHTML = `<col style="width: 5%;"><col style="width: 11%;"><col style="width: 33%;"><col style="width: 8%;"><col style="width: 13%;"><col style="width: 13%;"><col style="width: 17%;">`;
                     thead.innerHTML = `<tr><th>STT</th><th>Sản phẩm</th><th>Chi tiết</th><th>Số lượng</th><th>Thành tiền</th><th>Số tiền KM</th><th>Ghi chú</th></tr>`;
@@ -443,12 +443,11 @@
                      const row = document.createElement('tr'); 
                      const thanhTienFormatted = (item.thanhtien || 0).toLocaleString('vi-VN');
                      const soTienKmFormatted = (item.sotien_km || 0).toLocaleString('vi-VN');
+                     
+                     const conLaiFormatted = ((item.thanhtien || 0) - (item.sotien_km || 0)).toLocaleString('vi-VN');
 
-                     // --- START: LINE BREAK FIX ---
-                     // Replace both literal "\\n" and actual "\n" newlines with <br> tags.
                      const ghiChuFormatted = (item.ghi_chu || '').replace(/\\n/g, '<br>').replace(/\n/g, '<br>');
                      const chiTietFormatted = (item.chitiet || '').replace(/\\n/g, '<br>').replace(/\n/g, '<br>');
-                     // --- END: LINE BREAK FIX ---
 
                      if (contractType === 'dress') {
                          row.innerHTML = `<td style="text-align: center;">${index + 1}</td>
@@ -456,6 +455,7 @@
                                           <td style="text-align: center;"><span class="dynamic-data">${item.soluong || 0}</span></td>
                                           <td class="price-cell"><span class="dynamic-data">${thanhTienFormatted}</span></td>
                                           <td class="price-cell"><span class="dynamic-data">${soTienKmFormatted}</span></td>
+                                          <td class="price-cell"><span class="dynamic-data">${conLaiFormatted}</span></td>
                                           <td><span class="dynamic-data">${item.ngay_lay || ''}</span></td>
                                           <td><span class="dynamic-data">${item.ngay_tra || ''}</span></td>
                                           <td><span class="dynamic-data">${ghiChuFormatted}</span></td>`;
@@ -507,7 +507,6 @@
                     element.style.boxShadow = 'none';
                     const filename = `${getFileNamePrefix()}_${document.getElementById('contract-id').textContent.trim()}_${document.getElementById('customer-name').textContent.trim()}.pdf`;
                     
-                    // START: UPDATED CODE
                     const opt = { 
                         margin: [10, 5, 5, 10],
                         filename: filename, 
@@ -516,11 +515,10 @@
                             scale: 2, 
                             useCORS: true, 
                             logging: false, 
-                            letterRendering: true // Fix for font rendering issue
+                            letterRendering: true 
                         }, 
                         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } 
                     };
-                    // END: UPDATED CODE
 
                     html2pdf().from(element).set(opt).save().then(() => {
                         element.style.boxShadow = originalShadow;
@@ -543,14 +541,12 @@
                     element.style.boxShadow = 'none';
                     const filename = `${getFileNamePrefix()}_${document.getElementById('contract-id').textContent.trim()}_${document.getElementById('customer-name').textContent.trim()}.jpg`;
                     
-                    // START: UPDATED CODE
                     const options = {
                         scale: 3,
                         useCORS: true,
                         logging: false,
-                        letterRendering: true // Fix for font rendering issue
+                        letterRendering: true 
                     };
-                    // END: UPDATED CODE
 
                     html2canvas(element, options).then(canvas => {
                         const link = document.createElement('a');
