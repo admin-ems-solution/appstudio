@@ -246,6 +246,33 @@
         function removeVietnameseTones(str) {if(!str)return"";str=str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g,"a");str=str.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g,"e");str=str.replace(/ì|í|ị|ỉ|ĩ/g,"i");str=str.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g,"o");str=str.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g,"u");str=str.replace(/ỳ|ý|ỵ|ỷ|ỹ/g,"y");str=str.replace(/đ/g,"d");str=str.replace(/À|Á|Ạ|Ả|Ã|Â|Ầ|Ấ|Ậ|Ẩ|Ẫ|Ă|Ằ|Ắ|Ặ|Ẳ|Ẵ/g,"A");str=str.replace(/È|É|Ẹ|Ẻ|Ẽ|Ê|Ề|Ế|Ệ|Ể|Ễ/g,"E");str=str.replace(/Ì|Í|Ị|Ỉ|Ĩ/g,"I");str=str.replace(/Ò|Ó|Ọ|Ỏ|Õ|Ô|Ồ|Ố|Ộ|Ổ|Ỗ|Ơ|Ờ|Ớ|Ợ|Ở|Ỡ/g,"O");str=str.replace(/Ù|Ú|Ụ|Ủ|Ũ|Ư|Ừ|Ứ|Ự|Ử|Ữ/g,"U");str=str.replace(/Ỳ|Ý|Ỵ|Ỷ|Ỹ/g,"Y");str=str.replace(/Đ/g,"D");str=str.replace(/\u0300|\u0301|\u0303|\u0309|\u0323/g,"");str=str.replace(/\u02C6|\u0306|\u031B/g,"");return str.trim()}
         function readNumberInVietnamese(number) { const units=["","một","hai","ba","bốn","năm","sáu","bảy","tám","chín"],groupUnits=[""," nghìn"," triệu"," tỷ"," nghìn tỷ"," triệu tỷ"];function convertBlock(e){if("000"===e)return"";let t=parseInt(e[0]),r=parseInt(e[1]),n=parseInt(e[2]),i="";return t>0&&(i+=units[t]+" trăm"),0===r&&n>0?i+=t>0?" linh "+units[n]:units[n]:1===r?(i+=" mười",5===n?i+=" lăm":n>0&&(i+=" "+units[n])):r>1&&(i+=" "+units[r]+" mươi",1===n?i+=" mốt":5===n?i+=" lăm":n>0&&(i+=" "+units[n])),i.trim()}let numStr=String(parseInt(number,10));if("0"===numStr)return"Không đồng";let chunks=[];for(;numStr.length>0;)chunks.unshift(numStr.slice(-3)),numStr=numStr.slice(0,-3);const result=chunks.map((e,t)=>{for(;e.length<3;)e="0"+e;const r=convertBlock(e);if(!r)return"";let n=groupUnits[chunks.length-1-t];return 0===parseInt(e)&&" nghìn"===n?"":r+n}).filter(Boolean).join(" ");return(result.charAt(0).toUpperCase()+result.slice(1)).trim()+" đồng"}
         
+        /**
+         * BẮT ĐẦU THAY ĐỔI
+         * Hàm mới để định dạng ngày tháng sang dd/mm/yyyy
+         */
+        function formatDate(dateString) {
+            if (!dateString || typeof dateString !== 'string') {
+                return ''; // Trả về chuỗi rỗng nếu đầu vào không hợp lệ
+            }
+            // Tách chuỗi ngày bằng dấu / hoặc -
+            const parts = dateString.split(/[\/-]/);
+            if (parts.length === 3) {
+                let [part1, part2, year] = parts;
+                // Giả sử đầu vào từ AppSheet luôn là MM/DD/YYYY
+                // Kiểm tra nếu part1 > 12 thì có thể là DD/MM/YYYY rồi
+                if (parseInt(part1, 10) > 12) {
+                    // Đã là định dạng dd/mm/yyyy
+                    return `${part1}/${part2}/${year}`;
+                } else {
+                    // Là định dạng mm/dd/yyyy, cần chuyển đổi
+                    return `${part2}/${part1}/${year}`;
+                }
+            }
+            // Nếu không đúng định dạng, trả về nguyên bản
+            return dateString;
+        }
+        // KẾT THÚC THAY ĐỔI
+
         document.addEventListener('DOMContentLoaded', function(){
             injectHTMLStructure();
             
@@ -338,19 +365,16 @@
                              continue;
                          }
 
+                        // BẮT ĐẦU THAY ĐỔI: Áp dụng định dạng ngày
+                        if (param === 'ngay_hd' || param === 'ngay_chup') {
+                            value = formatDate(value);
+                        }
+                        // KẾT THÚC THAY ĐỔI
+
                          ids.forEach(id => {
                             const element = document.getElementById(id);
                              if (element) {
-                                 if (id === 'contract-date') {
-                                     const dateParts = value.split('/');
-                                     if (dateParts.length === 3) {
-                                        element.textContent = `${dateParts[1]}/${dateParts[0]}/${dateParts[2]}`;
-                                     } else {
-                                        element.textContent = value; 
-                                     }
-                                 } else {
-                                     element.textContent = value;
-                                 }
+                                element.textContent = value;
                              }
                          });
                      }
@@ -415,7 +439,7 @@
                  demoParams.set('nhan_vien', 'NHÂN VIÊN DEMO');
                  demoParams.set('dien_thoai_nv', '0987654321');
                  demoParams.set('chuc_vu_nv', 'Nhân viên');
-                 demoParams.set('ngay_chup', '30/08/2025');
+                 demoParams.set('ngay_chup', '08/30/2025'); // Thay đổi định dạng để test
                  demoParams.set('gio_chup', '8:00 AM');
                  demoParams.set('dia_diem_chup', 'Phim trường Smiley Ville');
                  demoParams.set('thanh_tien', '9500000');
@@ -437,7 +461,7 @@
                  
                  globalServiceData = [
                     { sanpham: "Gói chụp Premium", chitiet: "Gói\\nBao gồm nhiều dòng", soluong: 1, thanhtien: 8900000, sotien_km: 500000, ghi_chu: "Bao gồm album\\nKhông lấy quà tặng", loai_dich_vu: "Gói Chụp" }, 
-                    { sanpham: "Váy cưới Lux", chitiet: "Thuê ngày cưới", soluong: 1, thanhtien: 12000000, sotien_km: 500000, ghi_chu: "Mã váy V01", loai_dich_vu: "Trang phục", ngay_lay: "30/08/2025", ngay_tra: "02/09/2025" }, 
+                    { sanpham: "Váy cưới Lux", chitiet: "Thuê ngày cưới", soluong: 1, thanhtien: 12000000, sotien_km: 500000, ghi_chu: "Mã váy V01", loai_dich_vu: "Trang phục", ngay_lay: "08/30/2025", ngay_tra: "09/02/2025" }, // Thay đổi định dạng để test
                     { sanpham: "In ảnh cổng", chitiet: "Tấm", soluong: 1, thanhtien: 600000, sotien_km: 0, ghi_chu: "Kích thước 60x90", loai_dich_vu: "Sản phẩm lẻ" }
                 ];
                  renderContractTerms('service');
@@ -474,14 +498,18 @@
                      const chiTietFormatted = (item.chitiet || '').replace(/\\n/g, '<br>').replace(/\n/g, '<br>');
 
                      if (contractType === 'dress') {
+                        // BẮT ĐẦU THAY ĐỔI: Áp dụng định dạng ngày
+                        const formattedNgayLay = formatDate(item.ngay_lay);
+                        const formattedNgayTra = formatDate(item.ngay_tra);
+                        // KẾT THÚC THAY ĐỔI
                          row.innerHTML = `<td style="text-align: center;">${index + 1}</td>
                                           <td><span class="dynamic-data">${item.sanpham || ''}</span></td>
                                           <td style="text-align: center;"><span class="dynamic-data">${item.soluong || 0}</span></td>
                                           <td class="price-cell"><span class="dynamic-data">${thanhTienFormatted}</span></td>
                                           <td class="price-cell"><span class="dynamic-data">${soTienKmFormatted}</span></td>
                                           <td class="price-cell"><span class="dynamic-data">${conLaiFormatted}</span></td>
-                                          <td class="date-cell"><span class="dynamic-data">${item.ngay_lay || ''}</span></td>
-                                          <td class="date-cell"><span class="dynamic-data">${item.ngay_tra || ''}</span></td>
+                                          <td class="date-cell"><span class="dynamic-data">${formattedNgayLay}</span></td>
+                                          <td class="date-cell"><span class="dynamic-data">${formattedNgayTra}</span></td>
                                           <td><span class="dynamic-data">${ghiChuFormatted}</span></td>`;
                      } else {
                          row.innerHTML = `<td style="text-align: center;">${index + 1}</td>
