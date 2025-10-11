@@ -79,12 +79,11 @@
     th, td { border: 1px solid #dee2e6; padding: 6px 8px; text-align: left; vertical-align: top; word-break: break-word; }
     th { background-color: #e9ecef; font-weight: 700; text-align: center; }
     
-    /* --- ĐIỀU CHỈNH & TĂNG CƯỜNG --- */
-    /* Class này đảm bảo cột Sản phẩm sẽ tự động xuống dòng và chống bị ghi đè */
+    /* --- ĐIỀU CHỈNH DUY NHẤT TRONG CSS --- */
     .product-cell {
-        word-break: break-word;     /* Ngắt từ nếu cần */
-        overflow-wrap: break-word;  /* Thuộc tính chuẩn hiện đại */
-        white-space: normal !important; /* Đảm bảo không bị ghi đè bởi nowrap, RẤT QUAN TRỌNG */
+        word-break: break-word;
+        overflow-wrap: break-word;
+        white-space: normal !important;
     }
 
     .price-cell {
@@ -465,7 +464,8 @@
                     colgroup.innerHTML = `<col style="width: 4%;"><col style="width: 16%;"><col style="width: 6%;"><col style="width: 13%;"><col style="width: 13%;"><col style="width: 13%;"><col style="width: 9%;"><col style="width: 9%;"><col style="width: 17%;">`;
                     thead.innerHTML = `<tr><th>STT</th><th>Sản phẩm</th><th>Số lượng</th><th>Thành tiền</th><th>Số tiền KM</th><th>Còn lại</th><th>Ngày lấy</th><th>Ngày trả</th><th>Ghi chú</th></tr>`;
                 } else {
-                    colgroup.innerHTML = `<col style="width: 5%;"><col style="width: 25%;"><col style="width: 21%;"><col style="width: 6%;"><col style="width: 13%;"><col style="width: 13%;"><col style="width: 17%;">`;
+                    /* --- ĐÃ HOÀN TÁC VỀ KÍCH THƯỚC GỐC THEO YÊU CẦU CỦA BẠN --- */
+                    colgroup.innerHTML = `<col style="width: 5%;"><col style="width: 11%;"><col style="width: 33%;"><col style="width: 8%;"><col style="width: 13%;"><col style="width: 13%;"><col style="width: 17%;">`;
                     thead.innerHTML = `<tr><th>STT</th><th>Sản phẩm</th><th>Chi tiết</th><th>Số lượng</th><th>Thành tiền</th><th>Số tiền KM</th><th>Ghi chú</th></tr>`;
                 }
                  
@@ -542,8 +542,7 @@
                     const filename = `${getFileNamePrefix()}_${document.getElementById('contract-id').textContent.trim()}_${document.getElementById('customer-name').textContent.trim()}.pdf`;
                     
                     const opt = { 
-                        /* --- SỬA LỖI --- */
-                        /* Lỗi cú pháp "margin:," đã được sửa. Cần cung cấp giá trị cho margin. */
+                        /* --- ĐÃ SỬA LỖI --- */
                         margin: [10, 5, 5, 10], 
                         filename: filename, 
                         image: { type: 'jpeg', quality: 0.98 }, 
