@@ -12,11 +12,11 @@
     @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;700&display=swap');
     :root {
         --page-width: 190mm; 
-        --main-padding: 6pt; /* Đã giảm từ 10pt */
+        --main-padding: 8pt; /* Tăng nhẹ từ 6pt lên 8pt */
         --dynamic-data-color: #0d6efd; 
     }
-    /* Đã giảm font-size xuống 8pt và line-height xuống 1.25 */
-    body { font-family: 'Be Vietnam Pro', sans-serif; font-size: 8pt; line-height: 1.25; color: #212529; background-color: #f0f2f5; margin: 0; padding: 0; }
+    /* Font 8.5pt và line-height 1.3: Dễ đọc hơn 8pt nhưng vẫn tiết kiệm hơn 9pt */
+    body { font-family: 'Be Vietnam Pro', sans-serif; font-size: 8.5pt; line-height: 1.3; color: #212529; background-color: #f0f2f5; margin: 0; padding: 0; }
     
     .actions-container { 
         position: sticky; top: 0; display: flex; justify-content: flex-end; align-items: center;
@@ -58,32 +58,32 @@
     .footer-content { 
         padding-top: 5px; 
         text-align: right; 
-        font-size: 7pt; /* Giảm font footer */
+        font-size: 7.5pt; 
         color: #6c757d; 
         border-top: 1px solid #dee2e6;
     }
     .dynamic-data { color: var(--dynamic-data-color); font-weight: 500; }
 
-    .header-content { padding: 10px var(--main-padding); } 
-    /* Giảm padding bottom header */
-    .header-content .header { display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #dee2e6; padding-bottom: 8px; }
+    .header-content { padding: 12px var(--main-padding); } 
+    .header-content .header { display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #dee2e6; padding-bottom: 10px; }
     .header-left { display: flex; align-items: center; }
-    /* Giảm kích thước Logo và QR */
-    .header-content .logo { width: 55px; height: 55px; flex-shrink: 0; }
-    #contract-qr-container { width: 55px; height: 55px; flex-shrink: 0; }
-    #contract-qr-container img { width: 100%; height: 100%; display: block; }
-    .studio-info { padding-left: 10px !important; }
-    .studio-info h2 { font-size: 10pt; margin: 0; } /* Giảm font tên studio */
-    .studio-info p { font-size: 7.5pt; line-height: 1.2; margin: 0; }
-
-    /* Giảm font tiêu đề chính */
-    .main-title { text-align: center; font-size: 15pt; font-weight: 700; margin: 5px 0 3px 0; text-transform: uppercase; }
-    .contract-meta { text-align: center; font-style: italic; color: #555; margin-bottom: 10px; font-size: 8pt; }
     
-    /* Tối ưu bảng */
-    table { width: 100%; border-collapse: collapse; margin-bottom: 10px; font-size: 8pt; }
-    /* Giảm padding ô bảng */
-    th, td { border: 1px solid #dee2e6; padding: 3px 5px; text-align: left; vertical-align: top; word-break: break-word; }
+    /* Logo tăng lên 60px cho cân đối */
+    .header-content .logo { width: 60px; height: 60px; flex-shrink: 0; }
+    #contract-qr-container { width: 60px; height: 60px; flex-shrink: 0; }
+    #contract-qr-container img { width: 100%; height: 100%; display: block; }
+    
+    .studio-info { padding-left: 12px !important; }
+    .studio-info h2 { font-size: 11pt; margin: 0; } 
+    .studio-info p { font-size: 8pt; line-height: 1.25; margin: 0; }
+
+    /* Tiêu đề 16pt */
+    .main-title { text-align: center; font-size: 16pt; font-weight: 700; margin: 8px 0 5px 0; text-transform: uppercase; }
+    .contract-meta { text-align: center; font-style: italic; color: #555; margin-bottom: 12px; font-size: 8.5pt; }
+    
+    table { width: 100%; border-collapse: collapse; margin-bottom: 12px; font-size: 8.5pt; }
+    /* Padding bảng tăng lên 4px */
+    th, td { border: 1px solid #dee2e6; padding: 4px 6px; text-align: left; vertical-align: top; word-break: break-word; }
     th { background-color: #e9ecef; font-weight: 700; text-align: center; }
     
     .product-cell {
@@ -102,37 +102,36 @@
         word-break: break-all;      
     }
 
-    .summary-and-payment-wrapper { display: flex; justify-content: space-between; align-items: stretch; margin-top: 5px; margin-bottom: 10px; page-break-inside: avoid; border: 1px solid #e9ecef; padding: 10px; border-radius: 5px; }
+    .summary-and-payment-wrapper { display: flex; justify-content: space-between; align-items: stretch; margin-top: 5px; margin-bottom: 15px; page-break-inside: avoid; border: 1px solid #e9ecef; padding: 12px; border-radius: 5px; }
     .left-column { width: 58%; }
-    .shooting-info-table { margin-bottom: 10px; }
-    .shooting-info-table td { padding: 2px 5px; }
+    .shooting-info-table { margin-bottom: 12px; }
+    .shooting-info-table td { padding: 3px 6px; }
 
     .qr-payment-section .qr-payment-content { display: flex; align-items: center; }
-    .qr-payment-section .qr-code { width: 80px; height: 80px; flex-shrink: 0; margin-right: 10px; } /* Giảm size QR thanh toán */
+    .qr-payment-section .qr-code { width: 85px; height: 85px; flex-shrink: 0; margin-right: 12px; } 
     .qr-payment-section .qr-code img { max-width: 100%; height: auto; border: 1px solid #ccc; display: block; }
-    .qr-payment-section .payment-instructions p { margin: 2px 0; font-size: 8pt; }
+    .qr-payment-section .payment-instructions p { margin: 3px 0; font-size: 8.5pt; }
 
     .right-column { width: 40%; }
     .summary-table { margin-bottom: 0; }
-    .summary-table td { padding: 2px 5px; }
+    .summary-table td { padding: 3px 6px; }
     .summary-table .highlight-red { color: #dc3545; font-weight: 700; }
     
-    .terms-section { margin-top: 10px; border-top: 1px solid #dee2e6; padding-top: 5px; }
-    .print-block { page-break-inside: avoid; margin-top: 10px; }
-    .print-block h3 { font-size: 9pt; font-weight: 700; margin: 0 0 3px 0; } /* Giảm font h3 */
+    .terms-section { margin-top: 12px; border-top: 1px solid #dee2e6; padding-top: 8px; }
+    .print-block { page-break-inside: avoid; margin-top: 12px; }
+    .print-block h3 { font-size: 9.5pt; font-weight: 700; margin: 0 0 4px 0; } 
     .print-block p, .print-block li { 
-        margin-bottom: 2px; /* Giảm margin bottom */
+        margin-bottom: 3px; 
         text-align: justify;
     }
-    .print-block ul { padding-left: 15px; list-style-type: none; margin-block-start: 0; margin-block-end: 0; }
+    .print-block ul { padding-left: 18px; list-style-type: none; margin-block-start: 0; margin-block-end: 0; }
     .print-block ul li::before { content: "- "; }
     
-    /* Thu gọn phần ký tên */
-    .signature-block { display: flex; justify-content: space-around; text-align: center; margin-top: 20px; padding-top: 10px; border-top: 1px solid #dee2e6; page-break-before: auto; }
+    .signature-block { display: flex; justify-content: space-around; text-align: center; margin-top: 25px; padding-top: 12px; border-top: 1px solid #dee2e6; page-break-before: auto; }
     .signature-block p {
         text-align: center;
     }
-    .signature-block .name { margin-top: 40px; font-weight: 700; } /* Giảm khoảng cách ký */
+    .signature-block .name { margin-top: 50px; font-weight: 700; } 
 
     @media print {
         body { background: none; }
@@ -146,7 +145,7 @@
         }
         @page { 
             size: A4;
-            margin: 8mm; /* Giảm lề in một chút */
+            margin: 10mm; /* Tăng lề lên 10mm (1cm) để không bị quá sát */
         }
         #print-container { display: table; width: 100%; }
         #page-header { display: table-row-group; }
@@ -203,7 +202,7 @@
                 <ul><li>Các điều khoản dịch vụ được sử dụng trong vòng 1 năm tính từ ngày ký hợp đồng.</li></ul>
             </div>
             <div class="signature-block print-block">
-                <div class="customer-signature"><p style="font-weight: 700;">Khách hàng</p><p style="font-size: 8pt; color: #6c757d; font-style: italic;">(Ký và ghi họ tên)</p><p class="name" id="customer-signature-name" class="dynamic-data"></p></div><div class="staff-signature"><p style="font-weight: 700;">Nhân viên tư vấn</p><p style="font-size: 8pt; color: #6c757d; font-style: italic;">(Ký và ghi họ tên)</p><p class="name" id="staff-signature-name" class="dynamic-data"></p></div><div class="studio-signature"><p style="font-weight: 700;" id="studio-signature-name-top"></p><p style="font-size: 8pt; color: #6c757d; font-style: italic;">(Ký và ghi họ tên)</p><p class="name" id="studio-signature-name-bottom"></p></div>
+                <div class="customer-signature"><p style="font-weight: 700;">Khách hàng</p><p style="font-size: 8.5pt; color: #6c757d; font-style: italic;">(Ký và ghi họ tên)</p><p class="name" id="customer-signature-name" class="dynamic-data"></p></div><div class="staff-signature"><p style="font-weight: 700;">Nhân viên tư vấn</p><p style="font-size: 8.5pt; color: #6c757d; font-style: italic;">(Ký và ghi họ tên)</p><p class="name" id="staff-signature-name" class="dynamic-data"></p></div><div class="studio-signature"><p style="font-weight: 700;" id="studio-signature-name-top"></p><p style="font-size: 8.5pt; color: #6c757d; font-style: italic;">(Ký và ghi họ tên)</p><p class="name" id="studio-signature-name-bottom"></p></div>
             </div>`;
             
         const CONTRACT_TERMS_DRESS = `
@@ -232,7 +231,7 @@
                 <p>Hợp đồng này được lập thành 02 bản có giá trị như nhau, Bên A giữ 01 bản, Bên B giữ 01 bản và có hiệu lực kể từ ngày ký hợp đồng, cho đến khi bên B hoàn thành các dịch vụ quy định tại Điều 1 và Bên A thanh toán xong phí dịch vụ cho Bên B thì hợp đồng này xem như được thanh lý hoặc cả hai bên cùng thống nhất chấm dứt hợp đồng bằng văn bản.</p>
             </div>
             <div class="signature-block print-block">
-                <div class="customer-signature"><p style="font-weight: 700;">Khách hàng</p><p style="font-size: 8pt; color: #6c757d; font-style: italic;">(Ký và ghi họ tên)</p><p class="name" id="customer-signature-name" class="dynamic-data"></p></div><div class="staff-signature"><p style="font-weight: 700;">Nhân viên tư vấn</p><p style="font-size: 8pt; color: #6c757d; font-style: italic;">(Ký và ghi họ tên)</p><p class="name" id="staff-signature-name" class="dynamic-data"></p></div><div class="studio-signature"><p style="font-weight: 700;" id="studio-signature-name-top"></p><p style="font-size: 8pt; color: #6c757d; font-style: italic;">(Ký và ghi họ tên)</p><p class="name" id="studio-signature-name-bottom"></p></div>
+                <div class="customer-signature"><p style="font-weight: 700;">Khách hàng</p><p style="font-size: 8.5pt; color: #6c757d; font-style: italic;">(Ký và ghi họ tên)</p><p class="name" id="customer-signature-name" class="dynamic-data"></p></div><div class="staff-signature"><p style="font-weight: 700;">Nhân viên tư vấn</p><p style="font-size: 8.5pt; color: #6c757d; font-style: italic;">(Ký và ghi họ tên)</p><p class="name" id="staff-signature-name" class="dynamic-data"></p></div><div class="studio-signature"><p style="font-weight: 700;" id="studio-signature-name-top"></p><p style="font-size: 8.5pt; color: #6c757d; font-style: italic;">(Ký và ghi họ tên)</p><p class="name" id="studio-signature-name-bottom"></p></div>
             </div>`;
         
         const CONTRACT_TERMS_FAMILY = `
@@ -253,7 +252,7 @@
                 <ul><li>Các điều khoản dịch vụ được sử dụng trong vòng 1 năm tính từ ngày ký hợp đồng.</li></ul>
             </div>
              <div class="signature-block print-block">
-                <div class="customer-signature"><p style="font-weight: 700;">Khách hàng</p><p style="font-size: 8pt; color: #6c757d; font-style: italic;">(Ký và ghi họ tên)</p><p class="name" id="customer-signature-name" class="dynamic-data"></p></div><div class="staff-signature"><p style="font-weight: 700;">Nhân viên tư vấn</p><p style="font-size: 8pt; color: #6c757d; font-style: italic;">(Ký và ghi họ tên)</p><p class="name" id="staff-signature-name" class="dynamic-data"></p></div><div class="studio-signature"><p style="font-weight: 700;" id="studio-signature-name-top"></p><p style="font-size: 8pt; color: #6c757d; font-style: italic;">(Ký và ghi họ tên)</p><p class="name" id="studio-signature-name-bottom"></p></div>
+                <div class="customer-signature"><p style="font-weight: 700;">Khách hàng</p><p style="font-size: 8.5pt; color: #6c757d; font-style: italic;">(Ký và ghi họ tên)</p><p class="name" id="customer-signature-name" class="dynamic-data"></p></div><div class="staff-signature"><p style="font-weight: 700;">Nhân viên tư vấn</p><p style="font-size: 8.5pt; color: #6c757d; font-style: italic;">(Ký và ghi họ tên)</p><p class="name" id="staff-signature-name" class="dynamic-data"></p></div><div class="studio-signature"><p style="font-weight: 700;" id="studio-signature-name-top"></p><p style="font-size: 8.5pt; color: #6c757d; font-style: italic;">(Ký và ghi họ tên)</p><p class="name" id="studio-signature-name-bottom"></p></div>
             </div>`;
 
         function removeVietnameseTones(str) {if(!str)return"";str=str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g,"a");str=str.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g,"e");str=str.replace(/ì|í|ị|ỉ|ĩ/g,"i");str=str.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g,"o");str=str.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g,"u");str=str.replace(/ỳ|ý|ỵ|ỷ|ỹ/g,"y");str=str.replace(/đ/g,"d");str=str.replace(/À|Á|Ạ|Ả|Ã|Â|Ầ|Ấ|Ậ|Ẩ|Ẫ|Ă|Ằ|Ắ|Ặ|Ẳ|Ẵ/g,"A");str=str.replace(/È|É|Ẹ|Ẻ|Ẽ|Ê|Ề|Ế|Ệ|Ể|Ễ/g,"E");str=str.replace(/Ì|Í|Ị|Ỉ|Ĩ/g,"I");str=str.replace(/Ò|Ó|Ọ|Ỏ|Õ|Ô|Ồ|Ố|Ộ|Ổ|Ỗ|Ơ|Ờ|Ớ|Ợ|Ở|Ỡ/g,"O");str=str.replace(/Ù|Ú|Ụ|Ủ|Ũ|Ư|Ừ|Ứ|Ự|Ử|Ữ/g,"U");str=str.replace(/Ỳ|Ý|Ỵ|Ỷ|Ỹ/g,"Y");str=str.replace(/Đ/g,"D");str=str.replace(/\u0300|\u0301|\u0303|\u0309|\u0323/g,"");str=str.replace(/\u02C6|\u0306|\u031B/g,"");return str.trim()}
@@ -497,7 +496,7 @@
             
             function generatePaymentQRCode(data, callback){const qrContainer=document.getElementById("payment-qr-container"),bankBin=data.bin||"",accountNumber=data.accountNo||"",accountName=data.accountName||"";if(!bankBin||!accountNumber){qrContainer.innerHTML='<p style="color: red; font-size: 0.9em;">Lỗi.</p>';if(callback)callback();return}const accountNameForURL=encodeURIComponent(removeVietnameseTones(accountName).toUpperCase()),qrApiUrl=`https://img.vietqr.io/image/${bankBin}-${accountNumber}-compact.png?addInfo=${encodeURIComponent(data.info||"")}&accountName=${accountNameForURL}`,qrImage=new Image;qrImage.crossOrigin="anonymous",qrContainer.innerHTML="...",qrImage.onload=()=>{qrContainer.innerHTML="",qrContainer.appendChild(qrImage);if(callback)callback()},qrImage.onerror=()=>{qrContainer.innerHTML='<p style="color: red; font-size: 0.9em;">Lỗi QR.</p>';if(callback)callback()},qrImage.src=qrApiUrl}
             
-            function generateContractQRCode(e){const t=document.getElementById("contract-qr-container");if(!t||!e)return;const r=`https://api.qrserver.com/v1/create-qr-code/?size=55x55&data=${encodeURIComponent(e)}&qzone=1&format=svg`,n=new Image;n.src=r,n.alt=`QR Code for ${e}`,t.innerHTML="",t.appendChild(n)}
+            function generateContractQRCode(e){const t=document.getElementById("contract-qr-container");if(!t||!e)return;const r=`https://api.qrserver.com/v1/create-qr-code/?size=60x60&data=${encodeURIComponent(e)}&qzone=1&format=svg`,n=new Image;n.src=r,n.alt=`QR Code for ${e}`,t.innerHTML="",t.appendChild(n)}
             
             function getFileNamePrefix() {
                 switch(currentContractType) {
@@ -531,7 +530,7 @@
                     const filename = `${getFileNamePrefix()}_${document.getElementById('contract-id').textContent.trim()}_${document.getElementById('customer-name').textContent.trim()}.pdf`;
                     
                     const opt = { 
-                        margin: [8, 5, 5, 8], 
+                        margin: [10, 5, 5, 10], 
                         filename: filename, 
                         image: { type: 'jpeg', quality: 0.98 }, 
                         html2canvas: { 
@@ -673,7 +672,7 @@
                  const logoUrl = "https://2hstudio.vn/wp-content/uploads/2024/10/8.jpg";
                  document.querySelector(".header-content").innerHTML = `<header class="header"><div class="header-left"><div class="logo"><img id="studio-logo-img" src="${logoUrl}" alt="Studio Logo" style="width: 100%; height: 100%; object-fit: contain;" onerror="this.style.display='none';"></div><div class="studio-info"><h2 id="studio-name"></h2><p><strong>Địa chỉ:</strong> <span id="studio-address"></span></p><p><strong>Website:</strong> <a id="studio-website" href="#" target="_blank"></a> | <strong>Email:</strong> <span id="studio-email"></span></p><p><strong>Điện thoại:</strong> <span id="studio-phone"></span> | <strong>Zalo:</strong> <span id="studio-zalo"></span></p></div></div><div id="contract-qr-container" title="Mã hợp đồng"></div></header>`;
                  
-                 document.querySelector(".main-content").innerHTML = `<div><h1 class="main-title" id="main-contract-title">HỢP ĐỒNG CUNG CẤP DỊCH VỤ</h1><div class="contract-meta">Số: <span id="contract-id" class="dynamic-data"></span> | Ngày: <span id="contract-date" class="dynamic-data"></span></div><p><strong><span id="branch-name-main"></span></strong> Gửi tới quý khách hàng hoá đơn dịch vụ như sau:</p><div class="info-grid" style="display:flex; justify-content:space-between; margin-bottom:10px;"><div class="customer-info" style="width:50%;"><p style="margin-bottom: 2px;"><strong>Bên A:</strong></p><p style="margin: 2px 0;"><strong>Khách hàng:</strong> <span id="customer-name" class="dynamic-data"></span></p><p style="margin: 2px 0;"><strong>Điện thoại:</strong> <span id="customer-phone" class="dynamic-data"></span></p><p style="margin: 2px 0;"><strong>Địa chỉ:</strong> <span id="customer-address" class="dynamic-data"></span></p></div><div class="staff-info" style="width: 40%;"><p style="margin-bottom: 2px;"><strong>Bên B:</strong></p><p style="margin: 2px 0;"><strong>Nhân viên:</strong> <span id="staff-name" class="dynamic-data"></span></p><p style="margin: 2px 0;"><strong>Điện thoại NV:</strong> <span id="staff-phone" class="dynamic-data"></span></p><p style="margin: 2px 0;"><strong>Chức Vụ:</strong> <span id="staff-title" class="dynamic-data"></span></p></div></div><table style="table-layout: fixed;"><colgroup></colgroup><thead></thead><tbody id="service-table-body"></tbody></table></div><div class="summary-and-payment-wrapper"><div class="left-column"><table class="shooting-info-table"><tbody><tr><td><strong>Ngày chụp:</strong></td><td style="text-align:right;"><span id="shooting-date" class="dynamic-data"></span></td></tr><tr><td><strong>Giờ chụp:</strong></td><td style="text-align:right;"><span id="shooting-time" class="dynamic-data"></span></td></tr><tr><td><strong>Địa điểm chụp:</strong></td><td style="text-align:right;"><span id="shooting-location" class="dynamic-data"></span></td></tr></tbody></table><div class="qr-payment-section"><div class="qr-payment-content"><div class="qr-code" id="payment-qr-container"></div><div class="payment-instructions"><p style="font-weight: bold;">QUÉT MÃ QR ĐỂ THANH TOÁN:</p><p>- STK: <span class="dynamic-data" id="payment-account-number"></span></p><p>- Chủ tài khoản: <span class="dynamic-data" id="payment-account-name"></span></p><p>- Nội dung CK: <span class="dynamic-data" id="payment-info"></span></p></div></div></div></div><div class="right-column" id="summary-section-container"></div></div><div class="terms-section"></div>`;
+                 document.querySelector(".main-content").innerHTML = `<div><h1 class="main-title" id="main-contract-title">HỢP ĐỒNG CUNG CẤP DỊCH VỤ</h1><div class="contract-meta">Số: <span id="contract-id" class="dynamic-data"></span> | Ngày: <span id="contract-date" class="dynamic-data"></span></div><p><strong><span id="branch-name-main"></span></strong> Gửi tới quý khách hàng hoá đơn dịch vụ như sau:</p><div class="info-grid" style="display:flex; justify-content:space-between; margin-bottom:12px;"><div class="customer-info" style="width:50%;"><p style="margin-bottom: 2px;"><strong>Bên A:</strong></p><p style="margin: 2px 0;"><strong>Khách hàng:</strong> <span id="customer-name" class="dynamic-data"></span></p><p style="margin: 2px 0;"><strong>Điện thoại:</strong> <span id="customer-phone" class="dynamic-data"></span></p><p style="margin: 2px 0;"><strong>Địa chỉ:</strong> <span id="customer-address" class="dynamic-data"></span></p></div><div class="staff-info" style="width: 40%;"><p style="margin-bottom: 2px;"><strong>Bên B:</strong></p><p style="margin: 2px 0;"><strong>Nhân viên:</strong> <span id="staff-name" class="dynamic-data"></span></p><p style="margin: 2px 0;"><strong>Điện thoại NV:</strong> <span id="staff-phone" class="dynamic-data"></span></p><p style="margin: 2px 0;"><strong>Chức Vụ:</strong> <span id="staff-title" class="dynamic-data"></span></p></div></div><table style="table-layout: fixed;"><colgroup></colgroup><thead></thead><tbody id="service-table-body"></tbody></table></div><div class="summary-and-payment-wrapper"><div class="left-column"><table class="shooting-info-table"><tbody><tr><td><strong>Ngày chụp:</strong></td><td style="text-align:right;"><span id="shooting-date" class="dynamic-data"></span></td></tr><tr><td><strong>Giờ chụp:</strong></td><td style="text-align:right;"><span id="shooting-time" class="dynamic-data"></span></td></tr><tr><td><strong>Địa điểm chụp:</strong></td><td style="text-align:right;"><span id="shooting-location" class="dynamic-data"></span></td></tr></tbody></table><div class="qr-payment-section"><div class="qr-payment-content"><div class="qr-code" id="payment-qr-container"></div><div class="payment-instructions"><p style="font-weight: bold;">QUÉT MÃ QR ĐỂ THANH TOÁN:</p><p>- STK: <span class="dynamic-data" id="payment-account-number"></span></p><p>- Chủ tài khoản: <span class="dynamic-data" id="payment-account-name"></span></p><p>- Nội dung CK: <span class="dynamic-data" id="payment-info"></span></p></div></div></div></div><div class="right-column" id="summary-section-container"></div></div><div class="terms-section"></div>`;
             }
         });
     </script>
