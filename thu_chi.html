@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Phiếu Thu - Chi (Final)</title>
+    <title>Phiếu Thu - Chi (V3 Fix Layout)</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -14,14 +14,13 @@
         body { 
             font-family: 'Times New Roman', serif; 
             font-size: 11pt; 
-            line-height: 1.35; 
+            line-height: 1.3; 
             color: #000; 
             background-color: #f0f2f5; 
             margin: 0; 
             padding: 0; 
         }
 
-        /* Khổ giấy A4 chuẩn */
         @page { 
             size: A4 portrait; 
             margin: 0; 
@@ -48,61 +47,89 @@
             flex-direction: column;
         }
 
-        /* --- CẤU HÌNH LỀ VÀ CĂN CHỈNH --- */
+        /* --- CẤU HÌNH KHUNG --- */
         .voucher-half {
-            flex: 1; /* Chiếm đúng 50% chiều cao */
-            /* Padding: Trên/Dưới 20mm, Trái/Phải 25mm -> Căn giữa đẹp, không sát lề */
-            padding: 20mm 25mm 15mm 25mm; 
+            flex: 1; 
+            /* Giảm padding trái phải xuống 15mm để tránh tràn nội dung */
+            padding: 15mm 20mm 10mm 20mm; 
             box-sizing: border-box;
             display: flex;
             flex-direction: column;
-            justify-content: space-between; /* Đẩy nội dung dãn đều ra */
+            justify-content: space-between;
+            overflow: hidden; /* Ngăn chặn mọi thứ tràn ra ngoài */
         }
 
         .cut-line {
-            width: 90%;
+            width: 95%;
             margin: 0 auto;
-            border-top: 2px dashed #bbb;
+            border-top: 1px dashed #999;
             height: 1px;
         }
 
-        /* Header: Thông tin Studio & Số phiếu dồn sang trái */
+        /* --- HEADER (SỬA LẠI) --- */
         .header-section { 
+            display: flex; 
+            justify-content: space-between; /* Đẩy 2 khối sang 2 bên */
+            align-items: flex-start; /* Căn thẳng hàng trên cùng */
             margin-bottom: 5px;
+        }
+
+        .header-left {
+            flex: 1;
+            padding-right: 10px;
         }
         .studio-name { font-weight: bold; font-size: 11pt; text-transform: uppercase; display: block; margin-bottom: 3px; }
         .studio-info-line { display: block; font-size: 10.5pt; margin-bottom: 2px; }
-        
-        /* Cụm Số phiếu nằm dưới thông tin Studio */
-        .voucher-number-block {
-            margin-top: 8px;
+
+        /* Khối số phiếu bên phải */
+        .header-right {
+            text-align: left; /* Chữ trong khối vẫn căn trái cho thẳng hàng nhau */
+            min-width: 150px;
+        }
+        .voucher-num-line {
             font-size: 10.5pt;
+            margin-bottom: 3px;
         }
 
-        /* Tiêu đề chính */
-        .title-section { text-align: center; margin-top: 5px; margin-bottom: 15px; }
+        /* --- TITLE --- */
+        .title-section { text-align: center; margin-top: 0px; margin-bottom: 10px; }
         .main-title { font-size: 18pt; font-weight: bold; text-transform: uppercase; margin: 0; }
         .date-sub { font-style: italic; font-size: 11pt; margin: 3px 0; }
-        .copy-info { font-weight: bold; font-size: 10pt; margin-top: 2px; }
+        .copy-info { font-weight: bold; font-size: 10pt; }
 
-        /* Nội dung form */
+        /* --- FORM CONTENT --- */
         .form-body { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; }
-        .line-row { display: flex; align-items: baseline; margin-bottom: 10px; }
-        .label { white-space: nowrap; margin-right: 8px; font-size: 11pt; }
-        .value { flex-grow: 1; border-bottom: 1px dotted #000; font-weight: bold; padding-left: 5px; font-size: 11pt; }
+        
+        .line-row { 
+            display: flex; 
+            align-items: baseline; /* Căn chân chữ */
+            margin-bottom: 8px; 
+            width: 100%;
+        }
+        .label { white-space: nowrap; margin-right: 5px; font-weight: normal; }
+        .label-bold { font-weight: bold; } /* Nếu muốn nhãn đậm thì thêm class này */
+        
+        /* Dòng chấm fix lỗi tràn */
+        .value { 
+            flex-grow: 1; 
+            border-bottom: 1px dotted #000; 
+            font-weight: bold; 
+            padding-left: 5px; 
+            min-width: 50px; /* Đảm bảo luôn có độ rộng tối thiểu */
+        }
         .value.italic { font-weight: normal; font-style: italic; }
 
-        /* Dòng kép (Hình thức + STK) */
-        .double-row { display: flex; align-items: baseline; justify-content: space-between; gap: 30px; margin-bottom: 10px; }
+        /* Double Row fix */
+        .double-row { display: flex; align-items: baseline; justify-content: space-between; gap: 15px; margin-bottom: 8px; width: 100%; }
         .half-row { display: flex; align-items: baseline; flex: 1; }
 
-        /* Chữ ký */
+        /* --- CHỮ KÝ --- */
         .signature-section { 
-            display: flex; justify-content: space-between; text-align: center; margin-top: 15px; 
+            display: flex; justify-content: space-between; text-align: center; margin-top: 10px; 
         }
-        .sig-col { width: 23%; }
+        .sig-col { width: 24%; }
         .sig-title { font-weight: bold; font-size: 11pt; margin-bottom: 5px; }
-        .sig-note { font-style: italic; font-size: 10pt; margin-top: 0; margin-bottom: 60px; /* Khoảng trống ký */ }
+        .sig-note { font-style: italic; font-size: 10pt; margin-top: 0; margin-bottom: 50px; }
         .sig-name { font-weight: bold; font-size: 11pt; }
 
         @media print {
@@ -126,27 +153,28 @@
             <!-- === LIÊN 1 (TRÊN) === -->
             <div class="voucher-half">
                 <div>
-                    <!-- Header: Studio Info + Số phiếu (Căn trái) -->
                     <div class="header-section">
-                        <span class="studio-name data-ten-studio">2H STUDIO</span>
-                        <span class="studio-info-line">Địa chỉ: <span class="data-dia-chi-studio">...</span></span>
-                        <span class="studio-info-line">Email: <span class="data-email-studio">...</span></span>
-                        <span class="studio-info-line">Điện thoại: <span class="data-sdt-studio">...</span> - Zalo: <span class="data-zalo-studio">...</span></span>
+                        <!-- Bên trái: Thông tin Studio -->
+                        <div class="header-left">
+                            <span class="studio-name data-ten-studio">2H STUDIO</span>
+                            <span class="studio-info-line">Địa chỉ: <span class="data-dia-chi-studio">...</span></span>
+                            <span class="studio-info-line">Email: <span class="data-email-studio">...</span></span>
+                            <span class="studio-info-line">Điện thoại: <span class="data-sdt-studio">...</span> - Zalo: <span class="data-zalo-studio">...</span></span>
+                        </div>
                         
-                        <!-- Yêu cầu 1: Số phiếu căn dưới thông tin Studio -->
-                        <div class="voucher-number-block">
-                            Quyển số: ...........  Số: <span class="data-ma-phieu">..........</span>
+                        <!-- Bên phải: Quyển số / Số (2 dòng) -->
+                        <div class="header-right">
+                            <div class="voucher-num-line">Quyển số: ...........</div>
+                            <div class="voucher-num-line">Số: <span class="data-ma-phieu">..........</span></div>
                         </div>
                     </div>
 
-                    <!-- Tiêu đề -->
                     <div class="title-section">
                         <h1 class="main-title data-tieu-de">PHIẾU THU</h1>
                         <div class="date-sub data-ngay-thang">Ngày ... tháng ... năm ...</div>
                         <div class="copy-info">Liên số 1/2</div>
                     </div>
 
-                    <!-- Nội dung -->
                     <div class="form-body">
                         <div class="line-row">
                             <span class="label data-label-nguoi-nop">Họ và tên người nộp tiền:</span>
@@ -162,11 +190,11 @@
                         </div>
                         
                         <div class="double-row">
-                            <div class="half-row" style="flex: 0.7;">
+                            <div class="half-row" style="flex: 0.6;"> <!-- Co phần hình thức lại chút -->
                                 <span class="label">Hình thức:</span>
                                 <span class="value data-hinh-thuc"></span>
                             </div>
-                            <div class="half-row" style="flex: 1.3;">
+                            <div class="half-row" style="flex: 1.4;"> <!-- Dãn phần STK ra -->
                                 <span class="label">STK:</span>
                                 <span class="value data-stk"></span>
                             </div>
@@ -183,7 +211,6 @@
                     </div>
                 </div>
 
-                <!-- Chữ ký -->
                 <div class="signature-section">
                     <div class="sig-col">
                         <div class="sig-title data-label-nguoi-nop-ky">Người nộp tiền</div>
@@ -208,17 +235,20 @@
 
             <div class="cut-line"></div>
 
-            <!-- === LIÊN 2 (DƯỚI) - Copy y hệt === -->
+            <!-- === LIÊN 2 (DƯỚI) === -->
             <div class="voucher-half">
                 <div>
                     <div class="header-section">
-                        <span class="studio-name data-ten-studio">2H STUDIO</span>
-                        <span class="studio-info-line">Địa chỉ: <span class="data-dia-chi-studio">...</span></span>
-                        <span class="studio-info-line">Email: <span class="data-email-studio">...</span></span>
-                        <span class="studio-info-line">Điện thoại: <span class="data-sdt-studio">...</span> - Zalo: <span class="data-zalo-studio">...</span></span>
+                        <div class="header-left">
+                            <span class="studio-name data-ten-studio">2H STUDIO</span>
+                            <span class="studio-info-line">Địa chỉ: <span class="data-dia-chi-studio">...</span></span>
+                            <span class="studio-info-line">Email: <span class="data-email-studio">...</span></span>
+                            <span class="studio-info-line">Điện thoại: <span class="data-sdt-studio">...</span> - Zalo: <span class="data-zalo-studio">...</span></span>
+                        </div>
                         
-                        <div class="voucher-number-block">
-                            Quyển số: ...........  Số: <span class="data-ma-phieu">..........</span>
+                        <div class="header-right">
+                            <div class="voucher-num-line">Quyển số: ...........</div>
+                            <div class="voucher-num-line">Số: <span class="data-ma-phieu">..........</span></div>
                         </div>
                     </div>
 
@@ -243,11 +273,11 @@
                         </div>
                         
                         <div class="double-row">
-                            <div class="half-row" style="flex: 0.7;">
+                            <div class="half-row" style="flex: 0.6;">
                                 <span class="label">Hình thức:</span>
                                 <span class="value data-hinh-thuc"></span>
                             </div>
-                            <div class="half-row" style="flex: 1.3;">
+                            <div class="half-row" style="flex: 1.4;">
                                 <span class="label">STK:</span>
                                 <span class="value data-stk"></span>
                             </div>
@@ -309,21 +339,20 @@
         document.addEventListener('DOMContentLoaded', () => {
             const urlParams = new URLSearchParams(window.location.search);
             
-            // Demo Data
             let data = {
                 hang_muc: 'Thu',
                 ten_studio: '2H STUDIO',
-                dia_chi_studio: '111 Hoàng Cầu',
+                dia_chi_studio: '111 Hoàng Cầu - Đống Đa - Hà Nội',
                 email: '2hstudio.net@gmail.com',
                 phone: '0826268111',
                 zalo: '2H Studio',
                 ngay_lap: '2025-10-15',
                 ma_phieu: '7a0bc562',
                 doi_tuong: 'Trương Tuấn Hiệp - Hoàng Thu Ngọc',
-                dia_chi_kh: 'Xã Huyện Tỉnh',
+                dia_chi_kh: 'D\'capitale Trần Duy Hưng, Trung Hoà, Cầu Giấy',
                 noi_dung: 'THANH TOÁN LẦN 2',
                 so_tien: '6000000',
-                nguoi_tao: 'Hà Ngọc Yến',
+                nguoi_tao: 'NV007',
                 hinh_thuc: 'Chuyển khoản',
                 stk: 'ACB-91926'
             };
