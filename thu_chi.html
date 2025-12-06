@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Phiếu Thu - Chi (Mẫu 01-TT)</title>
+    <title>Phiếu Thu - Chi (A4 Dọc)</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     
     <style>
-        /* Font chuẩn văn bản hành chính */
         @import url('https://fonts.googleapis.com/css2?family=Times+New+Roman:ital,wght@0,400;0,700;1,400;1,700&display=swap');
         
         body { 
@@ -22,111 +21,102 @@
             padding: 0; 
         }
 
-        /* --- Cấu hình trang in A4 Ngang --- */
+        /* Cấu hình khổ giấy A4 Dọc */
         @page { 
-            size: A4 landscape; 
-            margin: 10mm; 
+            size: A4 portrait; 
+            margin: 0; /* Căn lề 0 để tự chủ động padding bên trong */
         }
 
         .actions-container { 
-            position: sticky; top: 0; display: flex; justify-content: center; align-items: center;
-            width: 100%; background-color: #343a40; padding: 10px; box-sizing: border-box;
-            z-index: 2000; box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            gap: 15px;
+            position: sticky; top: 0; display: flex; justify-content: center; gap: 15px;
+            width: 100%; background-color: #343a40; padding: 10px; z-index: 2000; 
         }
         .action-btn { 
-            background-color: #0d6efd; color: white; border: none; padding: 8px 16px; border-radius: 4px; 
-            font-size: 14px; cursor: pointer; font-family: sans-serif;
+            background-color: #0d6efd; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;
         }
 
-        /* Container chính chứa 2 liên */
         .page-wrapper { 
-            display: flex; 
-            justify-content: center; 
-            padding: 20px; 
+            display: flex; justify-content: center; padding: 20px; 
         }
 
-        .a4-landscape-sheet {
-            width: 297mm;
-            height: 210mm;
+        .a4-page {
+            width: 210mm;
+            height: 297mm; /* Chiều cao A4 chuẩn */
             background: white;
-            display: flex; /* Chia đôi trang */
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            padding: 10mm;
             box-sizing: border-box;
+            display: flex;
+            flex-direction: column; /* Xếp dọc */
         }
 
-        /* Một liên (chiếm 50% chiều rộng) */
+        /* Một liên chiếm 50% chiều cao */
         .voucher-half {
-            flex: 1;
-            padding: 0 15px;
+            height: 50%;
+            padding: 15mm 20mm; /* Lề trong: Trên dưới 15mm, Trái phải 20mm */
+            box-sizing: border-box;
             display: flex;
             flex-direction: column;
             position: relative;
         }
 
-        /* Đường cắt giữa 2 liên */
+        /* Đường cắt ngang ở giữa trang */
         .cut-line {
-            width: 1px;
-            border-left: 2px dashed #999;
-            margin: 0 10px;
-            height: 100%;
+            width: 90%;
+            margin: 0 auto;
+            border-top: 2px dashed #999;
         }
 
-        /* --- Header --- */
-        .header-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
+        /* --- Header theo mẫu ảnh --- */
+        .header-section { display: flex; align-items: flex-start; margin-bottom: 10px; gap: 15px; }
         
-        .unit-info { width: 55%; font-size: 10pt; }
-        .unit-info p { margin: 2px 0; }
-        .unit-info .studio-name { font-weight: bold; text-transform: uppercase; }
+        .logo-box { 
+            width: 80px; height: 80px; 
+            display: flex; align-items: center; justify-content: center;
+        }
+        .logo-box img { 
+            max-width: 100%; max-height: 100%; object-fit: contain; 
+            /* border-radius: 50%; Nếu logo tròn thì bỏ comment dòng này */
+        }
 
-        .form-meta { width: 45%; text-align: center; font-size: 10pt; }
-        .form-meta .meta-title { font-weight: bold; margin-bottom: 2px; }
-        .form-meta .meta-sub { font-style: italic; font-size: 9pt; margin-top: 0; }
+        .studio-info { flex: 1; font-size: 11pt; }
+        .studio-name { font-weight: bold; font-size: 12pt; text-transform: uppercase; margin-bottom: 4px; display: block;}
+        .studio-line { display: block; margin-bottom: 2px; }
 
-        /* --- Title --- */
-        .voucher-title-section { text-align: center; margin-bottom: 15px; position: relative; }
-        .voucher-main-title { font-size: 18pt; font-weight: bold; margin: 0; text-transform: uppercase; }
-        .voucher-date { font-style: italic; margin-top: 5px; }
+        /* --- Tiêu đề & Số phiếu --- */
+        .title-row { position: relative; text-align: center; margin-bottom: 15px; margin-top: 10px; }
+        .main-title { font-size: 19pt; font-weight: bold; text-transform: uppercase; margin: 0; }
+        .date-sub { font-style: italic; font-size: 11pt; margin: 5px 0; }
+        .copy-number { font-weight: bold; font-size: 10pt; }
 
-        /* Số phiếu bên phải tiêu đề */
-        .voucher-number-block {
+        .voucher-number {
             position: absolute;
-            top: 0;
-            right: 0;
-            text-align: left;
-            font-size: 10pt;
+            top: 0; right: 0;
+            text-align: left; font-size: 10pt;
         }
 
-        /* --- Body --- */
-        .content-lines { margin-bottom: 15px; }
-        .line-row { margin-bottom: 8px; display: flex; align-items: baseline; }
-        .line-label { white-space: nowrap; margin-right: 5px; }
-        .line-value { 
-            flex-grow: 1; 
-            border-bottom: 1px dotted #000; 
-            font-weight: bold; 
-            padding-left: 5px;
-        }
-        .line-value.italic { font-weight: normal; font-style: italic; }
+        /* --- Nội dung chính --- */
+        .body-content { flex-grow: 1; }
+        .line-row { display: flex; align-items: baseline; margin-bottom: 8px; }
+        .label { white-space: nowrap; margin-right: 5px; }
+        .value { flex-grow: 1; border-bottom: 1px dotted #000; font-weight: bold; padding-left: 5px; }
+        .value.italic { font-weight: normal; font-style: italic; }
 
-        /* --- Signatures (5 cột) --- */
-        .signature-section { 
-            display: flex; 
-            justify-content: space-between; 
-            text-align: center; 
-            margin-top: 10px;
-        }
-        .sig-col { width: 19%; }
-        .sig-title { font-weight: bold; font-size: 10pt; margin-bottom: 2px; }
-        .sig-sub { font-style: italic; font-size: 9pt; margin-top: 0; margin-bottom: 50px; }
-        .sig-name { font-weight: bold; margin-top: 50px; }
+        /* Dòng kép (Hình thức + STK) */
+        .double-row { display: flex; align-items: baseline; justify-content: space-between; gap: 20px; margin-bottom: 8px; }
+        .half-row { display: flex; align-items: baseline; flex: 1; }
+
+        /* --- Chữ ký (4 cột) --- */
+        .signature-row { display: flex; justify-content: space-between; text-align: center; margin-top: 10px; }
+        .sig-col { width: 24%; }
+        .sig-head { font-weight: bold; font-size: 11pt; margin-bottom: 3px; }
+        .sig-sub { font-style: italic; font-size: 10pt; margin-top: 0; margin-bottom: 60px; }
+        .sig-name { font-weight: bold; }
 
         @media print {
-            body { background: none; margin: 0; }
+            body { background: none; }
             .actions-container { display: none; }
             .page-wrapper { padding: 0; }
-            .a4-landscape-sheet { box-shadow: none; width: 100%; height: 100%; padding: 5mm; }
+            .a4-page { box-shadow: none; width: 100%; height: 100%; }
         }
     </style>
 </head>
@@ -138,85 +128,91 @@
     </div>
 
     <div class="page-wrapper">
-        <div class="a4-landscape-sheet" id="print-area">
+        <div class="a4-page" id="print-area">
             
-            <!-- LIÊN 1 -->
+            <!-- === LIÊN 1 (NỬA TRÊN) === -->
             <div class="voucher-half">
-                <div class="header-top">
-                    <div class="unit-info">
-                        <p>Đơn vị: <span class="data-ten-studio">...</span></p>
-                        <p>Địa chỉ: <span class="data-dia-chi-studio">...</span></p>
+                <!-- Header -->
+                <div class="header-section">
+                    <div class="logo-box">
+                        <img src="https://2hstudio.vn/wp-content/uploads/2024/10/8.jpg" alt="Logo" id="logo-img-1" onerror="this.style.display='none'">
                     </div>
-                    <div class="form-meta">
-                        <div class="meta-title">Mẫu số 01 - TT</div>
-                        <div class="meta-sub">(Ban hành theo Thông tư số 200/2014/TT-BTC<br>Ngày 22/12/2014 của Bộ Tài chính)</div>
+                    <div class="studio-info">
+                        <span class="studio-name data-ten-studio">2H STUDIO</span>
+                        <span class="studio-line">Địa chỉ: <span class="data-dia-chi-studio">...</span></span>
+                        <span class="studio-line">Email: <span class="data-email-studio">...</span></span>
+                        <span class="studio-line">Điện thoại: <span class="data-sdt-studio">...</span> - Zalo: <span class="data-zalo-studio">...</span></span>
                     </div>
                 </div>
 
-                <div class="voucher-title-section">
-                    <h1 class="voucher-main-title data-tieu-de">PHIẾU THU</h1>
-                    <div class="voucher-date data-ngay-thang">Ngày ... tháng ... năm ...</div>
+                <!-- Title -->
+                <div class="title-row">
+                    <h1 class="main-title data-tieu-de">PHIẾU THU</h1>
+                    <div class="date-sub data-ngay-thang">Ngày ... tháng ... năm ...</div>
+                    <div class="copy-number">Liên số 1/2</div> <!-- Cố định Liên 1 -->
                     
-                    <div class="voucher-number-block">
+                    <div class="voucher-number">
                         <div>Quyển số: ..........</div>
                         <div>Số: <span class="data-ma-phieu">..........</span></div>
                     </div>
                 </div>
 
-                <div class="content-lines">
+                <!-- Content -->
+                <div class="body-content">
                     <div class="line-row">
-                        <span class="line-label data-label-nguoi-nop">Họ và tên người nộp tiền:</span>
-                        <span class="line-value data-nguoi-nop"></span>
+                        <span class="label data-label-nguoi-nop">Họ và tên người nộp tiền:</span>
+                        <span class="value data-nguoi-nop"></span>
                     </div>
                     <div class="line-row">
-                        <span class="line-label">Địa chỉ:</span>
-                        <span class="line-value data-dia-chi-kh"></span>
+                        <span class="label">Địa chỉ:</span>
+                        <span class="value data-dia-chi-kh"></span>
                     </div>
                     <div class="line-row">
-                        <span class="line-label">Lý do nộp:</span>
-                        <span class="line-value data-ly-do"></span>
+                        <span class="label">Lý do nộp:</span>
+                        <span class="value data-ly-do"></span>
+                    </div>
+                    
+                    <!-- Dòng Hình thức & STK -->
+                    <div class="double-row">
+                        <div class="half-row" style="flex: 0.8;">
+                            <span class="label">Hình thức:</span>
+                            <span class="value data-hinh-thuc"></span>
+                        </div>
+                        <div class="half-row" style="flex: 1.2;">
+                            <span class="label">STK:</span>
+                            <span class="value data-stk"></span>
+                        </div>
+                    </div>
+
+                    <div class="line-row">
+                        <span class="label">Số tiền:</span>
+                        <span class="value data-so-tien-so"></span>
                     </div>
                     <div class="line-row">
-                        <span class="line-label">Số tiền:</span>
-                        <span class="line-value data-so-tien"></span>
-                    </div>
-                    <div class="line-row">
-                        <span class="line-label">(Viết bằng chữ):</span>
-                        <span class="line-value italic data-so-tien-chu"></span>
-                    </div>
-                    <div class="line-row">
-                        <span class="line-label">Kèm theo:</span>
-                        <span class="line-value italic data-kem-theo"></span>
-                        <span class="line-label">Chứng từ gốc</span>
+                        <span class="label">(Viết bằng chữ):</span>
+                        <span class="value italic data-so-tien-chu"></span>
                     </div>
                 </div>
 
-                <div class="voucher-date" style="text-align: right; margin-bottom: 5px;">
-                    <span class="data-ngay-thang">Ngày ... tháng ... năm ...</span>
-                </div>
-
-                <div class="signature-section">
+                <!-- Signatures (Đã đổi thứ tự) -->
+                <div class="signature-row">
                     <div class="sig-col">
-                        <div class="sig-title">Giám đốc</div>
-                        <p class="sig-sub">(Ký, họ tên, đóng dấu)</p>
-                    </div>
-                    <div class="sig-col">
-                        <div class="sig-title">Kế toán trưởng</div>
-                        <p class="sig-sub">(Ký, họ tên)</p>
-                    </div>
-                    <div class="sig-col">
-                        <div class="sig-title data-label-nguoi-nop-ky">Người nộp tiền</div>
+                        <div class="sig-head data-label-nguoi-nop-ky">Người nộp tiền</div>
                         <p class="sig-sub">(Ký, họ tên)</p>
                         <div class="sig-name data-nguoi-nop"></div>
                     </div>
                     <div class="sig-col">
-                        <div class="sig-title">Người lập phiếu</div>
+                        <div class="sig-head">Người lập phiếu</div>
                         <p class="sig-sub">(Ký, họ tên)</p>
                         <div class="sig-name data-nguoi-lap"></div>
                     </div>
                     <div class="sig-col">
-                        <div class="sig-title">Thủ quỹ</div>
+                        <div class="sig-head">Kế toán trưởng</div>
                         <p class="sig-sub">(Ký, họ tên)</p>
+                    </div>
+                    <div class="sig-col">
+                        <div class="sig-head">Giám đốc</div>
+                        <p class="sig-sub">(Ký, họ tên, đóng dấu)</p>
                     </div>
                 </div>
             </div>
@@ -224,83 +220,88 @@
             <!-- ĐƯỜNG CẮT -->
             <div class="cut-line"></div>
 
-            <!-- LIÊN 2 (Copy y hệt Liên 1) -->
+            <!-- === LIÊN 2 (NỬA DƯỚI - Copy y hệt) === -->
             <div class="voucher-half">
-                <div class="header-top">
-                    <div class="unit-info">
-                        <p>Đơn vị: <span class="data-ten-studio">...</span></p>
-                        <p>Địa chỉ: <span class="data-dia-chi-studio">...</span></p>
+                <!-- Header -->
+                <div class="header-section">
+                    <div class="logo-box">
+                        <img src="https://2hstudio.vn/wp-content/uploads/2024/10/8.jpg" alt="Logo" id="logo-img-2" onerror="this.style.display='none'">
                     </div>
-                    <div class="form-meta">
-                        <div class="meta-title">Mẫu số 01 - TT</div>
-                        <div class="meta-sub">(Ban hành theo Thông tư số 200/2014/TT-BTC<br>Ngày 22/12/2014 của Bộ Tài chính)</div>
+                    <div class="studio-info">
+                        <span class="studio-name data-ten-studio">2H STUDIO</span>
+                        <span class="studio-line">Địa chỉ: <span class="data-dia-chi-studio">...</span></span>
+                        <span class="studio-line">Email: <span class="data-email-studio">...</span></span>
+                        <span class="studio-line">Điện thoại: <span class="data-sdt-studio">...</span> - Zalo: <span class="data-zalo-studio">...</span></span>
                     </div>
                 </div>
 
-                <div class="voucher-title-section">
-                    <h1 class="voucher-main-title data-tieu-de">PHIẾU THU</h1>
-                    <div class="voucher-date data-ngay-thang">Ngày ... tháng ... năm ...</div>
+                <!-- Title -->
+                <div class="title-row">
+                    <h1 class="main-title data-tieu-de">PHIẾU THU</h1>
+                    <div class="date-sub data-ngay-thang">Ngày ... tháng ... năm ...</div>
+                    <div class="copy-number">Liên số 2/2</div> <!-- Cố định Liên 2 -->
                     
-                    <div class="voucher-number-block">
+                    <div class="voucher-number">
                         <div>Quyển số: ..........</div>
                         <div>Số: <span class="data-ma-phieu">..........</span></div>
                     </div>
                 </div>
 
-                <div class="content-lines">
+                <!-- Content -->
+                <div class="body-content">
                     <div class="line-row">
-                        <span class="line-label data-label-nguoi-nop">Họ và tên người nộp tiền:</span>
-                        <span class="line-value data-nguoi-nop"></span>
+                        <span class="label data-label-nguoi-nop">Họ và tên người nộp tiền:</span>
+                        <span class="value data-nguoi-nop"></span>
                     </div>
                     <div class="line-row">
-                        <span class="line-label">Địa chỉ:</span>
-                        <span class="line-value data-dia-chi-kh"></span>
+                        <span class="label">Địa chỉ:</span>
+                        <span class="value data-dia-chi-kh"></span>
                     </div>
                     <div class="line-row">
-                        <span class="line-label">Lý do nộp:</span>
-                        <span class="line-value data-ly-do"></span>
+                        <span class="label">Lý do nộp:</span>
+                        <span class="value data-ly-do"></span>
+                    </div>
+                    
+                    <div class="double-row">
+                        <div class="half-row" style="flex: 0.8;">
+                            <span class="label">Hình thức:</span>
+                            <span class="value data-hinh-thuc"></span>
+                        </div>
+                        <div class="half-row" style="flex: 1.2;">
+                            <span class="label">STK:</span>
+                            <span class="value data-stk"></span>
+                        </div>
+                    </div>
+
+                    <div class="line-row">
+                        <span class="label">Số tiền:</span>
+                        <span class="value data-so-tien-so"></span>
                     </div>
                     <div class="line-row">
-                        <span class="line-label">Số tiền:</span>
-                        <span class="line-value data-so-tien"></span>
-                    </div>
-                    <div class="line-row">
-                        <span class="line-label">(Viết bằng chữ):</span>
-                        <span class="line-value italic data-so-tien-chu"></span>
-                    </div>
-                    <div class="line-row">
-                        <span class="line-label">Kèm theo:</span>
-                        <span class="line-value italic data-kem-theo"></span>
-                        <span class="line-label">Chứng từ gốc</span>
+                        <span class="label">(Viết bằng chữ):</span>
+                        <span class="value italic data-so-tien-chu"></span>
                     </div>
                 </div>
 
-                <div class="voucher-date" style="text-align: right; margin-bottom: 5px;">
-                    <span class="data-ngay-thang">Ngày ... tháng ... năm ...</span>
-                </div>
-
-                <div class="signature-section">
+                <!-- Signatures -->
+                <div class="signature-row">
                     <div class="sig-col">
-                        <div class="sig-title">Giám đốc</div>
-                        <p class="sig-sub">(Ký, họ tên, đóng dấu)</p>
-                    </div>
-                    <div class="sig-col">
-                        <div class="sig-title">Kế toán trưởng</div>
-                        <p class="sig-sub">(Ký, họ tên)</p>
-                    </div>
-                    <div class="sig-col">
-                        <div class="sig-title data-label-nguoi-nop-ky">Người nộp tiền</div>
+                        <div class="sig-head data-label-nguoi-nop-ky">Người nộp tiền</div>
                         <p class="sig-sub">(Ký, họ tên)</p>
                         <div class="sig-name data-nguoi-nop"></div>
                     </div>
                     <div class="sig-col">
-                        <div class="sig-title">Người lập phiếu</div>
+                        <div class="sig-head">Người lập phiếu</div>
                         <p class="sig-sub">(Ký, họ tên)</p>
                         <div class="sig-name data-nguoi-lap"></div>
                     </div>
                     <div class="sig-col">
-                        <div class="sig-title">Thủ quỹ</div>
+                        <div class="sig-head">Kế toán trưởng</div>
                         <p class="sig-sub">(Ký, họ tên)</p>
+                    </div>
+                    <div class="sig-col">
+                        <div class="sig-head">Giám đốc</div>
+                        <p class="sig-sub">(Ký, họ tên, đóng dấu)</p>
                     </div>
                 </div>
             </div>
@@ -332,22 +333,30 @@
             let data = {
                 hang_muc: 'Thu',
                 ten_studio: '2H STUDIO',
-                dia_chi_studio: '111 Hoàng Cầu - Hà Nội',
+                dia_chi_studio: '111 Hoàng Cầu',
+                email: '2hstudio.net@gmail.com',
+                phone: '0826268111',
+                zalo: '2H Studio',
                 ngay_lap: '2025-10-15',
                 ma_phieu: 'PT001',
-                doi_tuong: 'Nguyễn Văn A',
-                dia_chi_kh: 'Hà Nội',
-                noi_dung: 'Thanh toán tiền chụp ảnh',
-                so_tien: '5000000',
+                doi_tuong: 'Trương Tuấn Hiệp - Hoàng Thu Ngọc',
+                dia_chi_kh: 'Xã Huyện Tỉnh',
+                noi_dung: 'THANH TOÁN LẦN 2',
+                so_tien: '6000000',
                 nguoi_tao: 'Admin',
-                kem_theo: '01 Hóa đơn bán lẻ'
+                hinh_thuc: 'Chuyển khoản',
+                stk: 'ACB-91926'
             };
 
-            // Ghi đè bằng dữ liệu URL nếu có
+            // Lấy dữ liệu từ URL
             if (urlParams.has('so_tien')) {
                 data.hang_muc = urlParams.get('hang_muc') || 'Thu';
                 data.ten_studio = urlParams.get('ten_studio');
                 data.dia_chi_studio = urlParams.get('diachi_studio');
+                data.email = urlParams.get('email_studio');
+                data.phone = urlParams.get('dienthoai_studio');
+                data.zalo = urlParams.get('zalo_studio');
+                
                 data.ngay_lap = urlParams.get('ngay_lap');
                 data.ma_phieu = urlParams.get('id_thu_chi');
                 data.doi_tuong = urlParams.get('doi_tuong');
@@ -355,38 +364,41 @@
                 data.noi_dung = urlParams.get('noi_dung');
                 data.so_tien = urlParams.get('so_tien');
                 data.nguoi_tao = urlParams.get('nguoi_tao');
-                data.kem_theo = urlParams.get('giay_bao') || '...........................';
+                
+                data.hinh_thuc = urlParams.get('hinh_thuc_tt') || '';
+                data.stk = urlParams.get('stk') || ''; // Lấy STK từ URL AppSheet
             }
 
-            // Xử lý Logic Thu/Chi
             const isChi = data.hang_muc.toLowerCase() === 'chi';
 
-            // 1. Tiêu đề và Nhãn
+            // Gán dữ liệu
             setTextByClass('data-tieu-de', isChi ? 'PHIẾU CHI' : 'PHIẾU THU');
             setTextByClass('data-label-nguoi-nop', isChi ? 'Họ và tên người nhận tiền:' : 'Họ và tên người nộp tiền:');
             setTextByClass('data-label-nguoi-nop-ky', isChi ? 'Người nhận tiền' : 'Người nộp tiền');
 
-            // 2. Thông tin chung
             setTextByClass('data-ten-studio', data.ten_studio);
             setTextByClass('data-dia-chi-studio', data.dia_chi_studio);
+            setTextByClass('data-email-studio', data.email);
+            setTextByClass('data-sdt-studio', data.phone);
+            setTextByClass('data-zalo-studio', data.zalo);
+            
             setTextByClass('data-ma-phieu', data.ma_phieu);
             setTextByClass('data-nguoi-nop', data.doi_tuong);
             setTextByClass('data-dia-chi-kh', data.dia_chi_kh);
             setTextByClass('data-ly-do', data.noi_dung);
             setTextByClass('data-nguoi-lap', data.nguoi_tao);
-            setTextByClass('data-kem-theo', data.kem_theo);
+            setTextByClass('data-hinh_thuc', data.hinh_thuc);
+            setTextByClass('data-stk', data.stk);
 
-            // 3. Ngày tháng
             let d = new Date();
             if(data.ngay_lap) d = new Date(data.ngay_lap);
-            if(isNaN(d.getTime())) d = new Date(); // Fallback nếu lỗi ngày
+            if(isNaN(d.getTime())) d = new Date();
             const dateStr = `Ngày ${d.getDate().toString().padStart(2,'0')} tháng ${(d.getMonth()+1).toString().padStart(2,'0')} năm ${d.getFullYear()}`;
             setTextByClass('data-ngay-thang', dateStr);
 
-            // 4. Tiền
             const rawMoney = data.so_tien.toString().replace(/,/g, '').replace(/\./g, '');
             const moneyVal = parseInt(rawMoney, 10);
-            setTextByClass('data-so-tien', moneyVal.toLocaleString('vi-VN') + ' VNĐ');
+            setTextByClass('data-so-tien-so', moneyVal.toLocaleString('vi-VN') + ' VNĐ');
             setTextByClass('data-so-tien-chu', readNumberInVietnamese(moneyVal));
             
             document.title = (isChi ? "PC_" : "PT_") + data.ma_phieu;
@@ -399,7 +411,7 @@
                 filename: document.title + '.pdf',
                 image: { type: 'jpeg', quality: 0.98 },
                 html2canvas: { scale: 2 },
-                jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
             html2pdf().from(element).set(opt).save();
         }
