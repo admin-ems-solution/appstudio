@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Phiếu Thu - Chi (Final v4)</title>
+    <title>Phiếu Thu - Chi (Final v5)</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -151,7 +151,7 @@
                             </div>
                             <div class="half-row" style="flex: 1.4;">
                                 <span class="label">STK:</span>
-                                <!-- Chỗ này sẽ hiển thị STK + Tên Chủ TK -->
+                                <!-- Chỗ này sẽ hiển thị STK nếu có -->
                                 <span class="value data-stk"></span>
                             </div>
                         </div>
@@ -179,11 +179,11 @@
                         <div class="sig-name data-nguoi-lap"></div>
                     </div>
                     <div class="sig-col">
-                        <div class="sig-title">Kế toán trưởng</div>
+                        <div class="sig-title">Thủ quỹ</div>
                         <p class="sig-note">(Ký, họ tên)</p>
                     </div>
                     <div class="sig-col">
-                        <div class="sig-title">Giám đốc</div>
+                        <div class="sig-title">Đại diện cửa hàng</div>
                         <p class="sig-note">(Ký, họ tên, đóng dấu)</p>
                     </div>
                 </div>
@@ -261,11 +261,11 @@
                         <div class="sig-name data-nguoi-lap"></div>
                     </div>
                     <div class="sig-col">
-                        <div class="sig-title">Kế toán trưởng</div>
+                        <div class="sig-title">Thủ quỹ</div>
                         <p class="sig-note">(Ký, họ tên)</p>
                     </div>
                     <div class="sig-col">
-                        <div class="sig-title">Giám đốc</div>
+                        <div class="sig-title">Đại diện cửa hàng</div>
                         <p class="sig-note">(Ký, họ tên, đóng dấu)</p>
                     </div>
                 </div>
@@ -294,7 +294,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             const urlParams = new URLSearchParams(window.location.search);
             
-            // Demo data
+            // Demo data for preview if no URL params
             let data = {
                 hang_muc: 'Thu',
                 ten_studio: '2H STUDIO',
@@ -331,7 +331,6 @@
                 data.nguoi_tao = urlParams.get('nguoi_tao');
                 data.hinh_thuc = urlParams.get('hinh_thuc_tt') || '';
                 
-                // Lấy STK và Chủ TK từ URL
                 data.stk = urlParams.get('stk') || '';
                 data.chu_tk = urlParams.get('chu_tk') || '';
             }
@@ -354,12 +353,14 @@
             setTextByClass('data-ly-do', data.noi_dung);
             setTextByClass('data-nguoi-lap', data.nguoi_tao);
             
-            // ĐÃ SỬA: Dùng dấu gạch ngang (-) thay vì gạch dưới (_)
+            // Xử lý hiển thị Hình thức
             setTextByClass('data-hinh-thuc', data.hinh_thuc);
             
             // Xử lý hiển thị STK + (Chủ TK)
             let hien_thi_stk = data.stk;
-            if (data.chu_tk) {
+            // Nếu có tên chủ TK đi kèm thì nối vào (code logic cũ giữ nguyên, 
+            // nhưng thực tế AppSheet đang gửi cả cụm vào biến stk nên chu_tk có thể rỗng)
+            if (data.chu_tk && data.stk) {
                 hien_thi_stk += ` (${data.chu_tk})`;
             }
             setTextByClass('data-stk', hien_thi_stk);
