@@ -353,7 +353,9 @@
             setTextByClass('data-dia-chi-kh', data.dia_chi_kh);
             setTextByClass('data-ly-do', data.noi_dung);
             setTextByClass('data-nguoi-lap', data.nguoi_tao);
-            setTextByClass('data-hinh_thuc', data.hinh_thuc);
+            
+            // ĐÃ SỬA: Dùng dấu gạch ngang (-) thay vì gạch dưới (_)
+            setTextByClass('data-hinh-thuc', data.hinh_thuc);
             
             // Xử lý hiển thị STK + (Chủ TK)
             let hien_thi_stk = data.stk;
