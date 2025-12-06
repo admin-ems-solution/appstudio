@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Phiếu Thu - Chi (V3 Fix Layout)</title>
+    <title>Phiếu Thu - Chi (Final v4)</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -21,10 +21,7 @@
             padding: 0; 
         }
 
-        @page { 
-            size: A4 portrait; 
-            margin: 0; 
-        }
+        @page { size: A4 portrait; margin: 0; }
 
         .actions-container { 
             position: sticky; top: 0; display: flex; justify-content: center; gap: 15px;
@@ -34,9 +31,7 @@
             background-color: #0d6efd; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;
         }
 
-        .page-wrapper { 
-            display: flex; justify-content: center; padding: 20px; 
-        }
+        .page-wrapper { display: flex; justify-content: center; padding: 20px; }
 
         .a4-page {
             width: 210mm;
@@ -50,83 +45,46 @@
         /* --- CẤU HÌNH KHUNG --- */
         .voucher-half {
             flex: 1; 
-            /* Giảm padding trái phải xuống 15mm để tránh tràn nội dung */
+            /* Giữ lề 15mm trái/phải để không bị tràn, trên/dưới 10mm-20mm cho thoáng */
             padding: 15mm 20mm 10mm 20mm; 
             box-sizing: border-box;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            overflow: hidden; /* Ngăn chặn mọi thứ tràn ra ngoài */
+            overflow: hidden;
         }
 
         .cut-line {
-            width: 95%;
-            margin: 0 auto;
-            border-top: 1px dashed #999;
-            height: 1px;
+            width: 95%; margin: 0 auto; border-top: 1px dashed #999; height: 1px;
         }
 
-        /* --- HEADER (SỬA LẠI) --- */
-        .header-section { 
-            display: flex; 
-            justify-content: space-between; /* Đẩy 2 khối sang 2 bên */
-            align-items: flex-start; /* Căn thẳng hàng trên cùng */
-            margin-bottom: 5px;
-        }
-
-        .header-left {
-            flex: 1;
-            padding-right: 10px;
-        }
+        /* --- HEADER --- */
+        .header-section { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 5px; }
+        .header-left { flex: 1; padding-right: 10px; }
         .studio-name { font-weight: bold; font-size: 11pt; text-transform: uppercase; display: block; margin-bottom: 3px; }
         .studio-info-line { display: block; font-size: 10.5pt; margin-bottom: 2px; }
 
-        /* Khối số phiếu bên phải */
-        .header-right {
-            text-align: left; /* Chữ trong khối vẫn căn trái cho thẳng hàng nhau */
-            min-width: 150px;
-        }
-        .voucher-num-line {
-            font-size: 10.5pt;
-            margin-bottom: 3px;
-        }
+        .header-right { text-align: left; min-width: 150px; }
+        .voucher-num-line { font-size: 10.5pt; margin-bottom: 3px; }
 
         /* --- TITLE --- */
-        .title-section { text-align: center; margin-top: 0px; margin-bottom: 10px; }
+        .title-section { text-align: center; margin-bottom: 10px; }
         .main-title { font-size: 18pt; font-weight: bold; text-transform: uppercase; margin: 0; }
         .date-sub { font-style: italic; font-size: 11pt; margin: 3px 0; }
         .copy-info { font-weight: bold; font-size: 10pt; }
 
-        /* --- FORM CONTENT --- */
+        /* --- FORM --- */
         .form-body { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; }
-        
-        .line-row { 
-            display: flex; 
-            align-items: baseline; /* Căn chân chữ */
-            margin-bottom: 8px; 
-            width: 100%;
-        }
-        .label { white-space: nowrap; margin-right: 5px; font-weight: normal; }
-        .label-bold { font-weight: bold; } /* Nếu muốn nhãn đậm thì thêm class này */
-        
-        /* Dòng chấm fix lỗi tràn */
-        .value { 
-            flex-grow: 1; 
-            border-bottom: 1px dotted #000; 
-            font-weight: bold; 
-            padding-left: 5px; 
-            min-width: 50px; /* Đảm bảo luôn có độ rộng tối thiểu */
-        }
+        .line-row { display: flex; align-items: baseline; margin-bottom: 8px; width: 100%; }
+        .label { white-space: nowrap; margin-right: 5px; }
+        .value { flex-grow: 1; border-bottom: 1px dotted #000; font-weight: bold; padding-left: 5px; min-width: 50px; }
         .value.italic { font-weight: normal; font-style: italic; }
 
-        /* Double Row fix */
         .double-row { display: flex; align-items: baseline; justify-content: space-between; gap: 15px; margin-bottom: 8px; width: 100%; }
         .half-row { display: flex; align-items: baseline; flex: 1; }
 
         /* --- CHỮ KÝ --- */
-        .signature-section { 
-            display: flex; justify-content: space-between; text-align: center; margin-top: 10px; 
-        }
+        .signature-section { display: flex; justify-content: space-between; text-align: center; margin-top: 10px; }
         .sig-col { width: 24%; }
         .sig-title { font-weight: bold; font-size: 11pt; margin-bottom: 5px; }
         .sig-note { font-style: italic; font-size: 10pt; margin-top: 0; margin-bottom: 50px; }
@@ -150,19 +108,16 @@
     <div class="page-wrapper">
         <div class="a4-page" id="print-area">
             
-            <!-- === LIÊN 1 (TRÊN) === -->
+            <!-- LIÊN 1 -->
             <div class="voucher-half">
                 <div>
                     <div class="header-section">
-                        <!-- Bên trái: Thông tin Studio -->
                         <div class="header-left">
                             <span class="studio-name data-ten-studio">2H STUDIO</span>
                             <span class="studio-info-line">Địa chỉ: <span class="data-dia-chi-studio">...</span></span>
                             <span class="studio-info-line">Email: <span class="data-email-studio">...</span></span>
                             <span class="studio-info-line">Điện thoại: <span class="data-sdt-studio">...</span> - Zalo: <span class="data-zalo-studio">...</span></span>
                         </div>
-                        
-                        <!-- Bên phải: Quyển số / Số (2 dòng) -->
                         <div class="header-right">
                             <div class="voucher-num-line">Quyển số: ...........</div>
                             <div class="voucher-num-line">Số: <span class="data-ma-phieu">..........</span></div>
@@ -190,12 +145,13 @@
                         </div>
                         
                         <div class="double-row">
-                            <div class="half-row" style="flex: 0.6;"> <!-- Co phần hình thức lại chút -->
+                            <div class="half-row" style="flex: 0.6;">
                                 <span class="label">Hình thức:</span>
                                 <span class="value data-hinh-thuc"></span>
                             </div>
-                            <div class="half-row" style="flex: 1.4;"> <!-- Dãn phần STK ra -->
+                            <div class="half-row" style="flex: 1.4;">
                                 <span class="label">STK:</span>
+                                <!-- Chỗ này sẽ hiển thị STK + Tên Chủ TK -->
                                 <span class="value data-stk"></span>
                             </div>
                         </div>
@@ -235,7 +191,7 @@
 
             <div class="cut-line"></div>
 
-            <!-- === LIÊN 2 (DƯỚI) === -->
+            <!-- LIÊN 2 -->
             <div class="voucher-half">
                 <div>
                     <div class="header-section">
@@ -245,7 +201,6 @@
                             <span class="studio-info-line">Email: <span class="data-email-studio">...</span></span>
                             <span class="studio-info-line">Điện thoại: <span class="data-sdt-studio">...</span> - Zalo: <span class="data-zalo-studio">...</span></span>
                         </div>
-                        
                         <div class="header-right">
                             <div class="voucher-num-line">Quyển số: ...........</div>
                             <div class="voucher-num-line">Số: <span class="data-ma-phieu">..........</span></div>
@@ -339,22 +294,24 @@
         document.addEventListener('DOMContentLoaded', () => {
             const urlParams = new URLSearchParams(window.location.search);
             
+            // Demo data
             let data = {
                 hang_muc: 'Thu',
                 ten_studio: '2H STUDIO',
-                dia_chi_studio: '111 Hoàng Cầu - Đống Đa - Hà Nội',
+                dia_chi_studio: '111 Hoàng Cầu',
                 email: '2hstudio.net@gmail.com',
                 phone: '0826268111',
                 zalo: '2H Studio',
                 ngay_lap: '2025-10-15',
                 ma_phieu: '7a0bc562',
-                doi_tuong: 'Trương Tuấn Hiệp - Hoàng Thu Ngọc',
-                dia_chi_kh: 'D\'capitale Trần Duy Hưng, Trung Hoà, Cầu Giấy',
+                doi_tuong: 'Khách hàng Demo',
+                dia_chi_kh: 'Hà Nội',
                 noi_dung: 'THANH TOÁN LẦN 2',
                 so_tien: '6000000',
-                nguoi_tao: 'NV007',
+                nguoi_tao: 'NV001',
                 hinh_thuc: 'Chuyển khoản',
-                stk: 'ACB-91926'
+                stk: 'ACB-91926',
+                chu_tk: 'PHẠM VĂN ÁNH' 
             };
 
             if (urlParams.has('so_tien')) {
@@ -373,7 +330,10 @@
                 data.so_tien = urlParams.get('so_tien');
                 data.nguoi_tao = urlParams.get('nguoi_tao');
                 data.hinh_thuc = urlParams.get('hinh_thuc_tt') || '';
+                
+                // Lấy STK và Chủ TK từ URL
                 data.stk = urlParams.get('stk') || '';
+                data.chu_tk = urlParams.get('chu_tk') || '';
             }
 
             const isChi = data.hang_muc.toLowerCase() === 'chi';
@@ -394,7 +354,13 @@
             setTextByClass('data-ly-do', data.noi_dung);
             setTextByClass('data-nguoi-lap', data.nguoi_tao);
             setTextByClass('data-hinh_thuc', data.hinh_thuc);
-            setTextByClass('data-stk', data.stk);
+            
+            // Xử lý hiển thị STK + (Chủ TK)
+            let hien_thi_stk = data.stk;
+            if (data.chu_tk) {
+                hien_thi_stk += ` (${data.chu_tk})`;
+            }
+            setTextByClass('data-stk', hien_thi_stk);
 
             let d = new Date();
             if(data.ngay_lap) d = new Date(data.ngay_lap);
