@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phiếu Thu - Chi</title>
+    
+    <!-- Thư viện tạo PDF và Ảnh -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
+   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap');
+    
+    :root {
+        --page-width: 190mm; /* Khổ A4 chiều ngang nội dung */
+        --main-color: #212529;
+        --blue-accent: #0d6efd;
+    }
+
+    body { 
+        font-family: 'Be Vietnam Pro', sans-serif; 
+        font-size: 10pt; /* Cỡ chữ to hơn hợp đồng chút cho dễ nhìn phiếu */
+        line-height: 1.5; 
+        color: var(--main-color); 
+        background-color: #f0f2f5; 
+        margin: 0; 
+        padding: 0; 
+    }
+    
+    /* --- Action Bar (Thanh công cụ) --- */
+    .actions-container { 
+        position: sticky; top: 0; display: flex; justify-content: flex-end; align-items: center;
+        width: 100%; background-color: #343a40; padding: 10px 20px; box-sizing: border-box;
+        z-index: 2000; box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+    .action-btn { 
+        background-color: var(--blue-accent); color: white; border: none; padding: 8px 16px; border-radius: 4px; 
+        font-size: 13px; font-weight: 500; cursor: pointer; margin-left: 10px; transition: 0.2s;
+    }
+    .action-btn:hover { opacity: 0.9; }
+    .btn-print { background-color: #6c757d; }
+    .btn-pdf { background-color: #198754; }
+    .btn-img { background-color: #fd7e14; }
+
+    /* --- Page Container --- */
+    .page-wrapper { display: flex; justify-content: center; padding: 30px 0; }
+    .voucher-paper { 
+        width: var(--page-width); 
+        min-height: 130mm; /* Chiều cao khoảng nửa tờ A4 (A5 Landscape) */
+        background-color: white; 
+        margin: 0 auto; 
+        padding: 40px 50px;
+        box-shadow: 0 0 15px rgba(0,0,0,0.1);
+        box-sizing: border-box;
+        position: relative;
+    }
+
+    /* --- Header --- */
+    .header { display: flex; justify-content: space-between; margin-bottom: 25px; }
+    .header-left { display: flex; gap: 15px; width: 75%; }
+    .logo-box { width: 80px; height: 80px; flex-shrink: 0; }
+    .logo-box img { width: 100%; height: 100%; object-fit: contain; }
+    
+    .company-info h2 { margin: 0 0 5px 0; font-size: 12pt; text-transform: uppercase; letter-spacing: 0.5px; }
+    .company-info p { margin: 2px 0; font-size: 9pt; color: #555; }
+    .company-info a { color: var(--blue-accent); text-decoration: none; }
+
+    .header-right { text-align: right; width: 25%; display: flex; flex-direction: column; align-items: flex-end; }
+    .qr-box { width: 70px; height: 70px; margin-bottom: 5px; }
+    .qr-box img { width: 100%; height: 100%; }
+    .meta-text { font-size: 8pt; color: #777; font-style: italic; }
+
+    /* --- Title --- */
+    .voucher-title { text-align: center; margin-bottom: 25px; }
+    .voucher-title h1 { margin: 0; font-size: 22pt; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+    .voucher-title .date-line { font-style: italic; font-size: 10pt; margin-top: 5px; color: #444; }
+    
+    .voucher-number-info { 
+        position: absolute; 
+        top: 140px; 
+        right: 50px; 
+        text-align: left; 
+        font-size: 10pt;
+        line-height: 1.4;
+    }
+
+    /* --- Content Form --- */
+    .form-content { margin-bottom: 30px; }
+    .form-row { display: flex; margin-bottom: 12px; align-items: baseline; }
+    .form-label { min-width: 130px; font-weight: 600; color: #333; }
+    .form-value { flex-grow: 1; border-bottom: 1px dotted #999; padding-bottom: 2px; color: #000; font-weight: 500;}
+    .form-value.highlight { font-weight: 700; font-size: 11pt; }
+    
+    .money-row { align-items: center; }
+    .money-value { font-size: 13pt; font-weight: 700; color: #212529; }
+    
+    .inline-group { display: flex; width: 100%; gap: 30px; }
+    .inline-item { display: flex; flex-grow: 1; }
+
+    /* --- Signatures --- */
+    .signature-section { 
+        display: flex; 
+        justify-content: space-between; 
+        text-align: center; 
+        margin-top: 40px;
+    }
+    .sig-block { flex: 1; }
+    .sig-title { font-weight: 700; font-size: 10pt; text-transform: uppercase; margin-bottom: 4px; }
+    .sig-note { font-style: italic; font-size: 8.5pt; color: #666; margin-top: 0; }
+    .sig-space { height: 80px; }
+    .sig-name { font-weight: 600; font-size: 10pt; }
+
+    /* --- Utilities --- */
+    .dynamic-data { color: #000; } /* Dữ liệu động màu đen cho trang trọng */
+    
+    /* --- Print Styles --- */
+    @media print {
+        body { background: none; }
+        .actions-container { display: none; }
+        .page-wrapper { padding: 0; display: block; }
+        .voucher-paper { 
+            box-shadow: none; margin: 0; width: 100%; height: auto; padding: 20px; 
+            page-break-inside: avoid;
+        }
+        @page { size: A4; margin: 10mm; }
+    }
+</style>
+</head>
+<body>
+
+    <!-- Thanh công cụ -->
+    <div class="actions-container">
+        <button onclick="window.print()" class="action-btn btn-print">🖨️ In Phiếu</button>
+        <button onclick="downloadPDF()" class="action-btn btn-pdf">📄 Tải PDF</button>
+        <button onclick="downloadImage()" class="action-btn btn-img">🖼️ Tải Ảnh</button>
+    </div>
+
+    <div class="page-wrapper">
+        <div class="voucher-paper" id="voucher-content">
+            
+            <!-- Header -->
+            <div class="header">
+                <div class="header-left">
+                    <div class="logo-box">
+                        <!-- Logo Studio (thay link ảnh của bạn vào đây) -->
+                        <img src="https://2hstudio.vn/wp-content/uploads/2024/10/8.jpg" alt="Logo" onerror="this.style.display='none'">
+                    </div>
+                    <div class="company-info">
+                        <h2 id="studio-name">2H STUDIO</h2>
+                        <p>Địa chỉ: <span id="studio-address">111 Hoàng Cầu</span></p>
+                        <p>Website: <a href="#" id="studio-website">http://www.2hstudio.vn/</a></p>
+                        <p>Fanpage: <span id="studio-fanpage">2Hwedding</span></p>
+                        <p>Email: <span id="studio-email">2hstudio.net@gmail.com</span></p>
+                        <p>Điện thoại: <span id="studio-phone">0826268111</span> - Zalo: <span id="studio-zalo">2H Studio</span></p>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <div id="qr-code-box" class="qr-box"></div>
+                    <div class="meta-text">Mã phiếu: <span id="ma-phieu"></span></div>
+                </div>
+            </div>
+
+            <!-- Title -->
+            <div class="voucher-title">
+                <h1 id="voucher-header-text">PHIẾU THU</h1>
+                <div class="date-line" id="date-string">Ngày ... tháng ... năm ...</div>
+            </div>
+
+            <!-- Số phiếu (Quyển số / Số) -->
+            <div class="voucher-number-info">
+                <div>Quyển số: .................</div>
+                <div>Số: ...........................</div>
+            </div>
+
+            <!-- Content -->
+            <div class="form-content">
+                <div class="form-row">
+                    <!-- Nếu là Chi thì là Người nhận tiền, Thu là Người nộp tiền -->
+                    <span class="form-label" id="label-doi-tuong">Người nộp tiền :</span>
+                    <span class="form-value highlight" id="doi-tuong"></span>
+                </div>
+
+                <div class="form-row">
+                    <span class="form-label">Địa chỉ :</span>
+                    <span class="form-value" id="dia-chi"></span>
+                </div>
+
+                <div class="form-row">
+                    <span class="form-label">Nội dung :</span>
+                    <span class="form-value" id="noi-dung"></span>
+                </div>
+
+                <div class="form-row">
+                    <div class="inline-group">
+                        <div class="inline-item" style="flex: 1;">
+                            <span class="form-label" style="min-width: 90px;">Hình thức :</span>
+                            <span class="form-value" id="hinh-thuc"></span>
+                        </div>
+                        <div class="inline-item" style="flex: 1.5;">
+                            <!-- Nếu là Chuyển khoản sẽ hiện STK, nếu Tiền mặt có thể ẩn -->
+                            <span class="form-label" style="min-width: 50px;">STK :</span>
+                            <span class="form-value" id="so-tai-khoan"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row money-row">
+                    <span class="form-label">Số tiền :</span>
+                    <span class="form-value money-value" id="so-tien-so">0</span>
+                </div>
+
+                <div class="form-row">
+                    <span class="form-label">Bằng chữ :</span>
+                    <span class="form-value" id="so-tien-chu" style="font-style: italic;">Không đồng</span>
+                </div>
+                
+                <div class="form-row" id="row-kem-theo" style="display: none;">
+                    <span class="form-label">Kèm theo :</span>
+                    <span class="form-value" id="kem-theo"></span>
+                </div>
+            </div>
+
+            <!-- Signatures -->
+            <div class="signature-section">
+                <div class="sig-block">
+                    <div class="sig-title">Giám đốc</div>
+                    <p class="sig-note">(Ký, họ tên, đóng dấu)</p>
+                    <div class="sig-space"></div>
+                    <div class="sig-name"></div>
+                </div>
+                
+                <div class="sig-block">
+                    <div class="sig-title">Người lập phiếu</div>
+                    <p class="sig-note">(Ký, họ tên)</p>
+                    <div class="sig-space"></div>
+                    <div class="sig-name" id="nguoi-lap-phieu"></div>
+                </div>
+
+                <div class="sig-block">
+                    <!-- Thu: Người nhận tiền (Thủ quỹ) | Chi: Thủ quỹ -->
+                    <div class="sig-title" id="label-sig-3">Người nhận tiền</div>
+                    <p class="sig-note">(Ký, họ tên)</p>
+                    <div class="sig-space"></div>
+                    <div class="sig-name"></div>
+                </div>
+
+                <div class="sig-block">
+                    <!-- Thu: Người nộp tiền | Chi: Người nhận tiền -->
+                    <div class="sig-title" id="label-sig-4">Người nộp tiền</div>
+                    <p class="sig-note">(Ký, họ tên)</p>
+                    <div class="sig-space"></div>
+                    <div class="sig-name" id="ten-doi-tuong-ky"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Hàm đọc số tiền thành chữ
+        function readNumberInVietnamese(number) { 
+            const units=["","một","hai","ba","bốn","năm","sáu","bảy","tám","chín"];
+            const groupUnits=[""," nghìn"," triệu"," tỷ"," nghìn tỷ"," triệu tỷ"];
+            
+            function convertBlock(e){
+                if("000"===e)return"";
+                let t=parseInt(e[0]),r=parseInt(e[1]),n=parseInt(e[2]),i="";
+                return t>0&&(i+=units[t]+" trăm"),0===r&&n>0?i+=t>0?" linh "+units[n]:units[n]:1===r?(i+=" mười",5===n?i+=" lăm":n>0&&(i+=" "+units[n])):r>1&&(i+=" "+units[r]+" mươi",1===n?i+=" mốt":5===n?i+=" lăm":n>0&&(i+=" "+units[n])),i.trim()
+            }
+            
+            let numStr=String(parseInt(number,10));
+            if("0"===numStr||isNaN(parseInt(number))) return "Không đồng";
+            
+            let chunks=[];
+            for(;numStr.length>0;)chunks.unshift(numStr.slice(-3)),numStr=numStr.slice(0,-3);
+            
+            const result=chunks.map((e,t)=>{
+                for(;e.length<3;)e="0"+e;
+                const r=convertBlock(e);
+                if(!r)return"";
+                let n=groupUnits[chunks.length-1-t];
+                return 0===parseInt(e)&&" nghìn"===n?"":r+n
+            }).filter(Boolean).join(" ");
+            
+            let final = (result.charAt(0).toUpperCase()+result.slice(1)).trim()+" đồng";
+            return final.replace(/  /g, " "); 
+        }
+
+        function removeVietnameseTones(str) {
+            if(!str) return "";
+            return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D');
+        }
+
+        function formatDate(dateStr) {
+            // Chấp nhận định dạng dd/mm/yyyy hoặc yyyy-mm-dd
+            if (!dateStr) return { day: '...', month: '...', year: '...' };
+            
+            let d;
+            if (dateStr.includes('/')) {
+                const parts = dateStr.split('/');
+                // Giả sử input là dd/mm/yyyy
+                return { day: parts[0], month: parts[1], year: parts[2] };
+            } else if (dateStr.includes('-')) {
+                d = new Date(dateStr);
+            } else {
+                d = new Date();
+            }
+            return {
+                day: d.getDate().toString().padStart(2, '0'),
+                month: (d.getMonth() + 1).toString().padStart(2, '0'),
+                year: d.getFullYear()
+            };
+        }
+
+        // Hàm tạo QR Code
+        function generateQRCode(text) {
+            const container = document.getElementById('qr-code-box');
+            if(!text) { container.innerHTML = ''; return; }
+            const url = `https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${encodeURIComponent(text)}&format=svg`;
+            container.innerHTML = `<img src="${url}" alt="QR">`;
+        }
+
+        // Hàm chính để điền dữ liệu
+        function populateData() {
+            const urlParams = new URLSearchParams(window.location.search);
+            
+            // --- 1. Chế độ DEMO (Nếu không có tham số URL) ---
+            let data = {};
+            if (!urlParams.has('so_tien')) {
+                console.log("Running Demo Mode");
+                data = {
+                    hang_muc: 'Thu', // hoặc 'Chi'
+                    so_tien: '6000000',
+                    ngay_lap: '15/10/2025',
+                    doi_tuong: 'Trương Tuấn Hiệp - Hoàng Thu Ngọc',
+                    dia_chi: 'Xã - Huyện - Tỉnh', // Bảng thu_chi không có địa chỉ, có thể truyền thêm
+                    noi_dung: 'THANH TOÁN LẦN 2 (Hợp đồng HD250706...)',
+                    hinh_thuc_tt: 'Chuyển khoản',
+                    tai_khoan_co: 'ACB-91926', // Lấy từ cột tai_khoan_co hoặc tai_khoan_no tuỳ loại
+                    nguoi_tao: 'Nguyễn Văn A',
+                    ma_phieu: 'PT-251015-001',
+                    giay_bao: 'Giấy báo có'
+                };
+            } else {
+                // --- 2. Lấy từ URL (Map từ bảng thu_chi) ---
+                data = {
+                    hang_muc: urlParams.get('hang_muc') || 'Thu',
+                    so_tien: urlParams.get('so_tien') || '0',
+                    ngay_lap: urlParams.get('ngay_lap'),
+                    doi_tuong: urlParams.get('doi_tuong') || '',
+                    dia_chi: urlParams.get('dia_chi') || '', // Có thể trống
+                    noi_dung: urlParams.get('noi_dung') || '',
+                    hinh_thuc_tt: urlParams.get('hinh_thuc_tt') || '',
+                    // Nếu là Thu -> Lấy tài khoản Có (tiền vào). Nếu là Chi -> Lấy tài khoản Nợ (hoặc TK nguồn)
+                    tai_khoan: (urlParams.get('hang_muc') === 'Chi') ? urlParams.get('tai_khoan_no') : urlParams.get('tai_khoan_co'),
+                    nguoi_tao: urlParams.get('nguoi_tao') || '',
+                    ma_phieu: urlParams.get('id_thu_chi') || '',
+                    giay_bao: urlParams.get('giay_bao') || ''
+                };
+            }
+
+            // --- Xử lý Logic hiển thị ---
+            const isChi = data.hang_muc.toLowerCase() === 'chi';
+            
+            // 1. Tiêu đề
+            document.getElementById('voucher-header-text').textContent = isChi ? "PHIẾU CHI" : "PHIẾU THU";
+            document.title = (isChi ? "Phieu_Chi_" : "Phieu_Thu_") + data.doi_tuong;
+
+            // 2. Nhãn (Labels)
+            document.getElementById('label-doi-tuong').textContent = isChi ? "Người nhận tiền :" : "Người nộp tiền :";
+            document.getElementById('label-sig-3').textContent = isChi ? "Thủ quỹ" : "Người nhận tiền";
+            document.getElementById('label-sig-4').textContent = isChi ? "Người nhận tiền" : "Người nộp tiền";
+
+            // 3. Dữ liệu ngày tháng
+            const dateObj = formatDate(data.ngay_lap);
+            document.getElementById('date-string').textContent = `Ngày ${dateObj.day} tháng ${dateObj.month} năm ${dateObj.year}`;
+
+            // 4. Các trường thông tin
+            document.getElementById('doi-tuong').textContent = data.doi_tuong;
+            document.getElementById('ten-doi-tuong-ky').textContent = data.doi_tuong; // Điền tên xuống phần ký tên
+            document.getElementById('dia-chi').textContent = data.dia_chi;
+            document.getElementById('noi-dung').textContent = data.noi_dung;
+            document.getElementById('hinh-thuc').textContent = data.hinh_thuc_tt;
+            document.getElementById('nguoi-lap-phieu').textContent = data.nguoi_tao;
+            document.getElementById('ma-phieu').textContent = data.ma_phieu;
+            
+            // Tài khoản ngân hàng (Chỉ hiện nếu có)
+            const stkDisplay = data.tai_khoan ? data.tai_khoan : '';
+            document.getElementById('so-tai-khoan').textContent = stkDisplay;
+
+            // Giấy báo (nếu có)
+            if(data.giay_bao) {
+                document.getElementById('row-kem-theo').style.display = 'flex';
+                document.getElementById('kem-theo').textContent = data.giay_bao;
+            }
+
+            // 5. Số tiền & Chữ
+            // Làm sạch chuỗi số (bỏ dấu phẩy nếu có trong DB)
+            const rawMoney = data.so_tien.toString().replace(/,/g, '').replace(/\./g, '');
+            const moneyVal = parseInt(rawMoney, 10);
+            
+            document.getElementById('so-tien-so').textContent = moneyVal.toLocaleString('vi-VN');
+            document.getElementById('so-tien-chu').textContent = readNumberInVietnamese(moneyVal);
+
+            // 6. Generate QR
+            // Nội dung QR: Mã phiếu | Số tiền | Đối tượng
+            const qrContent = `${data.ma_phieu}|${moneyVal}|${removeVietnameseTones(data.doi_tuong)}`;
+            generateQRCode(qrContent);
+            
+            // 7. Cập nhật thông tin Studio từ URL nếu có (ghi đè mặc định)
+            if(urlParams.has('ten_studio')) document.getElementById('studio-name').textContent = urlParams.get('ten_studio');
+            if(urlParams.has('diachi_studio')) document.getElementById('studio-address').textContent = urlParams.get('diachi_studio');
+        }
+
+        // Chức năng tải PDF
+        function downloadPDF() {
+            const element = document.getElementById('voucher-content');
+            const opt = {
+                margin: 0,
+                filename: document.title + '.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, useCORS: true },
+                jsPDF: { unit: 'mm', format: 'a5', orientation: 'landscape' } // A5 ngang
+            };
+            html2pdf().from(element).set(opt).save();
+        }
+
+        // Chức năng tải Ảnh
+        function downloadImage() {
+            const element = document.getElementById('voucher-content');
+            html2canvas(element, { scale: 3, useCORS: true }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = document.title + '.jpg';
+                link.href = canvas.toDataURL('image/jpeg', 0.95);
+                link.click();
+            });
+        }
+
+        // Chạy khi load trang
+        document.addEventListener('DOMContentLoaded', populateData);
+    </script>
+</body>
+</html>
